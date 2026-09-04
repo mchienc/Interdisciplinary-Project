@@ -1,0 +1,37 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: webgis_postgis
+    restart: always
+    environment:
+      POSTGRES_DB: webgis_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgis_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - webgis_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: webgis_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@webgis.vn
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgis
+    networks:
+      - webgis_network
+
+volumes:
+  postgis_data:
+
+networks:
+  webgis_network:
+    driver: bridge

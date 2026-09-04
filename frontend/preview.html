@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ thống WebGIS Phân tích Không gian Đô thị - Hà Nội</title>
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet.heat Plugin cho Heatmap (KDE Visual) -->
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    #map { height: 100%; width: 100%; }
+    .custom-popup .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .legend {
+      background: rgba(15, 23, 42, 0.9);
+      padding: 10px;
+      border-radius: 8px;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      font-size: 11px;
+      line-height: 18px;
+    }
+    .legend i {
+      width: 14px;
+      height: 14px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.85;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-slate-900 text-slate-100 overflow-hidden font-sans">
+  
+  <!-- Header Bar -->
+  <header class="h-14 bg-slate-800 border-b border-slate-700 px-5 flex items-center justify-between z-10 shrink-0">
+    <div class="flex items-center space-x-3">
+      <span class="text-2xl">🏙️</span>
+      <div>
+        <h1 class="font-bold text-sm md:text-base text-white">Urban Spatial Analysis WebGIS</h1>
+        <p class="text-xs text-slate-400">Đồ án liên ngành CNTT & GIS | GVHD: ThS. Nguyễn Lệ Thu</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span id="dbBadge" class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded border border-emerald-500/30 flex items-center gap-1.5 font-medium">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        PostGIS 16: Active
+      </span>
+      <span id="apiBadge" class="bg-blue-500/20 text-blue-300 text-xs px-2.5 py-1 rounded border border-blue-500/30 font-medium">
+        FastAPI: :8000
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- Sidebar Controls & Analytics -->
+    <aside class="w-80 md:w-96 bg-slate-850 border-r border-slate-700 p-4 flex flex-col space-y-4 overflow-y-auto shrink-0 bg-slate-800/95">
+      
+      <!-- Box 1: Bật/Tắt Lớp Chuyên đề (GIS Layers Control) -->
+      <div class="bg-slate-900/60 p-3.5 rounded-lg border border-slate-700/60 space-y-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <span>🗺️</span> Lớp Dữ liệu Chuyên đề (Layers)
+        </h2>
+        <label class="flex items-center space-x-2 text-xs text-slate-200 cursor-pointer">
+          <input type="checkbox" id="toggleMalls" checked onchange="toggleMallsLayer()" class="rounded text-blue-600 focus:ring-0 bg-slate-800 border-slate-600">
+          <span>Điểm TTTM & Siêu thị (<b id="mallsCount" class="text-blue-400">392</b>)</span>
+        </label>
+        <label class="flex items-center space-x-2 text-xs text-slate-200 cursor-pointer">
+          <input type="checkbox" id="toggleChoropleth" checked onchange="toggleChoroplethLayer()" class="rounded text-orange-600 focus:ring-0 bg-slate-800 border-slate-600">
+          <span>Ranh giới Quận & Mật độ (Choropleth)</span>
+        </label>
+        <label class="flex items-center space-x-2 text-xs text-slate-200 cursor-pointer">
+          <input type="checkbox" id="toggleHeatmap" onchange="toggleHeatmapLayer()" class="rounded text-rose-600 focus:ring-0 bg-slate-800 border-slate-600">
+          <span>Bản đồ nhiệt Điểm nóng (Heatmap / KDE)</span>
+        </label>
+      </div>
+
+      <!-- Box 2: Bộ lọc theo Quận & Thương hiệu -->
+      <div class="bg-slate-900/60 p-3.5 rounded-lg border border-slate-700/60 space-y-2.5">
+        <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 block flex items-center gap-1.5">
+          <span>🔍</span> Bộ lọc Không gian & Thuộc tính
+        </label>
+        <div>
+          <span class="text-[11px] text-slate-400 block mb-1">Theo Quận/Huyện:</span>
+          <select id="districtFilter" onchange="applyFilters()" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+            <option value="">-- Toàn thành phố Hà Nội --</option>
+          </select>
+        </div>
+        <div>
+          <span class="text-[11px] text-slate-400 block mb-1">Theo Thương hiệu:</span>
+          <select id="brandFilter" onchange="applyFilters()" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+            <option value="">-- Tất cả thương hiệu --</option>
+            <option value="Vincom">Vincom (Mega Mall, Center, Plaza)</option>
+            <option value="Lotte">Lotte Mart / Lotte Mall</option>
+            <option value="Aeon">Aeon Mall</option>
+            <option value="Big C">Big C / GO!</option>
+            <option value="WinMart">WinMart / WinMart+</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Box 3: Công cụ Phân tích Vùng đệm (Buffer Analysis) -->
+      <div class="bg-slate-900/60 p-3.5 rounded-lg border border-slate-700/60 space-y-3">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <span>🎯</span> Phân tích Vùng đệm (Service Buffer)
+        </h2>
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-300">Bán kính phục vụ:</span>
+            <span id="radiusLabel" class="font-bold text-blue-400">1000 m</span>
+          </div>
+          <input 
+            type="range" 
+            id="radiusSlider" 
+            min="300" 
+            max="5000" 
+            step="100" 
+            value="1000" 
+            oninput="updateRadiusLabel(this.value)" 
+            class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+          />
+          <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+            <span>300m (Đi bộ)</span>
+            <span>1km (Tiêu chuẩn)</span>
+            <span>5km (Xe máy/ô tô)</span>
+          </div>
+        </div>
+
+        <div id="selectedInfo" class="bg-slate-800/80 p-2 rounded text-xs text-slate-300 border border-slate-700/50">
+          👉 <i>Nhấp vào 1 TTTM trên bản đồ rồi bấm "Phân tích Vùng đệm".</i>
+        </div>
+
+        <button 
+          onclick="clearBufferLayers()" 
+          class="w-full bg-slate-700 hover:bg-slate-600 text-xs py-1.5 rounded transition text-slate-200"
+        >
+          Xóa lớp vùng đệm
+        </button>
+      </div>
+
+      <!-- Box 4: Bảng Xếp hạng Quận tập trung TTTM nhiều nhất -->
+      <div class="bg-slate-900/60 p-3.5 rounded-lg border border-slate-700/60 flex-1">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+          <span>🏆</span> Top Quận Mật độ TTTM Cao
+        </h2>
+        <div id="topDistrictsList" class="space-y-1.5 text-xs max-h-48 overflow-y-auto pr-1">
+          <div class="text-slate-500 italic">Đang tải phân tích PostGIS...</div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Map Canvas -->
+    <main class="flex-1 relative">
+      <div id="map"></div>
+    </main>
+
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8000";
+
+    // 1. Khởi tạo bản đồ
+    const map = L.map('map').setView([21.0285, 105.8342], 12);
+
+    // 2. BaseMap Dark Matter / Voyager
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
+
+    let districtsLayer = L.layerGroup().addTo(map);
+    let markersLayer = L.layerGroup().addTo(map);
+    let bufferLayer = L.layerGroup().addTo(map);
+    let heatLayer = null;
+
+    let allFeatures = [];
+    let allDistricts = [];
+    let selectedFeature = null;
+
+    // Màu phân cấp Choropleth Map theo số lượng TTTM
+    function getChoroplethColor(d) {
+      return d > 35 ? '#b91c1c' :  // Đỏ đậm (>35 TTTM)
+             d > 25 ? '#c2410c' :  // Cam đậm (25-35)
+             d > 15 ? '#d97706' :  // Vàng cam (15-25)
+             d > 5  ? '#eab308' :  // Vàng (5-15)
+             d > 0  ? '#84cc16' :  // Xanh lục (1-5)
+                      '#475569';   // Xám (0)
+    }
+
+    const defaultIcon = L.divIcon({
+      className: 'custom-pin',
+      html: `<div style="background-color: #ef4444; width: 11px; height: 11px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+      iconSize: [11, 11],
+      iconAnchor: [5, 5]
+    });
+
+    // Tải dữ liệu Quận và TTTM
+    async function initWebGIS() {
+      await loadDistricts();
+      await loadMalls();
+      addLegend();
+    }
+
+    async function loadDistricts() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/districts`);
+        const data = await res.json();
+        allDistricts = data.features || [];
+        
+        // Đổ dữ liệu vào select filter
+        const select = document.getElementById('districtFilter');
+        allDistricts
+          .sort((a, b) => (b.properties.mall_count || 0) - (a.properties.mall_count || 0))
+          .forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.properties.name;
+            opt.innerText = `${d.properties.name} (${d.properties.mall_count || 0} TTTM)`;
+            select.appendChild(opt);
+          });
+
+        renderDistricts(allDistricts);
+        renderTopDistrictsUI(allDistricts);
+      } catch (e) {
+        console.error("Lỗi tải lớp quận:", e);
+      }
+    }
+
+    function renderDistricts(districts) {
+      districtsLayer.clearLayers();
+      L.geoJSON({ type: "FeatureCollection", features: districts }, {
+        style: function (feat) {
+          const count = feat.properties.mall_count || 0;
+          return {
+            fillColor: getChoroplethColor(count),
+            weight: 1.5,
+            opacity: 1,
+            color: '#334155',
+            dashArray: '2',
+            fillOpacity: 0.4
+          };
+        },
+        onEachFeature: function (feat, layer) {
+          const p = feat.properties;
+          const popup = `
+            <div class="p-2 space-y-1">
+              <h3 class="font-bold text-sm text-slate-900">${p.name}</h3>
+              <p class="text-xs text-slate-600">Số TTTM / Siêu thị: <b class="text-rose-600">${p.mall_count || 0}</b></p>
+              <p class="text-xs text-slate-600">Dân số: <b>${(p.population || 0).toLocaleString()}</b> người</p>
+              <p class="text-xs text-slate-600">Mật độ: <b>${(p.density_per_km2 || 0).toLocaleString()}</b> ng/km²</p>
+              <p class="text-xs text-slate-600">Diện tích: <b>${p.area_km2 || 0}</b> km²</p>
+            </div>
+          `;
+          layer.bindPopup(popup, { className: 'custom-popup' });
+          
+          layer.on({
+            mouseover: function(e) {
+              const l = e.target;
+              l.setStyle({ weight: 3, color: '#60a5fa', fillOpacity: 0.65 });
+            },
+            mouseout: function(e) {
+              districtsLayer.resetStyle ? districtsLayer.resetStyle(e.target) : renderDistricts(allDistricts);
+            }
+          });
+        }
+      }).addTo(districtsLayer);
+    }
+
+    function renderTopDistrictsUI(districts) {
+      const top = districts.slice(0, 8);
+      document.getElementById('topDistrictsList').innerHTML = top.map(d => `
+        <div class="flex justify-between items-center bg-slate-800 px-2 py-1.5 rounded border border-slate-700/50">
+          <span class="text-slate-300 font-medium text-[11px] truncate max-w-[170px]">${d.properties.name}</span>
+          <span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold px-1.5 py-0.5 rounded text-[10px]">
+            ${d.properties.mall_count || 0} cơ sở
+          </span>
+        </div>
+      `).join('');
+    }
+
+    async function loadMalls() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/commercial-centers`);
+        const data = await res.json();
+        allFeatures = data.features || [];
+        document.getElementById('mallsCount').innerText = allFeatures.length;
+        renderMarkers(allFeatures);
+        createHeatmap(allFeatures);
+      } catch (err) {
+        console.error("Lỗi tải TTTM:", err);
+      }
+    }
+
+    function renderMarkers(features) {
+      markersLayer.clearLayers();
+      features.forEach(feat => {
+        const [lon, lat] = feat.geometry.coordinates;
+        const p = feat.properties;
+
+        const popupContent = `
+          <div class="p-1 space-y-1.5 min-w-[210px]">
+            <h4 class="font-bold text-slate-900 text-sm">${p.name}</h4>
+            <div class="text-xs text-blue-600 font-semibold">${p.brand !== 'Khác' ? p.brand : 'Độc lập'} &bull; <span class="uppercase">${p.type}</span></div>
+            ${p.district_name ? `<div class="text-xs text-slate-600">🏛️ <b>${p.district_name}</b></div>` : ''}
+            ${p.address ? `<div class="text-xs text-slate-500">📍 ${p.address}</div>` : ''}
+            <button 
+              onclick="selectMallForAnalysis(${p.osm_id}, '${p.name.replace(/'/g, "\\'")}')" 
+              class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-2 rounded font-medium transition flex items-center justify-center gap-1"
+            >
+              <span>🎯</span> Phân tích Vùng đệm
+            </button>
+          </div>
+        `;
+
+        const marker = L.marker([lat, lon], { icon: defaultIcon }).bindPopup(popupContent, { className: 'custom-popup' });
+        markersLayer.addLayer(marker);
+      });
+    }
+
+    function createHeatmap(features) {
+      const heatPoints = features.map(f => [
+        f.geometry.coordinates[1],
+        f.geometry.coordinates[0],
+        0.8 // Intensity
+      ]);
+      heatLayer = L.heatLayer(heatPoints, { radius: 25, blur: 18, maxZoom: 14 });
+    }
+
+    function selectMallForAnalysis(osmId, name) {
+      const feat = allFeatures.find(f => f.properties.osm_id === osmId);
+      if (!feat) return;
+      selectedFeature = feat;
+      requestBufferAnalysis(osmId, name);
+    }
+
+    async function requestBufferAnalysis(osmId, name) {
+      const radius = parseFloat(document.getElementById('radiusSlider').value);
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/analysis/buffer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ osm_id: osmId, radius_meters: radius })
+        });
+        const bufferGeoJson = await res.json();
+        
+        bufferLayer.clearLayers();
+        L.geoJSON(bufferGeoJson, {
+          style: { color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.3, weight: 2 }
+        }).addTo(bufferLayer);
+
+        document.getElementById('selectedInfo').innerHTML = `
+          <div class="text-emerald-400 font-semibold text-xs">✓ ${name}</div>
+          <div class="text-xs text-slate-300">Bán kính: <b>${radius}m</b></div>
+          <div class="text-xs text-slate-300">Diện tích bao phủ: <b>${bufferGeoJson.properties.area_km2} km²</b></div>
+        `;
+      } catch (e) {
+        console.error("Lỗi buffer:", e);
+      }
+    }
+
+    function updateRadiusLabel(val) {
+      document.getElementById('radiusLabel').innerText = `${val} m`;
+      if (selectedFeature) {
+        requestBufferAnalysis(selectedFeature.properties.osm_id, selectedFeature.properties.name);
+      }
+    }
+
+    function clearBufferLayers() {
+      bufferLayer.clearLayers();
+      selectedFeature = null;
+      document.getElementById('selectedInfo').innerHTML = "👉 <i>Nhấp vào 1 TTTM trên bản đồ rồi bấm 'Phân tích Vùng đệm'.</i>";
+    }
+
+    function applyFilters() {
+      const brand = document.getElementById('brandFilter').value.toLowerCase();
+      const district = document.getElementById('districtFilter').value.toLowerCase();
+
+      let filtered = allFeatures;
+      if (brand) {
+        filtered = filtered.filter(f => (f.properties.brand || "").toLowerCase().includes(brand));
+      }
+      if (district) {
+        filtered = filtered.filter(f => (f.properties.district_name || "").toLowerCase() === district);
+        // Zoom đến quận được chọn
+        const matchedDist = allDistricts.find(d => d.properties.name.toLowerCase() === district);
+        if (matchedDist) {
+          const bounds = L.geoJSON(matchedDist).getBounds();
+          map.fitBounds(bounds);
+        }
+      }
+
+      renderMarkers(filtered);
+      document.getElementById('mallsCount').innerText = filtered.length;
+    }
+
+    function toggleMallsLayer() {
+      document.getElementById('toggleMalls').checked ? map.addLayer(markersLayer) : map.removeLayer(markersLayer);
+    }
+    function toggleChoroplethLayer() {
+      document.getElementById('toggleChoropleth').checked ? map.addLayer(districtsLayer) : map.removeLayer(districtsLayer);
+    }
+    function toggleHeatmapLayer() {
+      if (!heatLayer) return;
+      document.getElementById('toggleHeatmap').checked ? map.addLayer(heatLayer) : map.removeLayer(heatLayer);
+    }
+
+    function addLegend() {
+      const legend = L.control({ position: 'bottomright' });
+      legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'legend');
+        const grades = [0, 5, 15, 25, 35];
+        div.innerHTML = '<b style="display:block; margin-bottom: 5px;">Mật độ TTTM / Quận</b>';
+        for (let i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+            '<i style="background:' + getChoroplethColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+ cơ sở');
+        }
+        return div;
+      };
+      legend.addTo(map);
+    }
+
+    initWebGIS();
+  </script>
+</body>
+</html>

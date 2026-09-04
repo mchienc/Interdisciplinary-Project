@@ -1,0 +1,7454 @@
+{
+  "type": "FeatureCollection",
+  "name": "hanoi_commercial_centers",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5205741622,
+        "name": "Gấu Bon Sumo",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8314415,
+          21.0343991
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485666060,
+        "name": "Siêu thị điện máy Mediamart",
+        "brand": "Mediamart",
+        "type": "supermarket",
+        "address": "Nguyễn Chí Thanh, Quận Ba Đình",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Mo-Su 09:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8123132,
+          21.029254
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485752221,
+        "name": "Seika Mart",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Giảng Võ",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Mo-Su 08:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8225112,
+          21.0261111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485805609,
+        "name": "Bách Hóa An Huy",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8215812,
+          21.026375
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5595575621,
+        "name": "Lotte Department Store",
+        "brand": "Lotte Department Store",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8125541,
+          21.0323169
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5603809224,
+        "name": "Siêu Thị Intimex",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Ngọc Khánh",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8177924,
+          21.0293755
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5603879232,
+        "name": "Unimart Giảng Võ",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Giảng Võ",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8226439,
+          21.0260451
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5619165232,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8157284,
+          21.0226588
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10621408645,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.815145,
+          21.0312281
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11886200435,
+        "name": "Vincom Center Metropolis Liễu Giai",
+        "brand": "Vingroup",
+        "type": "mall",
+        "address": "Phố Kim Mã, Ba Đình",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Mo-Su 09:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8150707,
+          21.0314958
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12840330523,
+        "name": "AEON MaxValu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Đội Cấn",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8168794,
+          21.0364155
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13240102801,
+        "name": "Fujimart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Tran Phu Street, Phường Ba Đình",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8321394,
+          21.0322095
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13415760107,
+        "name": "Cho phiên xanh",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8260703,
+          21.037372
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13806229588,
+        "name": "Muji",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.830854,
+          21.0313233
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 14058428179,
+        "name": "Lotte Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.812833,
+          21.0323151
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5332620421,
+        "name": "MaruMart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Nguyễn Biểu, Phường Ba Đình",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "Mo-Su 07:30-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8402,
+          21.0422916
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 14004358517,
+        "name": "Công ty Cổ phần Xây dựng và Công Nghệ Bình Định",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Quốc lộ 32 - Đường Hồ Chí Minh",
+        "district_name": "Huyện Ba Vì",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.4454328,
+          21.1806623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485793231,
+        "name": "Mỹ Phẩm Jesse Store",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Cầu Vồng, Bắc Từ Liêm",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Mo-Sa 08:00-18:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7737717,
+          21.0771397
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485847900,
+        "name": "T Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phạm Văn Đồng, Từ Liêm",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Mo-Su 09:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7826551,
+          21.0644931
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5605957125,
+        "name": "Siêu thị Thành Đô - Hồ Tùng Mậu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Hồ Tùng Mậu",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7648694,
+          21.0407173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6795015291,
+        "name": "Siêu Thị Tiện Lợi KT Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7920778,
+          21.0476134
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8333089567,
+        "name": "bách hóa",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Viên, Từ Liêm",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7725963,
+          21.0714818
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8348032117,
+        "name": "Siêu thị gia đình Thúy tĩnh",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7780219,
+          21.0838054
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8360335974,
+        "name": "Sản Vật Việt Bắc",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7619606,
+          21.065421
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8361021993,
+        "name": "Siêu thị bếp gas Sinh Viên",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7344516,
+          21.0536682
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9586940681,
+        "name": "Vincom Plaza Bắc Từ Liêm",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7807993,
+          21.0534891
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10166537622,
+        "name": "Quán tạp hóa",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7615789,
+          21.0697305
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10213838981,
+        "name": "shop quần áo Mon",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Ngõ 113 Phố Văn Hội, Bắc Từ Liêm",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7732546,
+          21.0795622
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10255177794,
+        "name": "Shop 10k Nga Ngố",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Mo-Su 06:30-22:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7746032,
+          21.0740589
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10648151771,
+        "name": "Trung tâm kính cường lực cũ Phúc Trung Kiên",
+        "brand": "Trung tâm kính cường lực cũ Phúc Trung Kiên",
+        "type": "supermarket",
+        "address": "Phan Bá Vành, cạnh đường tàu, Bắc Từ Liêm",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Mo-Sa 08:00-18:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7732403,
+          21.0571467
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11152959981,
+        "name": "siêu thị 24/7",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Ngách 2 Ngõ 32 Phố Viên",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7732193,
+          21.0722689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11204387971,
+        "name": "Vincom Plaza Bắc Từ Liêm",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "Đường Phạm Văn Đồng, Quận Bắc Từ Liêm",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7809996,
+          21.0527996
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1003540406,
+        "name": "MM Mega Market Thăng Long",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Phạm Văn Đồng, Bắc Từ Liêm",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Mo-Su 06:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7801036,
+          21.0543675
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4614238995,
+        "name": "văn phòng phẩm khắc dấu Minh Khuê",
+        "brand": "Vpp Minh Khuê",
+        "type": "department_store",
+        "address": "Đường Nguyễn Khang",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7984463,
+          21.022419
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485810415,
+        "name": "Thế giới di động",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Hồ Tùng Mậu, Nam Từ Liêm",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.772465,
+          21.0378988
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5621495822,
+        "name": "Siêu Thị Intimex",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Lạc Long Quân",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8080023,
+          21.0515919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8618217365,
+        "name": "Hazu Shop",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Dương Khuê, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7728934,
+          21.0348579
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11167471087,
+        "name": "Hà Đăng Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Thành Thái, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.793548,
+          21.028823
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11617459420,
+        "name": "Siêu thị Sinh viên",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7819984,
+          21.0409025
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12065665803,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Phùng Chí Kiên, Quận Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Mo-Su 07:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8026643,
+          21.04395
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12072961918,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Tôn Thất Thuyết, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7858607,
+          21.0272402
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12843468536,
+        "name": "AEON MaxValu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7879846,
+          21.0183057
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 291706206,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Hoàng Quốc Việt",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7964721,
+          21.0468146
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1196988284,
+        "name": "AEON Xuân Thủy",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Đường Xuân Thủy, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7864527,
+          21.0372586
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6685558879,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Vũ Phạm Hàm, Quận Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.796293,
+          21.0143653
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7134960186,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Hoàng Đạo Thúy, Quận Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.801833,
+          21.0074716
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7147892985,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Trần Duy Hưng, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7961018,
+          21.0067651
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9980248118,
+        "name": "GO!",
+        "brand": "Central Retail Vietnam",
+        "type": "supermarket",
+        "address": "Đường Trần Duy Hưng, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.793202,
+          21.0075494
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12857874390,
+        "name": "AEON MaxValu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7932648,
+          21.00299
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13264888448,
+        "name": "Muji",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7960695,
+          21.0070113
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 839871353,
+        "name": "GO! Thăng Long",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Trần Duy Hưng, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Mo-Su 08:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7930991,
+          21.0073711
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 840215537,
+        "name": "Vincom Center",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "Đường Trần Duy Hưng, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7955052,
+          21.0066295
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4782151921,
+        "name": "Tam hằng",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9456456,
+          21.0159269
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 659915516,
+        "name": "Chợ Vĩnh Phát",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9472119,
+          21.0781044
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 659915517,
+        "name": "Chợ Vải Ninh Hiệp",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9485365,
+          21.0778155
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 659915518,
+        "name": "Chợ Phú Điền",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9480232,
+          21.0773386
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1235239091,
+        "name": "Siêu thị Hapromart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9375658,
+          21.020468
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4774230221,
+        "name": "Tiến dũng",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9370431,
+          21.0139421
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4780599636,
+        "name": "Quang phát( c hòa)",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9364253,
+          21.0141428
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5187739822,
+        "name": "Quán ăn",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Đường Y",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.935509,
+          21.0053158
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12921157660,
+        "name": "AEON MaxValu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9442984,
+          20.9932694
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 911712331,
+        "name": "Vincom Mega Mall Ocean Park",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": ", Gia Lâm",
+        "district_name": "Huyện Gia Lâm",
+        "opening_hours": "Mo-Su 08:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9595465,
+          20.9939227
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5920578385,
+        "name": "Siêu Thị Unikmart sảnh D",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Nguyễn Tuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8027216,
+          20.9976544
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6206888191,
+        "name": "AV Food",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8029066,
+          20.9974193
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6243862587,
+        "name": "Unikmart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8021921,
+          21.0027355
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6573674285,
+        "name": "Siêu Thị Easy Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Nguyễn Tuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8058362,
+          20.9946631
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6979569185,
+        "name": "Huge supermarket (B2)",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8163946,
+          21.0033595
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7056057519,
+        "name": "siêu thị 24h ninja mark",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Nguyễn Xiển, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.809927,
+          20.982949
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7788139069,
+        "name": "Siêu thị Tòa nhà Huy Hoàng",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Nguyễn Trãi",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8079419,
+          20.9927898
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8956733283,
+        "name": "AEON MaxValu",
+        "brand": "AEON",
+        "type": "supermarket",
+        "address": "Phố Vũ Tông Phan, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Mo-Su 06:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8142339,
+          20.990925
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12085369604,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Lê Văn Thiêm, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8036339,
+          21.0006808
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13595661101,
+        "name": "FujiMart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Chính Kinh",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Mo-Su 06:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8116902,
+          20.9986499
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 457932534,
+        "name": "Hapro Thanh Xuân",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Nguyễn Trãi, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8015612,
+          20.9908724
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 892577126,
+        "name": "MiniGood",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8147008,
+          21.0034352
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 892577254,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8162266,
+          21.003404
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 892577255,
+        "name": "Daiso Japan",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8149029,
+          21.0024451
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5606598224,
+        "name": "Tops Market",
+        "brand": "CÔNG TY TNHH DỊCH VỤ EB",
+        "type": "supermarket",
+        "address": "Phố Lê Trọng Tấn, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8286292,
+          20.9998667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5611266121,
+        "name": "Siêu thị Thành Công",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Lê Trọng Tấn",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.828332,
+          20.9987006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7657313796,
+        "name": "TH Mart Nguyễn Lân",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8364139,
+          20.9950659
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8267269060,
+        "name": "Mega Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Giải Phóng, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8406422,
+          20.9857415
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 840467994,
+        "name": "Trung tâm thương mại Artemis",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Phó Lê Trọng Tấn, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Mo-Su 07:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8283792,
+          20.9998359
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4304794292,
+        "name": "Siêu Thị Lan Chi",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Chương Mỹ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5812071,
+          20.8931071
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6587963985,
+        "name": "Tổng kho K-market",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Huyện Chương Mỹ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.667025,
+          20.9335809
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9342743556,
+        "name": "Siêu thị Lanchi Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Đan Phượng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6635783,
+          21.085962
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12117964070,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Vạn Xuân, Huyện Đan Phượng",
+        "district_name": "Huyện Đan Phượng",
+        "opening_hours": "Mo-Su 07:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7009532,
+          21.0740473
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12173037181,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Tây Sơn, Huyện Đan Phượng",
+        "district_name": "Huyện Đan Phượng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6724653,
+          21.0836226
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6120794885,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Quốc lộ 23",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7751531,
+          21.1292221
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4625392008,
+        "name": "Nội Thất Đồ Gỗ Được Phát",
+        "brand": "Đỗ Văn Duy",
+        "type": "supermarket",
+        "address": "Giao Tác, Đông Anh",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9075773,
+          21.1400505
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5694054027,
+        "name": "Vin+ 38 Đào Cam Mộc",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8685287,
+          21.1412624
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5694054028,
+        "name": "Vin+ Tổ 25 Đ.Anh",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8443361,
+          21.1708102
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5694054122,
+        "name": "Vin +19 T22 Đ.Anh",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8568805,
+          21.1696205
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8577311117,
+        "name": "Siêu Thị BRG",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8567809,
+          21.1383517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8577357417,
+        "name": "Siêu Thị BRG",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8768821,
+          21.1114121
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12473015244,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Đông Hội",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8747613,
+          21.0780299
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1485575742,
+        "name": "Chợ Lắp Ghép 1/5",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": ", Dong Anh",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.844213,
+          21.1699765
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485850279,
+        "name": "FPT Shop",
+        "brand": "Công Ty Cổ Phần Bán Lẻ Kỹ Thuật Số FPT",
+        "type": "supermarket",
+        "address": "Đường Láng, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8020389,
+          21.0201337
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485879595,
+        "name": "Siêu thị điện máy Trần Anh",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Láng",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7984778,
+          21.024315
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5593898821,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8328793,
+          21.0281849
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5603611822,
+        "name": "Siêu thị Hoàng Cầu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Trần Quang Diệu",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8258285,
+          21.0176252
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5603878921,
+        "name": "Siêu Thị Intimex",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Giảng Võ",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8251982,
+          21.028135
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8943684244,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường La Thành, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8278952,
+          21.02091
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9395684499,
+        "name": "Hico Trung Tâm Mua Sắm Online Uy Tín",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Ngõ 159 Phố Pháo Đài Láng, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8047926,
+          21.0171575
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10621408635,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Mo-Su 09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8094935,
+          21.0233096
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12511798979,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8226869,
+          21.0195364
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13917548002,
+        "name": "FujiMart",
+        "brand": "FujiMart",
+        "type": "supermarket",
+        "address": "Phố Hoàng Cầu",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Mo-Su 07:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8237535,
+          21.0194726
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 966677780,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Trúc Khê, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8081843,
+          21.0157889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4907004322,
+        "name": "T Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8378919,
+          21.028469
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485816793,
+        "name": "Siêu thị Minh Hoa",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đặng Tiến Đông",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.822998,
+          21.013239
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5595959521,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Phạm Ngọc Thạch",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8321759,
+          21.0060945
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5603479821,
+        "name": "Siêu thị Minh Hoa Thái Hà",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Thái Hà",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8197131,
+          21.013353
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5608461621,
+        "name": "BRG Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Lương Định Của",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8351653,
+          21.0063252
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5632029722,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Ngõ 102 Trường Chinh, Quận Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8374033,
+          20.9997316
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6850919386,
+        "name": "Ô mai Hồng Lam",
+        "brand": "Hồng Lam",
+        "type": "department_store",
+        "address": "Phố Phạm Ngọc Thạch",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Mo-Su 07:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8355703,
+          21.0095922
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10749951833,
+        "name": "COMPLEX 01",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Ngách 31/167 Tây Sơn, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.826811,
+          21.0106769
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12213546992,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Nguyễn Văn Tuyết, Quận Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.821519,
+          21.0077764
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12228968664,
+        "name": "Siêu thị B11 Kim Liên",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Hoàng Tích Trí",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.83513,
+          21.0075497
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12549262758,
+        "name": "FujiMart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Tây Sơn, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Mo-Su 07:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8219659,
+          21.0055645
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 136161117,
+        "name": "Vincom Phạm Ngọc Thạch",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "Phố Phạm Ngọc Thạch, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Mo-Su 09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8319822,
+          21.0062846
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 858242836,
+        "name": "BRG Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Phạm Ngọc Thạch, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8333111,
+          21.0074827
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 904135117,
+        "name": "Tôm Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Nam Đồng, Đống Đa",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8324625,
+          21.0129038
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5007854825,
+        "name": "Bách Hóa Hùng Hiền",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7806227,
+          20.9783373
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5059466323,
+        "name": "T Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.749619,
+          20.9640138
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5185769521,
+        "name": "Chị hằng",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7871551,
+          20.9782954
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5616868222,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Nguyễn Khuyến, Hà Đông",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7892184,
+          20.9746026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5618765421,
+        "name": "Siêu thị Đức Thành",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Tố Hữu",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.75863,
+          20.9727956
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5619162221,
+        "name": "Siêu thị Mường Thanh",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Cầu Bươu",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7998171,
+          20.9601717
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5639988476,
+        "name": "Co.opmart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7902001,
+          20.9825538
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5639988477,
+        "name": "Tops Market",
+        "brand": "Tops Market",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7854355,
+          20.9789425
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6129825385,
+        "name": "Cửa Hàng Tiện Lợi BV Mart",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Chiến Thắng",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7960698,
+          20.9790881
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6169690585,
+        "name": "Lan Thu Viện Bỏng",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7939538,
+          20.9639976
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6373396052,
+        "name": "Cutepets - Siêu Thị Chó Mèo",
+        "brand": "Petshophanoi.com",
+        "type": "supermarket",
+        "address": "Thanh Bình, Hà Đông",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Mo-Su 09:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7800263,
+          20.9791873
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7848826898,
+        "name": "Siêu Thị Lanchi Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Mo-Su 09:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7129633,
+          20.9288418
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8831932484,
+        "name": "Chợ Xanh Văn Quán",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7914454,
+          20.9742689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9587296911,
+        "name": "Mac Plaza",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7913433,
+          20.9837567
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11243880807,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Hạnh Hoa, Quận Hà Đông",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7916407,
+          20.9635026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12240739572,
+        "name": "Tops Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Mo-Su 07:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7563084,
+          20.9657517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12914997411,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Quang Trung, Quận Hà Đông",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.777435,
+          20.9725969
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 740919090,
+        "name": "AEON Mall Hà Đông",
+        "brand": "AEON",
+        "type": "mall",
+        "address": ", Hà Đông",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7512147,
+          20.9894327
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 755118877,
+        "name": "Mê Linh Plaza Hà Đông",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7719333,
+          20.964091
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1322830850,
+        "name": "The LINC @ ParkCity Hanoi",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Lê Trọng Tấn, Hà Đông",
+        "district_name": "Quận Hà Đông",
+        "opening_hours": "Mo-Su 06:00-23:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7567116,
+          20.9656551
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6024114885,
+        "name": "H Mart",
+        "brand": "H Mart",
+        "type": "supermarket",
+        "address": "Phố Trần Hưng Đạo",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8592192,
+          21.0165116
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6652529904,
+        "name": "Fuji Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.841208,
+          21.0184193
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12104684989,
+        "name": "ShikiMart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Huế, Hoàn Kiếm",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8512238,
+          21.0161962
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4578730790,
+        "name": "Siêu thị V+",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.870358,
+          20.9994822
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4631390667,
+        "name": "Siêu Thị Đầm Trấu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8647486,
+          21.0122959
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290027,
+        "name": "sữa gia đình",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "quỳnh mai",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8599067,
+          21.0010761
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290029,
+        "name": "Subi",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "8-3",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8601899,
+          20.998939
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290031,
+        "name": "Tạp hóa @",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Tạ Quang Bửu",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8496459,
+          21.0008166
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290342,
+        "name": "Tạp hóa",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "quỳnh mai",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8603447,
+          21.0011051
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290344,
+        "name": "Việt hương",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "quỳnh mai",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8592341,
+          21.0010245
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290345,
+        "name": "Thành Loan",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Nguyễn Hiền",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8457693,
+          21.0011518
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290347,
+        "name": "Cửa Hàng Tự Chọn GT Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Tạ Quang Bửu",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8465822,
+          21.0040643
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4741290351,
+        "name": "Safe & save",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "quỳnh mai",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8606681,
+          21.0010644
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4746384124,
+        "name": "nhật toàn",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Tô Hiến Thành",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8512944,
+          21.0133515
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4746447821,
+        "name": "siêu thị á âu",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Huế",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8517613,
+          21.0107749
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4750152424,
+        "name": "Siêu thị gia đình",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Hồng Mai",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8525636,
+          20.9986173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4969427521,
+        "name": "Thành",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Ngõ 40 Tạ Quang Bửu",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8471332,
+          21.0040326
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5579554621,
+        "name": "Seikamart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Lê Đại Hành",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8477851,
+          21.0115978
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6031199885,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8613508,
+          21.0013398
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6419223349,
+        "name": "Thanh Do",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8654104,
+          21.0029358
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8389055279,
+        "name": "Tinh Dầu 100",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Lạc Trung, Hai Bà Trưng",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Mo-Su 08:30-20:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8622289,
+          21.003113
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11176709229,
+        "name": "Vincom Mega Mall Times City",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Mo-Su 10:00-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8685654,
+          20.9948145
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11672849003,
+        "name": "APG Eco-mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Mai Hắc Đế, Hai Bà Trưng",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8505773,
+          21.0095423
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12118006235,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Võ Thị Sáu, Quận Hai Bà Trưng",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8550689,
+          21.0034959
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12829686367,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Lương Yên",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8633466,
+          21.0111335
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13238906601,
+        "name": "Fujimart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Mo-Su 07:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8477414,
+          21.0116782
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 570572174,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Đại La, Trương ĐỊnh",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8444399,
+          20.9963876
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 593647007,
+        "name": "Trung tâm thương mại Chợ Mơ",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Bạch Mai, Hai Bà Trưng",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8505851,
+          20.9968909
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 709289367,
+        "name": "Đồng Tâm Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Lê Thanh Nghị",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8425582,
+          21.0019479
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1235776416,
+        "name": "Lotus Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Tô Hiến Thành, Hai Bà Trưng",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8506592,
+          21.0134105
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9593560395,
+        "name": "K-Market - Splendora",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Hoài Đức",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7230641,
+          21.0159966
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13392138849,
+        "name": "Vinamilk",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Hoài Đức",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7375836,
+          21.0348629
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13629196851,
+        "name": "Công ty Nguyễn Gia",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": ", Huyện Hoài Đức",
+        "district_name": "Huyện Hoài Đức",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7317821,
+          21.0381113
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 14072223285,
+        "name": "Showroom Hoàng Giáp Lê Trọng Tấn",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Lê Trọng Tấn",
+        "district_name": "Huyện Hoài Đức",
+        "opening_hours": "Mo-Sa 08:00-18:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7401517,
+          20.9768626
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4423192489,
+        "name": "Circle K",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8501184,
+          21.0301114
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4728789099,
+        "name": "Kun's Mart",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Hàng Cót, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8470348,
+          21.036962
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4728815204,
+        "name": "Siêu Thị Easy Mart",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Hàng Bạc, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8512213,
+          21.0339523
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4728822693,
+        "name": "Cửa Hàng Ben",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Hàng Cót, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8470351,
+          21.0368912
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4735494225,
+        "name": "phương anh",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Nguyễn Hữu Huân, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8543325,
+          21.0331387
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4735505922,
+        "name": "Bách Hóa Chú Cường",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Lò Sũ",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8545617,
+          21.0314544
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4737582027,
+        "name": "số 8 nguyễn khắc cần",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Nguyễn Khắc Cần",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.855337,
+          21.0229422
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4737591423,
+        "name": "thu trà",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Hai Bà Trưng",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Mo-Su,PH 08:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8543292,
+          21.023723
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4737795021,
+        "name": "thanh hương",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Phủ Doãn",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8477651,
+          21.0277923
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4739101150,
+        "name": "nhật linh",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Hàng Điếu, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8470967,
+          21.0336197
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4739172721,
+        "name": "thai an",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Hàng Gà, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8472025,
+          21.0364461
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4739178629,
+        "name": "sakura",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Hàng Gà, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8469539,
+          21.0358622
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4743002624,
+        "name": "số 1 ngõ trạm",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Ngõ Trạm, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8461285,
+          21.0311698
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4746164923,
+        "name": "số 4 đinh lễ",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Đinh Lễ",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8539897,
+          21.0258862
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4748338421,
+        "name": "thế giới hóa mỹ phẩm",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Hàm Long",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8543226,
+          21.0188011
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4750263322,
+        "name": "Halo Mart",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Nguyễn Hữu Huân, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8545911,
+          21.0340699
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4752344821,
+        "name": "số 7 yên thái",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Yên Thái, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8478967,
+          21.0320262
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4753941522,
+        "name": "30 cầu gỗ",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Cầu Gỗ",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8533404,
+          21.0319861
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4759093221,
+        "name": "thêm triển",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Vọng Hà",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.857588,
+          21.0300881
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4759093222,
+        "name": "Cửa Hàng Tự Chọn BGA Mart",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Vọng Hà",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8575294,
+          21.0301994
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4768903648,
+        "name": "Cửa Hàng Tiện Lợi Green",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Hàng Vôi",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8560336,
+          21.0309714
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4768907936,
+        "name": "Cửa Hàng Tiện Lợi BB Mart",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Đường Trần Quang Khải",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8588721,
+          21.0262623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4768909022,
+        "name": "ngân minh",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Nguyễn Khắc Cần",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8551448,
+          21.0231599
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4768909737,
+        "name": "anh hiển",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phố Chợ Cầu Gỗ, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8529315,
+          21.0327358
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4776220022,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Lê Duẩn",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8416221,
+          21.0245405
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4781116321,
+        "name": "Miniso",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Lãn Ông, Phường Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8500272,
+          21.0351507
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4785798523,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Hàn Thuyên",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8583853,
+          21.0189202
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4949185323,
+        "name": "ô mai vạn lợi",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8466714,
+          21.030945
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5436612021,
+        "name": "Strassenmarkt",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8510354,
+          21.0387182
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5814793053,
+        "name": "Brgmart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Hàng Trống",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.850622,
+          21.0288967
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6014427285,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8473135,
+          21.0302694
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6155720287,
+        "name": "K Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8506108,
+          21.0323778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6758836885,
+        "name": "tạp hóa mường thanh",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Thợ Nhuộm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8477695,
+          21.0232339
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6992010985,
+        "name": "BRGMart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8514357,
+          21.0388469
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10839011533,
+        "name": "BRGMART",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8506288,
+          21.028926
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10864009405,
+        "name": "Cerender",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8507711,
+          21.026118
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11152625106,
+        "name": "Tomibun",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Phan Chu Trinh, Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8548727,
+          21.0213583
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11461525804,
+        "name": "Organica",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Lý Đạo Thành, Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.857578,
+          21.0255339
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13340116815,
+        "name": "Brgmart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Mo-Su 06:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8499739,
+          21.0302632
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 570571856,
+        "name": "Tràng Tiền Plaza",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Phố Hai Bà Trưng, Hoàn Kiếm",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Mo-Su 9:30-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8533447,
+          21.0247575
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4877067121,
+        "name": "Siêu thị Hằng Vui",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "BĐ Linh Đàm",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8327165,
+          20.9653352
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5123787182,
+        "name": "Siêu thị Đức Thành",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.859713,
+          20.9839016
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485804469,
+        "name": "Siêu Thị T-Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Nguyễn Công Thái, Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8361347,
+          20.9753211
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5485830477,
+        "name": "Siêu Thị T-Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Nguyễn Cảnh Dị, Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8361596,
+          20.9713145
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5526778624,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Văn Tân, Quận Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8225074,
+          20.9641395
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5593636925,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Chung Cư Nam Đô Complex CT1, Quận Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8443272,
+          20.9794717
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5593660421,
+        "name": "Siêu thị Mường Thanh H1",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8259662,
+          20.9642759
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5593662121,
+        "name": "Siêu thị Mường Thanh H2",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8273063,
+          20.9648992
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5603389634,
+        "name": "Qmart Vĩnh Hưng",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8800623,
+          20.9990338
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5757756521,
+        "name": "Siêu thị Thành Đô 193 Vĩnh Hưng",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8774569,
+          20.9881788
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5757769521,
+        "name": "Siêu thị Thành Đô - 285 Lĩnh Nam",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8744379,
+          20.9840472
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6725510486,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Gamuda Garden 2-2, Quận Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8781521,
+          20.9702249
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6794340541,
+        "name": "Siêu Thị Minh Đức Green",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đặng Xuân Bảng, Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Mo-Sa 08:00-18:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8296484,
+          20.9706077
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8405189751,
+        "name": "Rice City Mall",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8230233,
+          20.9634554
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8940145717,
+        "name": "Siêu thị Đức Thành",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Tân Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8523693,
+          20.9833531
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9738862198,
+        "name": "AEON MaxValu Linh Đàm",
+        "brand": "AEON",
+        "type": "supermarket",
+        "address": "Văn Tân, Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8230327,
+          20.9640845
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10229783479,
+        "name": "Máy Photocopy TNT, đại lý máy photo giá rẻ",
+        "brand": "Đại lý Máy Photo",
+        "type": "supermarket",
+        "address": "Bắc Linh Đàm, Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8260919,
+          20.9711523
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11184885737,
+        "name": "Tmart Vĩnh Hưng",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8769817,
+          20.9874653
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 11195245537,
+        "name": "Tmart Đại Từ",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8334637,
+          20.9710366
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12570970072,
+        "name": "Văn Khấn Cúng",
+        "brand": "Văn Khấn Cúng",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Mo-Su 09:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8344162,
+          20.9644845
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13569316626,
+        "name": "T-Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Trần Nguyên Đán",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8334152,
+          20.9843731
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 871186115,
+        "name": "Trương Định Plaza",
+        "brand": "Công ty TNHH Trung tâm Thương mại Trương Định",
+        "type": "mall",
+        "address": "Đường Trương Định",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Mo-Su,PH 09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8467067,
+          20.9850048
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 954362675,
+        "name": "MM Mega Market Hoàng Mai",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Tam Trinh",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8660782,
+          20.9695151
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1331638454,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8695724,
+          20.9938892
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1489816479,
+        "name": "Sailor Mon - LePARC",
+        "brand": "LePARC by Gamuda",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8590067,
+          20.9622686
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1489816480,
+        "name": "Truely Vietnam - LePARC",
+        "brand": "LePARC by Gamuda",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8593608,
+          20.9619145
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1489816481,
+        "name": "Cowboy Town - LePARC",
+        "brand": "LePARC by Gamuda",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8595543,
+          20.96138
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1489816482,
+        "name": "Hallyu - LePARC",
+        "brand": "LePARC by Gamuda",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.859402,
+          20.9606748
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1489816483,
+        "name": "YOLO - LePARC",
+        "brand": "LePARC by Gamuda",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8590622,
+          20.9603143
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1489816484,
+        "name": "The Cup - LePARC",
+        "brand": "LePARC by Gamuda",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8585641,
+          20.9601004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1489816486,
+        "name": "LePARC by Gamuda",
+        "brand": "Gamuda",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8590313,
+          20.9611999
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4388678293,
+        "name": "Chợ Phúc Đồng",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9027786,
+          21.0397757
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4693019890,
+        "name": "Đại Lý Nga Kiên",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "Đường Thạch Bàn",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9099554,
+          21.0261624
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4693034190,
+        "name": "Đại Lý Hoàng Huy",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "Thạch Bàn",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9033831,
+          21.021739
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4693035689,
+        "name": "Đại Lý Hoàng Dung",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "Đường Thạch Bàn",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9091983,
+          21.0257194
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4693035890,
+        "name": "Đại Lý Nam Anh",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "sài đồng",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9097446,
+          21.0360282
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4693187190,
+        "name": "Tiến hương",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "Vũ Xuân Thiều",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9168577,
+          21.0339921
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4700754092,
+        "name": "Đại Lý Khang Anh",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "chân cầu vĩnh tuy- long biên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8949096,
+          21.0251451
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4703119789,
+        "name": "Đại Lý Phú Hiền",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "Phú Viên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.868331,
+          21.0381126
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4703119790,
+        "name": "Đại Lý Liên",
+        "brand": "sắc",
+        "type": "department_store",
+        "address": "Phú Viên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8684803,
+          21.0380277
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4706039789,
+        "name": "Đại Lý Sơn Nhàn",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8737226,
+          21.0350335
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4706050689,
+        "name": "Phúc hưng",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8746176,
+          21.0411081
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4706056292,
+        "name": "Thái tuyết",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8745949,
+          21.0410235
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4706145393,
+        "name": "Thúy huống ( cô thúy)",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8845948,
+          21.0289971
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4791286222,
+        "name": "Đại Lý Minh Anh",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9154183,
+          21.0593454
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5003334222,
+        "name": "Co-op Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8663369,
+          21.0452716
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5302018622,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8699299,
+          21.0419364
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5579660621,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9162056,
+          21.050733
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5769451454,
+        "name": "Siêu Thị Intimex",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Ngõ 390 Nguyễn Văn Cừ",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.87763,
+          21.0441004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6917941516,
+        "name": "True Mart+",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9139557,
+          21.0595919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6917941591,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9073563,
+          21.0657753
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6924038647,
+        "name": "Sói Biên",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9109651,
+          21.0627267
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8204154517,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.870501,
+          21.0459882
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10002340409,
+        "name": "GO!",
+        "brand": "Central Group",
+        "type": "supermarket",
+        "address": "Nguyễn Văn Linh, Long Biên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Mo-Th 08:00-22:00; Fr-Su 08:00-22:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8932747,
+          21.0508114
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10709719739,
+        "name": "Hoa lụa nhà trồng",
+        "brand": "Hoa lụa nhà trồng",
+        "type": "supermarket",
+        "address": "Ngõ 162 Nguyễn Văn Cừ, Long Biên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8724139,
+          21.0416208
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 208571137,
+        "name": "Vincom Plaza Long Biên",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9163608,
+          21.0509278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 840041412,
+        "name": "AEON Mall Long Biên",
+        "brand": "AEON Mall",
+        "type": "mall",
+        "address": "Đường Cổ Linh, Quận Long Biên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Mo-Fr 10:00-22:00; Sa,Su,PH 09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.899376,
+          21.0271274
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 899221486,
+        "name": "Siêu thị AEON",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8981925,
+          21.0280364
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 899221563,
+        "name": "Daiso Japan",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9003837,
+          21.0271557
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 899221622,
+        "name": "MUJI",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9004902,
+          21.0262445
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 899387289,
+        "name": "Siêu thị AEON",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8981799,
+          21.0280139
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 899387335,
+        "name": "Miniso",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8999761,
+          21.0273268
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 899476429,
+        "name": "Siêu thị AEON",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8982078,
+          21.0280189
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 908992994,
+        "name": "Siêu thị điện máy HC",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Nguyễn Văn Linh, Long Biên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9188806,
+          21.028944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1092144098,
+        "name": "TASCO Mall",
+        "brand": "Công ty Cổ phần TASCO",
+        "type": "mall",
+        "address": "Đường Nguyễn Văn Linh, Long Biên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Mo-Su 09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8934872,
+          21.0508502
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1316901395,
+        "name": "An Nam Auto",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Vũ Đức Thận, Quận Long Biên",
+        "district_name": "Quận Long Biên",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8920962,
+          21.0552239
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8763403938,
+        "name": "Big C",
+        "brand": "Big C",
+        "type": "supermarket",
+        "address": "Đường Võ Văn Kiệt, Mê Linh",
+        "district_name": "Huyện Mê Linh",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7826693,
+          21.1863594
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12811072432,
+        "name": "Điện máy Bick Bosch",
+        "brand": "Mr Ngọc",
+        "type": "supermarket",
+        "address": "Thôn 2, Mê Linh",
+        "district_name": "Huyện Mê Linh",
+        "opening_hours": "Mo-Fr 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6753808,
+          21.1702601
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 946707941,
+        "name": "Mê Linh Plaza",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Võ Văn Kiệt, Huyện Mê Linh",
+        "district_name": "Huyện Mê Linh",
+        "opening_hours": "08:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.782831,
+          21.1867319
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5103114229,
+        "name": "Siêu thị dũng bình",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Huyện Mỹ Đức",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6985779,
+          20.7601501
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12277048848,
+        "name": "K-Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7840355,
+          21.0183484
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4554110090,
+        "name": "Big C",
+        "brand": "Big C",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Fr 10:00-22:00; Sa-Su 9:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7781996,
+          21.0155361
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6658577897,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Lê Đức Thọ, Nam Từ Liêm",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7687784,
+          21.0284021
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8140616824,
+        "name": "Nhà sách Sư phạm TVHL",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "XP.5, Xuân Phương",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Su 07:30-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7386453,
+          21.0280272
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10035906581,
+        "name": "Vincom Plaza Skylake",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "Đường Phạm Hùng, Nam Từ Liêm",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Su 10:00-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7812518,
+          21.0202008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10035906583,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Phạm Hùng, Quận Nam Từ Liêm",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7815895,
+          21.0200135
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12072786766,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Toà A1 - Vinhomes Gardenia",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7597621,
+          21.0360639
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12277048846,
+        "name": "Youth Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7832399,
+          21.0174777
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12277048852,
+        "name": "K-Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7844497,
+          21.0168081
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 14102378801,
+        "name": "Tmart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Nguyễn Đổng Chi",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7641593,
+          21.0355305
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 463580599,
+        "name": "Trung tâm thương mại The Garden",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Mễ Trì, Nam Từ Liêm",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Fr 10:00-22:00; Sa,Su,PH 09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7776877,
+          21.0151623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 901113612,
+        "name": "Interserco",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7806959,
+          21.0282412
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6811944360,
+        "name": "K-Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": ", Nam Từ Liêm",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7834359,
+          21.0012178
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9811836141,
+        "name": "Sakuko Japanese Store",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7374138,
+          21.0082198
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9811836143,
+        "name": "Daily Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7379071,
+          21.0079794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12372330758,
+        "name": "K-Market",
+        "brand": "Kmarketvina",
+        "type": "supermarket",
+        "address": "Đường Lê Quang Đạo, Nam Từ Liêm",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Su 07:00-00:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7740509,
+          21.009303
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13900175364,
+        "name": "FujiMart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7395155,
+          20.9972925
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 839663172,
+        "name": "Vincom Mega Mall Smart City",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": ", Nam Từ Liêm",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Su 10:00-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7543896,
+          21.0058916
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1329845845,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Mo-Su 07:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.754367,
+          21.0061313
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1329911729,
+        "name": "Kohnan",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Quận Nam Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7533516,
+          21.0060954
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10811135952,
+        "name": "Chợ thôn Tri Chỉ",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Phú Xuyên",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8292155,
+          20.7841007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6223959585,
+        "name": "Siêu thị Thành Đô 23 Tả Thanh Oai",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Thanh Trì",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8099682,
+          20.9543037
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6630407485,
+        "name": "Tops Market",
+        "brand": "Cty TNHH TMQT&DV SThi Big C",
+        "type": "supermarket",
+        "address": "Đường Nguyễn Xiển, Thanh Trì",
+        "district_name": "Huyện Thanh Trì",
+        "opening_hours": "Mo-Th 08:00-22:00, Fr-Su 08:00-22:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8085208,
+          20.9832736
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4584524191,
+        "name": "Công Ty TNHH Hóa Chất Xây Dựng Việt Nam",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": "Huyện Thanh Trì",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.873954,
+          20.9195018
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5627922722,
+        "name": "Siêu thị Mega Ngọc Hồi",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Thanh Trì",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8521478,
+          20.9143597
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7094805085,
+        "name": "TH MART ĐỘI 3 Lạc Thị",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Thanh Trì",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8346774,
+          20.92349
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1194674329,
+        "name": "Trung tâm Dịch vụ Thương mại Thanh Trì",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Huyện Thanh Trì",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8452155,
+          20.9493515
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13111302714,
+        "name": "Rèm Màn Chăn ga gối đệm Quyền Lan",
+        "brand": "Rèm Màn Quyền Lan",
+        "type": "supermarket",
+        "address": "Đường tỉnh 418, Phúc Thọ",
+        "district_name": "Huyện Phúc Thọ",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5390884,
+          21.1114033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5575925625,
+        "name": "Mini Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Sóc Sơn",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8498142,
+          21.2302584
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7074068386,
+        "name": "Siêu Thị Lan Chi",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Thị xã Sơn Tây",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.4970012,
+          21.0982919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5638848622,
+        "name": "Unik mart Thuỵ Khuê",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Ngõ 152 Thụy Khuê",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8229993,
+          21.0432384
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5918039687,
+        "name": "Siêu Thị Hàng Đức",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.834472,
+          21.0528046
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6017147489,
+        "name": "Naturally Vietnam - Organic Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.822333,
+          21.0673913
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6621648085,
+        "name": "K-market Xuân Diệ",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8264692,
+          21.0662921
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6621785885,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Hoàng Hoa Thám, Quận Tây Hồ",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8259918,
+          21.0407594
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6968319585,
+        "name": "Siêu Thị Annam Gourmet",
+        "brand": "Annam Gourmet",
+        "type": "supermarket",
+        "address": "Đường Xuân Diệu, Tây Hồ",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Mo-Fr 07:00-21:00, Sa-Su 08:30-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8280816,
+          21.0639402
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7230076587,
+        "name": "The Oasis",
+        "brand": "Marco Sarli",
+        "type": "supermarket",
+        "address": "To Ngoc Van",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8320611,
+          21.0611067
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8111972850,
+        "name": "Trung Tâm Mua Sắm Syrena",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Xuân Diệu, Tây Hồ",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Mo-Su 09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8280612,
+          21.064144
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8900260998,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Ngõ 689 Lạc Long Quân",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8137396,
+          21.0791125
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 9587296909,
+        "name": "Trung Tâm Thương Mại Lion Mall",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8270716,
+          21.0653061
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 10872918341,
+        "name": "FujiMart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8090924,
+          21.0520038
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12252610131,
+        "name": "Fuji Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.818248,
+          21.0433213
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12287492374,
+        "name": "Lotte Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8129155,
+          21.076605
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12378781694,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Xuân Diệu",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8279935,
+          21.0640797
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12757792515,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Đường Võ Chí Công",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Mo-Su 07:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8069288,
+          21.0656732
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1192928626,
+        "name": "Lotte Mall West Lake Hanoi",
+        "brand": "Lotte Mall",
+        "type": "mall",
+        "address": "Đường Võ Chí Công, Tây Hồ",
+        "district_name": "Quận Tây Hồ",
+        "opening_hours": "Mo-Su 09:30-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.812676,
+          21.0759904
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12076904471,
+        "name": "Thiện Điện Thoại, Thiện Phụ Kiện",
+        "brand": "Công ty cổ phần Thiện Phụ Kiện",
+        "type": "supermarket",
+        "address": "Cầu vượt Phú Cát, Thạch Thất",
+        "district_name": "Huyện Thạch Thất",
+        "opening_hours": "Mo-Su 09:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5357599,
+          20.986922
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1188774710,
+        "name": "Siêu thị Long Bình",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Thường Tín",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8693347,
+          20.8727364
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1188774711,
+        "name": "Siêu thị Lan Chi Thường Tín",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Thường Tín",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8737208,
+          20.8703962
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3937714031,
+        "name": "Pet Mart Kim Mã",
+        "brand": "Hệ Thống Siêu Thị Thú Cưng Pet Mart",
+        "type": "supermarket",
+        "address": "Kim Mã, Quận Ba Đình",
+        "district_name": "Quận Ba Đình",
+        "opening_hours": "09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8246645,
+          21.0318491
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 977640029,
+        "name": "Media Mart Cầu Giấy",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Cầu Giấy, Quận Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.791874,
+          21.035431
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3471347683,
+        "name": "SFarm©",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Hoàng Sâm",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7992667,
+          21.0451847
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4171931890,
+        "name": "Vincom Mega Mall Royal City",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "Đường Nguyễn Trãi, Thanh Xuân",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "Mo-Su 10:00-21:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8160462,
+          21.0022833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4285828706,
+        "name": "VNJ",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Nguyễn Xiển, Thanh Xuan",
+        "district_name": "Quận Thanh Xuân",
+        "opening_hours": "08:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8052876,
+          20.9863879
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4304794291,
+        "name": "Xuan Mai Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Huyện Chương Mỹ",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5795156,
+          20.9010961
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3644820386,
+        "name": "Hệ Thống Siêu Thị Mái Ấm Online",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Xóm Trai, Đông Anh",
+        "district_name": "Huyện Đông Anh",
+        "opening_hours": "07:00-20:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8142732,
+          21.1183065
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4155614990,
+        "name": "Street Market",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Đống Đa",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8387225,
+          21.026708
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 442977400,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "Mo-Su 09:00-21:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8495236,
+          21.0115759
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3937714032,
+        "name": "Pet Mart Đại Cồ Việt",
+        "brand": "Hệ Thống Siêu Thị Thú Cưng Pet Mart",
+        "type": "supermarket",
+        "address": "Đường Đại Cồ Việt, Hai Bà Trưng",
+        "district_name": "Quận Hai Bà Trưng",
+        "opening_hours": "09:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8511563,
+          21.0084427
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 977647385,
+        "name": "Japan Supermarket",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Hàng Bông",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8458111,
+          21.0294273
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 977668079,
+        "name": "Siêu Thị Hapro",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Hàng Bông",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8482851,
+          21.0307067
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3150526966,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Lý Thái Tổ",
+        "district_name": "Quận Hoàn Kiếm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8553923,
+          21.029586
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3799178113,
+        "name": "Cửa Hàng Tiện Ích Bảo Long",
+        "brand": "Kiot 3 Nơ 5 Bán Đảo Linh Đàm",
+        "type": "supermarket",
+        "address": "Bán đảo linh đàm, Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8320905,
+          20.9648945
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4091988292,
+        "name": "Pizza Hut",
+        "brand": "Pizza Hut",
+        "type": "supermarket",
+        "address": "Trương Định, Hoàng Mai",
+        "district_name": "Quận Hoàng Mai",
+        "opening_hours": "10:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8447867,
+          20.9804803
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3684940919,
+        "name": "Xưởng tranh kính nghệ thuật",
+        "brand": "Công Ty Cổ Phần Kính nghệ thuật coba",
+        "type": "supermarket",
+        "address": "Xóm nhà thờ, Sơn tây",
+        "district_name": "Thị xã Sơn Tây",
+        "opening_hours": "Giờ hành chính"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.4856939,
+          21.1108861
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3844123780,
+        "name": "Siêu Thị Xe Đạp Điện Thành Tuyến Sơn Tây",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Chùa Thông, Sơn Tây",
+        "district_name": "Thị xã Sơn Tây",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.499349,
+          21.1213151
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3844127179,
+        "name": "Siêu Thị Điện Máy Thành Tuyến - Sơn Tây",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Chùa Thông, Sơn Tây",
+        "district_name": "Thị xã Sơn Tây",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.4991669,
+          21.1210538
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1858361604,
+        "name": "PHÚC YÊN PLAZA",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "TRƯNG TRẮC",
+        "district_name": null,
+        "opening_hours": "Mo-Su 09:00-23:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7064471,
+          21.2404629
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 3787800313,
+        "name": "Siêu thị Lan Chi",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9247533,
+          20.6439596
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4092475537,
+        "name": "VLXD XuânƯớc - Showroom 2",
+        "brand": "XuânƯớc",
+        "type": "supermarket",
+        "address": "Quốc lộ 38, Duy Tiên",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9126841,
+          20.6430587
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4092489305,
+        "name": "GạchỐp Lát XuânƯớc - Showroom 1",
+        "brand": "XuânƯớc",
+        "type": "supermarket",
+        "address": "Phạm Ngọc Nhị, Duy Tiên",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9156643,
+          20.6407287
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4506039789,
+        "name": "MINH THU",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Đường tỉnh 286, Huyện Yên Phong",
+        "district_name": null,
+        "opening_hours": "24/7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9258549,
+          21.1988486
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4727944090,
+        "name": "Đại lý Gas & Bếp Gas Tiến Du",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "303",
+        "district_name": null,
+        "opening_hours": "Mo-Su 17:00-09:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5480242,
+          21.2553724
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 4727976397,
+        "name": "Trọng Nhung",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "303, Yên Lạc",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5480598,
+          21.2553413
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5278890521,
+        "name": "Organic Vegetable Store",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5287695,
+          20.8710407
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5334888922,
+        "name": "Hùng Giang",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.343422,
+          20.8438704
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5334889322,
+        "name": "Hải Thu",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.3426441,
+          20.840301
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5367505221,
+        "name": "Co-op Mart",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6141032,
+          21.3129445
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5367749426,
+        "name": "Soiva Plaza",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6138535,
+          21.3125551
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5583587721,
+        "name": "SIÊU THỊ TRƯỜNG GIANG",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9274578,
+          21.1490369
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 5628801047,
+        "name": "HC",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5996047,
+          21.3212584
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 6449316846,
+        "name": "Kho Hàng sieuthitranh.net",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9675955,
+          21.1206202
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7146496601,
+        "name": "Chợ CHÃ",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9061657,
+          21.3712379
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 7763514085,
+        "name": "AEON MaxValu",
+        "brand": "AEON",
+        "type": "supermarket",
+        "address": ", Văn Giang",
+        "district_name": null,
+        "opening_hours": "Mo-Su 06:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9389933,
+          20.9533568
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 8530185719,
+        "name": "Tất Nụ",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "Phùng Hưng",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.3435412,
+          20.8421252
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12213204994,
+        "name": "Tiệm Nhà Hiền CN Đồng Văn Xanh",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Phố Đào Duy Từ, Đồng Văn - Duy Tiên",
+        "district_name": null,
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9085245,
+          20.6416124
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12388640280,
+        "name": "AEON MaxValu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9318572,
+          20.9545348
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12388640283,
+        "name": "AEON MaxValu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.933709,
+          20.9505741
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12896037598,
+        "name": "Trung tâm thương mại quốc tế Trung Việt Trung, Trung tâm thương mại Hồng Kông",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Trần Phú, Thành phố Từ Sơn",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9545261,
+          21.1147399
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13070068344,
+        "name": "The Daily House",
+        "brand": "The Daily House",
+        "type": "department_store",
+        "address": "Sky Oasis, khu đô thị Ecopark, Văn Giang",
+        "district_name": null,
+        "opening_hours": "Mo-Su 08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.921274,
+          20.9632132
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 12863854992,
+        "name": "AEON MaxValu",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": "Quận Bắc Từ Liêm",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7949624,
+          21.063478
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13318568589,
+        "name": "Tiên Hà Bách Hóa Tổng Hợp Túi Xách - Ví Da Dây Lưng",
+        "brand": "Khác",
+        "type": "department_store",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9549743,
+          20.942712
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13347246670,
+        "name": "Vincom Mega Mall Ocean City",
+        "brand": "Vincom",
+        "type": "mall",
+        "address": "Tô Quyền",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9736312,
+          20.951753
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13449358141,
+        "name": "Vstyl.vn",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.981278,
+          20.9497992
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 13506804182,
+        "name": "Siêu thị Huy Hùng",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "Đường Nguyễn Chí Thanh, Huyện Yên Phong",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9521072,
+          21.2033021
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 14102549102,
+        "name": "Cửa hàng LocknLock F2C Bắc Ninh",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9962562,
+          21.2033071
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 14106942949,
+        "name": "Nước tương Bà Chúc",
+        "brand": "Bà Chúc",
+        "type": "supermarket",
+        "address": "Thôn CD, Văn Giang",
+        "district_name": null,
+        "opening_hours": "Mo-Sun 5:00-17h30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9307552,
+          20.9102713
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 576742699,
+        "name": "Trung tâm Thương mại Chợ Giầu",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Lê Quang Đạo, Thành phố Từ Sơn",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9600482,
+          21.1163176
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 577155097,
+        "name": "Siêu thị Từ Sơn",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Minh Khai, Thành phố Từ Sơn",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9705043,
+          21.1234282
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 648729012,
+        "name": "Trung tâm thương mại Dabaco Mart Từ Sơn",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "Đường Lý Thái Tổ, Thành phố Từ Sơn",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9619767,
+          21.1027932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 651694255,
+        "name": "Chợ Lim",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.0155103,
+          21.1418621
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 685175181,
+        "name": "Siêu Thị điện máy Anh Đức",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9754443,
+          21.1187216
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1454902670,
+        "name": "GO! Việt Trì",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.4318487,
+          21.3069785
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1454902673,
+        "name": "Happy Land Plaza",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.385834,
+          21.3219445
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1525967520,
+        "name": "GO! Vĩnh Phúc",
+        "brand": "Khác",
+        "type": "supermarket",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6293218,
+          21.2941657
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1526746571,
+        "name": "Vincom Plaza Việt Trì",
+        "brand": "Khác",
+        "type": "mall",
+        "address": "",
+        "district_name": null,
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.3957217,
+          21.3121687
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1185203723,
+        "name": "Siêu thị Lan Chi",
+        "brand": "Lan Chi Mart",
+        "type": "supermarket",
+        "address": "Quốc lộ 32, Huyện Ba Vì",
+        "district_name": "Huyện Ba Vì",
+        "opening_hours": "08:00-22:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.4159504,
+          21.2061525
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 1116252727,
+        "name": "WinMart",
+        "brand": "WinMart",
+        "type": "supermarket",
+        "address": "Phố Trần Đăng Ninh, Cầu Giấy",
+        "district_name": "Quận Cầu Giấy",
+        "opening_hours": "Chưa cập nhật"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7940254,
+          21.0382708
+        ]
+      }
+    }
+  ]
+}
