@@ -5,32 +5,32 @@
 
 ### PHẦN I: THÔNG TIN CHUNG (GENERAL INFORMATION)
 
-- **Tên đề tài (Tiếng Việt):** Hệ thống WebGIS phân tích không gian đô thị: Đánh giá mật độ phân bố và khả năng tiếp cận các trung tâm dịch vụ thương mại
-- **Project Title (English):** Urban Spatial Analysis WebGIS System: Evaluating Distribution Density and Accessibility of Commercial Service Centers
+- **Tên đề tài (Tiếng Việt):** Hệ thống WebGIS phân tích không gian đô thị: Đánh giá mật độ phân bố và khả năng tiếp cận các điểm dịch vụ công cộng và thương mại (Y tế, Giáo dục, Thương mại)
+- **Project Title (English):** Urban Spatial Analysis WebGIS System: Evaluating Distribution Density and Accessibility of Public and Commercial Amenities (Healthcare, Education, Commerce)
 - **Giảng viên hướng dẫn (Academic Advisor):** ThS. Nguyễn Lệ Thu
 - **Nhóm chủ đề (Category):** Phát triển hệ thống phần mềm phục vụ các ngành Khoa học khác có liên quan (Hệ thống Thông tin Địa lý - GIS & Quy hoạch Đô thị)
 - **Thời gian thực hiện (Duration):** 9 tuần (17/08/2026 – 18/10/2026)
-- **Phạm vi không gian thử nghiệm (Case Study Area):** Thành phố Hà Nội (Khu vực các quận nội thành trọng điểm: Hoàn Kiếm, Ba Đình, Đống Đa, Cầu Giấy, Nam Từ Liêm, Hà Đông...)
+- **Phạm vi không gian thử nghiệm (Case Study Area):** Thành phố Hà Nội (Khu vực toàn bộ 30 quận, huyện và thị xã)
 
 ---
 
 ### PHẦN II: BẢN TIẾNG VIỆT (VIETNAMESE VERSION)
 
 #### 1. Tính cấp thiết và Bối cảnh nghiên cứu
-Trong kỷ nguyên số hóa và đô thị hóa thông minh (Smart Urbanism), việc phân bổ không gian của các tiện ích công cộng và cơ sở thương mại (Trung tâm thương mại - TTTM, đại siêu thị, chuỗi bán lẻ tập trung) đóng vai trò then chốt đối với sự phát triển kinh tế, cân bằng dân sinh và tối ưu hóa hạ tầng giao thông đô thị.
-Hiện nay, dữ liệu không gian đô thị tại các thành phố lớn như Hà Nội ngày càng phong phú nhưng còn phân tán, thiếu các công cụ trực quan hóa tập trung trên nền tảng Web có khả năng tương tác nhanh và hỗ trợ phân tích đa chiều cho các nhà quy hoạch, nhà đầu tư kinh doanh lẫn người dân.
-Các phần mềm GIS truyền thống (Desktop GIS như ArcGIS, QGIS) đòi hỏi máy tính cấu hình chuyên dụng, bản quyền đắt đỏ hoặc kỹ năng xử lý phức tạp, gây rào cản trong việc tiếp cận rộng rãi. Do đó, việc xây dựng một hệ thống **WebGIS mã nguồn mở (FOSS4G)** tích hợp năng lực lưu trữ CSDL không gian lớn, xử lý giải thuật phân tích không gian thời gian thực (Real-time Spatial Analytics) và trực quan hóa bản đồ tương tác là một đề tài mang tính liên ngành cao giữa **Khoa học Máy tính (CNTT)** và **Khoa học Không gian / Quy hoạch Đô thị**.
+Trong kỷ nguyên số hóa và đô thị hóa thông minh (Smart Urbanism), việc phân bổ không gian của các tiện ích dịch vụ công cộng—bao gồm **Y tế (Bệnh viện, Trạm y tế)**, **Giáo dục (Trường Đại học, Trường học các cấp)** và **Thương mại (Trung tâm thương mại - TTTM, Siêu thị)**—đóng vai trò then chốt đối với sự phát triển cân bằng dân sinh, giảm áp lực giao thông và nâng cao chất lượng sống của cư dân đô thị.
+Hiện nay, dữ liệu không gian tiện ích công cộng tại các thành phố lớn như Hà Nội còn phân tán, thiếu các công cụ trực quan hóa tập trung trên nền tảng Web có khả năng tương tác nhanh và hỗ trợ phân tích đa chiều cho các nhà hoạch định, nhà đầu tư kinh doanh lẫn người dân.
+Đề tài xây dựng một hệ thống **WebGIS mã nguồn mở (FOSS4G)** tích hợp năng lực quản trị CSDL không gian lớn, xử lý giải thuật phân tích không gian thời gian thực (Buffer đa vành đai, Voronoi, Kernel Density) nhằm giải quyết bài toán đánh giá toàn diện khả năng tiếp cận các dịch vụ công đô thị.
 
 #### 2. Mục tiêu đề tài
-- **Mục tiêu tổng quát:** Xây dựng hoàn chỉnh nền tảng WebGIS đa tầng phục vụ thu thập, quản lý, mô phỏng trực quan và tính toán các chỉ số phân tích không gian liên quan đến hệ thống TTTM và dịch vụ công cộng tại đô thị.
+- **Mục tiêu tổng quát:** Xây dựng hoàn chỉnh nền tảng WebGIS đa tầng phục vụ thu thập, quản lý, mô phỏng trực quan và tính toán các chỉ số phân tích không gian liên quan đến hệ thống Tiện ích Công cộng (Y tế, Giáo dục, Thương mại) tại TP. Hà Nội.
 - **Mục tiêu cụ thể:**
-  1. *Dữ liệu & CSDL:* Thu thập, trích xuất dữ liệu không gian thực tế từ OpenStreetMap (OSM) và cổng dữ liệu mở; chuẩn hóa hình học (Geometry) và xây dựng CSDL không gian chuẩn hóa trên **PostgreSQL/PostGIS** với hệ quy chiếu chuẩn VN-2000 / WGS84 (EPSG:4326, EPSG:3857).
-  2. *Giải thuật không gian (Spatial Algorithms):* Cài đặt các mô hình phân tích:
-     - Ước lượng mật độ hạt nhân (**Kernel Density Estimation - KDE**) xác định các điểm nóng (Hotspots) tập trung dịch vụ thương mại.
-     - Phân tích vùng đệm bán kính phục vụ (**Buffer Zone Analysis**) theo các ngưỡng khoảng cách đi bộ ($500m$, $1000m$) và xe cơ giới ($3000m$, $5000m$).
-     - Phân vùng không gian ảnh hưởng theo mô hình phân vùng Voronoi (**Voronoi / Thiessen Polygons**).
-     - Đánh giá sơ bộ khả năng tiếp cận và khoảng cách mạng lưới (Network Distance / Isochrone analysis).
-  3. *Hệ thống phần mềm:* Phát triển kiến trúc 3 lớp hiện đại, đáp ứng chuẩn dịch vụ bản đồ OGC (WMS/WFS/GeoJSON APIs), giao diện Frontend Web tương tác mượt mà, phản hồi dưới 1 giây đối với các truy vấn không gian phức tạp.
+  1. *Dữ liệu & CSDL:* Thu thập hơn 2,750 điểm tiện ích công cộng (408 cơ sở y tế, 2,036 trường học, 306 TTTM/siêu thị) và ranh giới 30 quận/huyện từ OpenStreetMap và geoBoundaries OGC; chuẩn hóa hình học và lưu trữ trên **PostgreSQL/PostGIS** với chỉ mục GiST Index.
+  2. *Giải thuật không gian (Spatial Analytics):* Cài đặt các mô hình phân tích chuyên biệt:
+     - **Phân tích Y tế (Healthcare):** Bán kính "Giờ vàng cấp cứu" ($3000m, 5000m$) đánh giá vùng trũng dịch vụ y tế.
+     - **Phân tích Giáo dục (Education):** Bán kính "Đi bộ an toàn tới trường" ($500m, 1000m$).
+     - **Phân tích Thương mại (Commerce):** Vùng bao phủ bán lẻ và đa giác cạnh tranh Voronoi.
+     - Ước lượng mật độ hạt nhân (**Kernel Density Estimation - KDE**) xác định các điểm nóng (Hotspots) tiện ích.
+  3. *Hệ thống phần mềm:* Phát triển kiến trúc WebGIS Workstation hiện đại, hỗ trợ bảng dữ liệu thuộc tính 2 chiều, công cụ đo đạc hình học vẽ tay, xuất báo cáo CSV/GeoJSON, phản hồi dưới 1 giây.
 
 #### 3. Đối tượng và Phạm vi nghiên cứu
 - **Đối tượng nghiên cứu:** 
