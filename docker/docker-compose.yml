@@ -1,7 +1,7 @@
 services:
-  postgis:
+  db:
     image: postgis/postgis:16-3.4
-    container_name: webgis_postgis
+    container_name: sdss_postgis
     restart: always
     environment:
       POSTGRES_DB: webgis_db
@@ -13,25 +13,64 @@ services:
       - postgis_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
-      - webgis_network
+      - sdss_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d webgis_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: sdss_backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://postgres:postgis_password@db:5432/webgis_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sdss_network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: sdss_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - sdss_network
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: webgis_pgadmin
+    container_name: sdss_pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@webgis.vn
+      PGADMIN_DEFAULT_EMAIL: admin@sdss.vn
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
     depends_on:
-      - postgis
+      - db
     networks:
-      - webgis_network
+      - sdss_network
 
 volumes:
   postgis_data:
 
 networks:
-  webgis_network:
+  sdss_network:
     driver: bridge
