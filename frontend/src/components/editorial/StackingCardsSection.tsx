@@ -53,7 +53,7 @@ const ITINERARIES: ItineraryCardData[] = [
       'Thư thái ngắm hoàng hôn đỏ rực tuyệt đẹp'
     ],
     stops: ['Chùa Trấn Quốc', 'Phủ Tây Hồ', 'Đường Thanh Niên', 'Bánh tôm Hồ Tây'],
-    image: 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&w=1200&q=85',
+    image: '/chua-tran-quoc.jpg',
     badge: '⛵ Hoàng hôn bên Chùa Trấn Quốc',
     badgeSub: 'Cổ tự nghìn năm trên đảo cá',
     poiIds: [5, 6, 4]
@@ -96,103 +96,64 @@ export const StackingCardsSection: React.FC<StackingCardsSectionProps> = ({
   const card2ImgRef = useRef<HTMLImageElement>(null);
   const card3ImgRef = useRef<HTMLImageElement>(null);
 
-  useGSAP(() => {
-    // Subtle badge float loop
-    gsap.to('.stacking-card-badge', {
-      y: -6,
+  // Hiệu ứng chiều sâu (Scale & Brightness) và Parallax mượt mà khi cuộn các thẻ chồng lên nhau
+  React.useEffect(() => {
+    // Hiệu ứng bồng bềnh cho nhãn nổi
+    const badgeTween = gsap.to('.stacking-card-badge', {
+      y: -5,
       repeat: -1,
       yoyo: true,
-      duration: 2.4,
+      duration: 2.2,
       ease: 'sine.inOut'
     });
 
-    const mm = gsap.matchMedia();
+    const scroller = scrollerRef?.current || window;
+    let rafId: number;
 
-    // Desktop: Stacking Cards Scrubbing Animation
-    mm.add('(min-width: 1024px)', () => {
-      if (!card1Ref.current || !card2Ref.current || !card3Ref.current || !containerRef.current) return;
+    const updateCardDepth = () => {
+      if (!card1Ref.current || !card2Ref.current || !card3Ref.current) return;
 
-      // Initial positions
-      gsap.set(card2Ref.current, { yPercent: 100, scale: 1, opacity: 1 });
-      gsap.set(card3Ref.current, { yPercent: 100, scale: 1, opacity: 1 });
+      const r1 = card1Ref.current.getBoundingClientRect();
+      const r2 = card2Ref.current.getBoundingClientRect();
+      const r3 = card3Ref.current.getBoundingClientRect();
 
-      const scroller = scrollerRef?.current || undefined;
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          scroller: scroller,
-          start: 'top top+=70',
-          end: 'bottom bottom',
-          scrub: 1.2,
-          invalidateOnRefresh: true
-        }
-      });
-
-      // Phase 1: Card 02 slides up over Card 01 (0 -> 1)
-      tl.to(card2Ref.current, {
-        yPercent: 0,
-        ease: 'power1.inOut',
-        duration: 1
-      }, 0);
-
-      tl.to(card1Ref.current, {
-        scale: 0.93,
-        filter: 'brightness(0.72) contrast(0.95)',
-        transformOrigin: 'center 85%',
-        ease: 'power1.inOut',
-        duration: 1
-      }, 0);
+      // Thẻ 1: Thu nhỏ nhẹ và hơi tối khi Thẻ 2 trượt lên đè lên nó
+      const overlap1 = Math.max(0, Math.min(1, (r1.bottom - r2.top) / (r1.height * 0.85)));
+      const scale1 = 1 - overlap1 * 0.05;
+      const brightness1 = 1 - overlap1 * 0.16;
+      card1Ref.current.style.transform = `scale(${scale1})`;
+      card1Ref.current.style.filter = `brightness(${brightness1})`;
 
       if (card1ImgRef.current) {
-        tl.to(card1ImgRef.current, {
-          yPercent: -15,
-          ease: 'none',
-          duration: 1
-        }, 0);
+        card1ImgRef.current.style.transform = `translateY(${-overlap1 * 12}%)`;
       }
 
-      // Phase 2: Card 03 slides up over Card 02 (1 -> 2)
-      tl.to(card3Ref.current, {
-        yPercent: 0,
-        ease: 'power1.inOut',
-        duration: 1
-      }, 1);
-
-      tl.to(card2Ref.current, {
-        scale: 0.93,
-        filter: 'brightness(0.72) contrast(0.95)',
-        transformOrigin: 'center 85%',
-        ease: 'power1.inOut',
-        duration: 1
-      }, 1);
-
-      tl.to(card1Ref.current, {
-        scale: 0.88,
-        opacity: 0.45,
-        ease: 'power1.inOut',
-        duration: 1
-      }, 1);
+      // Thẻ 2: Thu nhỏ nhẹ và hơi tối khi Thẻ 3 trượt lên đè lên nó
+      const overlap2 = Math.max(0, Math.min(1, (r2.bottom - r3.top) / (r2.height * 0.85)));
+      const scale2 = 1 - overlap2 * 0.05;
+      const brightness2 = 1 - overlap2 * 0.16;
+      card2Ref.current.style.transform = `scale(${scale2})`;
+      card2Ref.current.style.filter = `brightness(${brightness2})`;
 
       if (card2ImgRef.current) {
-        tl.to(card2ImgRef.current, {
-          yPercent: -15,
-          ease: 'none',
-          duration: 1
-        }, 1);
+        card2ImgRef.current.style.transform = `translateY(${-overlap2 * 12}%)`;
       }
+    };
 
-      if (card3ImgRef.current) {
-        tl.to(card3ImgRef.current, {
-          yPercent: -10,
-          ease: 'none',
-          duration: 1
-        }, 1);
-      }
-    });
+    const handleScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updateCardDepth);
+    };
 
-    return () => mm.revert();
-  }, { scope: containerRef, dependencies: [scrollerRef] });
+    scroller.addEventListener('scroll', handleScroll, { passive: true });
+    updateCardDepth();
+
+    return () => {
+      badgeTween.kill();
+      scroller.removeEventListener('scroll', handleScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, [scrollerRef]);
 
   return (
     <section id="lich-trinh-mau" className="w-full pt-10 pb-6 border-t border-stone-300/60">
@@ -211,52 +172,66 @@ export const StackingCardsSection: React.FC<StackingCardsSectionProps> = ({
       </div>
 
       {/* ========================================================
-          DESKTOP VIEW: STACKING CARDS (min-width: 1024px)
-          Outer container height 260vh provides smooth scroll scrub
+          DESKTOP VIEW: TRUE STICKY STACKING DECK (min-width: 1024px)
+          Mỗi thẻ có thứ tự tự nhiên, ghim dính (sticky) lần lượt tại top-20/24/28
+          Hoàn toàn không bị lệch trục hay chồng chéo sai thứ tự
           ======================================================== */}
       <div 
         ref={containerRef} 
-        className="hidden lg:block relative w-full h-[260vh]"
+        className="hidden lg:flex flex-col max-w-6xl mx-auto relative pb-28"
       >
-        {/* Sticky Pinned Stage */}
-        <div className="sticky top-20 w-full h-[620px] max-w-6xl mx-auto">
-          
-          {/* Card 01 */}
-          <div
-            ref={card1Ref}
-            className="absolute inset-0 z-10 w-full h-full bg-[#FDFBF7] border border-stone-300/80 rounded-[2.5rem] shadow-2xl shadow-stone-900/10 overflow-hidden will-change-transform"
-          >
-            <EditorialCardInner
-              item={ITINERARIES[0]}
-              imgRef={card1ImgRef}
-              onSelect={() => onSelectPreset(ITINERARIES[0].poiIds)}
-            />
-          </div>
+        {/* Card 01: Phố Cổ */}
+        <div
+          ref={card1Ref}
+          style={{
+            position: 'sticky',
+            top: '84px',
+            zIndex: 10,
+            marginBottom: '35vh'
+          }}
+          className="w-full h-[600px] lg:h-[620px] bg-[#FDFBF7] border border-stone-300/80 rounded-[2.5rem] shadow-2xl shadow-stone-900/10 overflow-hidden will-change-transform transform-gpu origin-top transition-transform duration-100"
+        >
+          <EditorialCardInner
+            item={ITINERARIES[0]}
+            imgRef={card1ImgRef}
+            onSelect={() => onSelectPreset(ITINERARIES[0].poiIds)}
+          />
+        </div>
 
-          {/* Card 02 */}
-          <div
-            ref={card2Ref}
-            className="absolute inset-0 z-20 w-full h-full bg-[#FDFBF7] border border-stone-300/80 rounded-[2.5rem] shadow-2xl shadow-stone-900/10 overflow-hidden will-change-transform"
-          >
-            <EditorialCardInner
-              item={ITINERARIES[1]}
-              imgRef={card2ImgRef}
-              onSelect={() => onSelectPreset(ITINERARIES[1].poiIds)}
-            />
-          </div>
+        {/* Card 02: Hồ Tây */}
+        <div
+          ref={card2Ref}
+          style={{
+            position: 'sticky',
+            top: '108px',
+            zIndex: 20,
+            marginBottom: '35vh'
+          }}
+          className="w-full h-[600px] lg:h-[620px] bg-[#FDFBF7] border border-stone-300/80 rounded-[2.5rem] shadow-2xl shadow-stone-900/10 overflow-hidden will-change-transform transform-gpu origin-top transition-transform duration-100"
+        >
+          <EditorialCardInner
+            item={ITINERARIES[1]}
+            imgRef={card2ImgRef}
+            onSelect={() => onSelectPreset(ITINERARIES[1].poiIds)}
+          />
+        </div>
 
-          {/* Card 03 */}
-          <div
-            ref={card3Ref}
-            className="absolute inset-0 z-30 w-full h-full bg-[#FDFBF7] border border-stone-300/80 rounded-[2.5rem] shadow-2xl shadow-stone-900/10 overflow-hidden will-change-transform"
-          >
-            <EditorialCardInner
-              item={ITINERARIES[2]}
-              imgRef={card3ImgRef}
-              onSelect={() => onSelectPreset(ITINERARIES[2].poiIds)}
-            />
-          </div>
-
+        {/* Card 03: Ba Đình */}
+        <div
+          ref={card3Ref}
+          style={{
+            position: 'sticky',
+            top: '132px',
+            zIndex: 30,
+            marginBottom: '0px'
+          }}
+          className="w-full h-[600px] lg:h-[620px] bg-[#FDFBF7] border border-stone-300/80 rounded-[2.5rem] shadow-2xl shadow-stone-900/10 overflow-hidden will-change-transform transform-gpu origin-top transition-transform duration-100"
+        >
+          <EditorialCardInner
+            item={ITINERARIES[2]}
+            imgRef={card3ImgRef}
+            onSelect={() => onSelectPreset(ITINERARIES[2].poiIds)}
+          />
         </div>
       </div>
 
