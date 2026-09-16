@@ -34,7 +34,8 @@ const CATEGORY_META: Record<string, { label: string; icon: string; badge: string
   bridge: { label: 'Cầu & Biểu tượng', icon: '🌉', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' },
   museum: { label: 'Bảo tàng & Văn hóa', icon: '🎨', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
   entertainment: { label: 'Giải trí & Làng nghề', icon: '🎡', badge: 'bg-pink-500/20 text-pink-300 border-pink-500/40' },
-  culinary: { label: 'Ẩm thực & Chợ đêm', icon: '🍜', badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' }
+  culinary: { label: 'Ẩm thực & Chợ đêm', icon: '🍜', badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' },
+  shopping: { label: 'Mua sắm & TTTM', icon: '🛍️', badge: 'bg-rose-500/20 text-rose-300 border-rose-500/40' }
 };
 
 export const PoiDetailModal: React.FC<PoiDetailModalProps> = ({

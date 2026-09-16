@@ -5,6 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    host: true
+    host: true,
+    watch: {
+      usePolling: true,
+      interval: 1000,
+      ignored: ['**/public/**', '**/node_modules/**']
+    }
   }
 });

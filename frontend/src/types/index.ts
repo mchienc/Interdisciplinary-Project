@@ -10,6 +10,9 @@ export interface POI {
   ticket_price: number;
   image_url?: string;
   tips?: string;
+  ideal_time?: 'morning' | 'afternoon' | 'evening' | 'any';
+  closed_days?: number[];
+  closed_time?: string;
 }
 
 export interface ScoreBreakdown {
@@ -70,6 +73,7 @@ export interface PlanResponse {
   daily_itineraries: DayItinerary[];
   total_trip_distance_km: number;
   total_trip_duration_min: number;
+  transport_mode?: string;
   message?: string;
 }
 
@@ -87,4 +91,5 @@ export interface PlanRequest {
   radius_meters: number;
   weights: WeightsConfig;
   selected_hotel_id?: number;
+  transport_mode?: string;
 }

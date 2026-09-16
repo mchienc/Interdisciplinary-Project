@@ -7,6 +7,11 @@ DATABASE_URL = os.getenv(
     "postgresql://postgres:postgis_password@localhost:5432/webgis_db"
 )
 
+# Chuẩn hóa tiền tố URI nếu nhà cung cấp Cloud (Supabase, Render) cung cấp dạng postgres://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+
 # Khởi tạo SQLAlchemy Engine với connection pool
 engine = create_engine(
     DATABASE_URL,

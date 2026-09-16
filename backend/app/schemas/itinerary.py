@@ -13,6 +13,9 @@ class POIRead(BaseModel):
     ticket_price: int = 0
     image_url: Optional[str] = None
     tips: Optional[str] = None
+    ideal_time: Optional[str] = "morning"
+    closed_days: Optional[List[int]] = []
+    closed_time: Optional[str] = None
 
 class POICreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=255, description="Tên địa điểm du lịch")
@@ -25,6 +28,9 @@ class POICreate(BaseModel):
     ticket_price: int = Field(default=0, ge=0, description="Giá vé vào cổng (VND)")
     image_url: Optional[str] = Field(default="", description="Link hình ảnh đại diện")
     tips: Optional[str] = Field(default="", description="Mẹo và lưu ý khi tham quan")
+    ideal_time: Optional[str] = Field(default="morning", description="Khung giờ vàng: morning, afternoon, evening, any")
+    closed_days: Optional[List[int]] = Field(default=[], description="Các ngày đóng cửa định kỳ (0: Thứ 2, 4: Thứ 6...)")
+    closed_time: Optional[str] = Field(default="17:00", description="Giờ đóng cửa")
 
 class ScoreBreakdown(BaseModel):
     distance_score: float = Field(..., description="Điểm cự ly chuẩn hóa (gần hơn = điểm cao hơn)")
@@ -60,6 +66,7 @@ class PlanRequest(BaseModel):
     radius_meters: float = Field(default=3500.0, ge=500.0, le=20000.0, description="Bán kính tìm kiếm khách sạn quanh trung vị hình học (m)")
     weights: Optional[WeightsConfig] = Field(default_factory=WeightsConfig, description="Cấu hình trọng số hàm chấm điểm đa tiêu chí")
     selected_hotel_id: Optional[int] = Field(default=None, description="Khách sạn người dùng chủ động chọn từ Top 5 đề xuất")
+    transport_mode: Optional[str] = Field(default="driving", description="Phương tiện di chuyển: walking, bike, driving")
 
 class GeometricMedianResult(BaseModel):
     lat: float
@@ -94,4 +101,5 @@ class PlanResponse(BaseModel):
     daily_itineraries: List[DayItinerary]
     total_trip_distance_km: float
     total_trip_duration_min: float
+    transport_mode: str = "driving"
     message: str = "Tối ưu hóa lịch trình và đề xuất lưu trú thành công."

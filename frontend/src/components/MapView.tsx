@@ -6,12 +6,13 @@ import {
   Maximize2, 
   Compass, 
   Target, 
-  Eye, 
   Info, 
   MapPin, 
   Navigation,
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  Clock,
+  Ticket
 } from 'lucide-react';
 import { POI, Accommodation, PlanResponse } from '../types';
 
@@ -38,33 +39,80 @@ interface MapViewProps {
   onOpenPoiDetail?: (poi: POI) => void;
 }
 
-const DAY_COLORS = ['#10b981', '#6366f1', '#f59e0b', '#ec4899', '#06b6d4'];
+// Màu sắc tươi sáng, hài hòa theo phong cách du lịch thảnh thơi
+const DAY_COLORS = ['#B85D3B', '#0F766E', '#2563EB', '#D97706', '#7C3AED'];
+
+const CATEGORY_ICONS: Record<string, string> = {
+  heritage: '🏛️',
+  culinary: '🍜',
+  nature: '⛵',
+  museum: '🎨',
+  bridge: '🌉',
+  entertainment: '🎡',
+  shopping: '🛍️'
+};
+
+const CATEGORY_NAMES: Record<string, string> = {
+  heritage: 'Di tích',
+  culinary: 'Ẩm thực',
+  nature: 'Thiên nhiên',
+  museum: 'Bảo tàng',
+  bridge: 'Cầu di sản',
+  entertainment: 'Giải trí',
+  shopping: 'Mua sắm & TTTM'
+};
 
 const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileUrl: string; desc: string }> = {
-  dark: {
-    label: 'Esri Dark Canvas',
-    icon: '🌓',
-    tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-    desc: 'Bản đồ GIS Dark Slate chuyên sâu'
-  },
-  street: {
-    label: 'Bản Đồ Phố Du Lịch',
+  voyager: {
+    label: 'Du Lịch Thảnh Thơi',
     icon: '🗺️',
-    tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-    desc: 'Màu sắc êm dịu, đầy đủ địa danh'
+    tileUrl: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    desc: 'Carto Voyager: Nước hồ ngọc lam, công viên xanh non'
+  },
+  light: {
+    label: 'Tối Giản Tinh Tế',
+    icon: '🏛️',
+    tileUrl: 'https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png',
+    desc: 'Carto Positron: Gam màu xám ấm thanh lịch'
+  },
+  osm: {
+    label: 'OpenStreetMap Chuẩn',
+    icon: '🧭',
+    tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    desc: 'Bản đồ mở quốc tế, chi tiết từng ngõ ngách'
   },
   satellite: {
     label: 'Ảnh Vệ Tinh Trực Quan',
     icon: '🛰️',
     tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     desc: 'Esri World Imagery chân thực'
-  },
-  osm: {
-    label: 'OpenStreetMap Chuẩn',
-    icon: '🏔️',
-    tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    desc: 'Cộng đồng bản đồ mở quốc tế'
   }
+};
+
+// Helper tính toán vòng tròn địa lý 1km (~15 phút đi bộ) xung quanh khách sạn
+const createCircleGeoJSON = (lon: number, lat: number, radiusMeters: number = 1000, points: number = 64) => {
+  const coords: [number, number][] = [];
+  const distanceX = radiusMeters / (111320 * Math.cos((lat * Math.PI) / 180));
+  const distanceY = radiusMeters / 110540;
+
+  for (let i = 0; i < points; i++) {
+    const theta = (i / points) * (2 * Math.PI);
+    const x = distanceX * Math.cos(theta);
+    const y = distanceY * Math.sin(theta);
+    coords.push([lon + x, lat + y]);
+  }
+  coords.push(coords[0]); // Đóng vòng polygon
+
+  return {
+    type: 'Feature' as const,
+    properties: {
+      title: 'Vùng đi bộ 15 phút (~1.0 km)'
+    },
+    geometry: {
+      type: 'Polygon' as const,
+      coordinates: [coords]
+    }
+  };
 };
 
 export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
@@ -89,21 +137,33 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
   const hotelMarkerElementsRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const routeTweensRef = useRef<gsap.core.Tween[]>([]);
 
-  // State điều khiển bản đồ - mặc định dùng 'dark' chuẩn GIS Workstation
-  const [currentBasemap, setCurrentBasemap] = useState<string>('dark');
+  // State điều khiển bản đồ - Mặc định là 'voyager' (Carto Voyager Light Travel)
+  const [currentBasemap, setCurrentBasemap] = useState<string>('voyager');
   const [isBasemapDropdownOpen, setIsBasemapDropdownOpen] = useState<boolean>(false);
   const [is3D, setIs3D] = useState<boolean>(false);
   const [showLegend, setShowLegend] = useState<boolean>(true);
 
-  // Expose camera fly methods ra bên ngoài component cho GSAP Landing Orchestrator
+  // Module 2: State cho 3D Cinematic Fly-Through & Walking Isochrone
+  const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
+  const [cinematicStop, setCinematicStop] = useState<{
+    name: string;
+    stage: string;
+    icon: string;
+    desc?: string;
+  } | null>(null);
+  const cinematicTimeoutRef = useRef<number | null>(null);
+  const [showIsochrone, setShowIsochrone] = useState<boolean>(false);
+
+  // Expose camera fly methods ra bên ngoài component cho Landing Hero Orchestrator
   useImperativeHandle(ref, () => ({
     flyDownToWorkspace: (onArrival?: () => void) => {
       const map = mapRef.current;
       if (!map) return;
       map.flyTo({
-        center: [105.8523, 21.0287],
-        zoom: 13.8,
+        center: [105.8523, 21.0287], // Hồ Hoàn Kiếm
+        zoom: 13.6,
         pitch: 30,
+        bearing: -12,
         duration: 2200,
         essential: true,
         curve: 1.42,
@@ -120,18 +180,19 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         center: [105.8523, 21.0287],
         zoom: 10.5,
         pitch: 0,
-        duration: 2000,
+        bearing: 0,
+        duration: 1800,
         essential: true
       });
     },
     getMap: () => mapRef.current
   }));
 
-  // 1. Khởi tạo Bản đồ MapLibre GL tại tầm nhìn bao quát thành phố (zoom: 10.5)
+  // 1. Khởi tạo Bản đồ MapLibre GL với basemap Voyager nhẹ nhàng
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    const initialStyle = BASEMAP_STYLES[currentBasemap];
+    const initialStyle = BASEMAP_STYLES.voyager;
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
@@ -142,7 +203,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             type: 'raster',
             tiles: [initialStyle.tileUrl],
             tileSize: 256,
-            attribution: '&copy; Esri &copy; OpenStreetMap'
+            attribution: '&copy; CartoDB &copy; OpenStreetMap contributors'
           }
         },
         layers: [
@@ -180,18 +241,32 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
     if (!basemapConfig) return;
 
     try {
-      if (map.getLayer('basemap-layer')) map.removeLayer('basemap-layer');
-      if (map.getSource('basemap-source')) map.removeSource('basemap-source');
+      if (map.getLayer('basemap-layer')) {
+        map.removeLayer('basemap-layer');
+      }
+      if (map.getSource('basemap-source')) {
+        map.removeSource('basemap-source');
+      }
 
       map.addSource('basemap-source', {
         type: 'raster',
         tiles: [basemapConfig.tileUrl],
         tileSize: 256,
-        attribution: '&copy; Esri &copy; OpenStreetMap'
+        attribution: '&copy; CartoDB &copy; OpenStreetMap'
       });
 
-      // Thêm layer nền vào vị trí dưới cùng (trước các layer đường đi)
-      const firstRouteLayer = map.getLayer('route-casing-day-1') ? 'route-casing-day-1' : undefined;
+      // Đặt layer nền bên dưới các layer route
+      const layers = map.getStyle().layers;
+      let firstRouteLayer = undefined;
+      if (layers) {
+        for (const l of layers) {
+          if (l.id.startsWith('route-')) {
+            firstRouteLayer = l.id;
+            break;
+          }
+        }
+      }
+
       map.addLayer(
         {
           id: 'basemap-layer',
@@ -236,7 +311,6 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         const fullCoords = dayItinerary.route_geojson?.geometry?.coordinates || [];
 
         const sourceId = `route-source-day-${day}`;
-        // Nếu animate thì khởi tạo với 2 tọa độ đầu tiên, ngược lại set toàn bộ
         const initialCoords = (shouldAnimate && fullCoords.length >= 2) ? [fullCoords[0], fullCoords[1]] : fullCoords;
 
         map.addSource(sourceId, {
@@ -251,7 +325,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           }
         });
 
-        // Đường viền (Casing)
+        // Đường viền Halo trắng tinh tế (White Casing) cho bản đồ sáng
         map.addLayer({
           id: `route-casing-day-${day}`,
           type: 'line',
@@ -261,9 +335,9 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#020617',
-            'line-width': 6,
-            'line-opacity': isDimmed ? 0.15 : 0.65
+            'line-color': '#ffffff',
+            'line-width': 7,
+            'line-opacity': isDimmed ? 0.3 : 0.85
           }
         });
 
@@ -279,7 +353,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           paint: {
             'line-color': color,
             'line-width': isDimmed ? 2.5 : 4.5,
-            'line-opacity': isDimmed ? 0.2 : 0.95
+            'line-opacity': isDimmed ? 0.25 : 0.95
           }
         });
 
@@ -288,7 +362,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           const tweenObj = { progress: 0 };
           const tween = gsap.to(tweenObj, {
             progress: 1,
-            duration: 1.0,
+            duration: 1.1,
             ease: 'power2.out',
             onUpdate: () => {
               const src = map.getSource(sourceId) as maplibregl.GeoJSONSource;
@@ -316,7 +390,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       });
 
       if (!bounds.isEmpty()) {
-        map.fitBounds(bounds, { padding: 90, maxZoom: 15, duration: 900 });
+        map.fitBounds(bounds, { padding: 80, maxZoom: 15, duration: 900 });
       }
     };
 
@@ -332,7 +406,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
     };
   }, [plan, activeDayTab]);
 
-  // 4. Render Markers (POIs, Geometric Median Weiszfeld, Hotels)
+  // 4. Render Markers (POIs giọt nước, Điểm lưu trú đề xuất, Tâm lý tưởng)
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -351,7 +425,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       });
     }
 
-    // A. Vẽ các Marker POI (Điểm du lịch)
+    // A. Vẽ các Marker POI (Điểm du lịch dạng giọt nước tinh tế)
     pois.forEach((poi) => {
       const isSelected = selectedPoiIds.includes(poi.id);
       const dayInfo = poiDayMap.get(poi.id);
@@ -359,46 +433,49 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       const el = document.createElement('div');
       el.className = 'cursor-pointer transition-transform duration-200 hover:scale-125 z-10';
 
-      let bgColor = '#64748b';
-      let badgeContent = '📍';
+      let bgColor = '#78716c';
+      let badgeText = CATEGORY_ICONS[poi.category] || '📍';
 
       if (dayInfo) {
         bgColor = DAY_COLORS[(dayInfo.day - 1) % DAY_COLORS.length];
-        badgeContent = `${dayInfo.seq}`;
+        badgeText = `${dayInfo.seq}`;
       } else if (isSelected) {
-        bgColor = '#4f46e5';
-        badgeContent = '✓';
+        bgColor = '#1C382B'; // Forest green
+        badgeText = '✓';
       }
 
       el.innerHTML = `
-        <div style="background-color: ${bgColor};" class="w-7 h-7 rounded-full text-white font-bold text-xs flex items-center justify-center border-2 border-white shadow-lg shadow-black/25">
-          ${badgeContent}
+        <div class="group relative flex flex-col items-center">
+          <div style="background-color: ${bgColor};" class="w-8 h-8 rounded-full rounded-br-none -rotate-45 text-white font-bold text-xs flex items-center justify-center border-2 border-white shadow-md shadow-stone-900/20 transition-transform duration-200 group-hover:scale-115">
+            <span class="rotate-45 select-none">${badgeText}</span>
+          </div>
+          ${dayInfo ? `<div class="mt-0.5 px-1.5 py-0.2 rounded-full bg-white/95 border border-stone-200 text-[9px] font-bold text-stone-800 shadow-xs whitespace-nowrap">Chặng #${dayInfo.seq}</div>` : ''}
         </div>
       `;
 
-      const popup = new maplibregl.Popup({ offset: 20, closeButton: false }).setHTML(`
-        <div class="space-y-2 max-w-xs p-1">
+      const popup = new maplibregl.Popup({ offset: 20, closeButton: true }).setHTML(`
+        <div class="space-y-2.5 max-w-xs p-1 text-stone-800">
           ${poi.image_url ? `
-            <div class="relative h-28 w-full rounded-xl overflow-hidden border border-slate-700/80 mb-1">
+            <div class="relative h-28 w-full rounded-2xl overflow-hidden border border-stone-200 shadow-xs mb-1">
               <img src="${poi.image_url}" alt="${poi.name}" class="w-full h-full object-cover" />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
-              <span class="absolute bottom-1.5 left-2 text-[10px] bg-indigo-600/90 text-white font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                ${poi.category}
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              <span class="absolute bottom-2 left-2 text-[10px] bg-[#B85D3B] text-white font-semibold px-2.5 py-0.5 rounded-full shadow-xs">
+                ${CATEGORY_NAMES[poi.category] || poi.category}
               </span>
             </div>
           ` : ''}
-          <div class="font-bold text-sm text-white">${poi.name}</div>
-          <p class="text-xs text-slate-300 leading-relaxed line-clamp-2">${poi.description || ''}</p>
-          <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-700/60 flex items-center justify-between">
+          <div class="font-serif text-sm font-bold text-[#1C382B] leading-snug">${poi.name}</div>
+          <p class="text-xs text-stone-600 leading-relaxed line-clamp-2">${poi.description || ''}</p>
+          <div class="text-[11px] text-stone-500 pt-1.5 border-t border-stone-200 flex items-center justify-between">
             <span>🎟️ Giá vé:</span>
-            <b class="text-emerald-400 font-mono">${poi.ticket_price === 0 ? 'Miễn phí' : poi.ticket_price.toLocaleString() + ' đ'}</b>
+            <b class="text-[#B85D3B] font-medium">${poi.ticket_price === 0 ? 'Miễn phí' : poi.ticket_price.toLocaleString('vi-VN') + ' đ'}</b>
           </div>
           ${dayInfo ? `
-            <div class="bg-indigo-950/60 p-1.5 rounded-lg border border-indigo-500/30 text-[11px] font-bold text-indigo-300 mt-1 flex items-center gap-1.5">
-              <span>🚀</span> Lịch trình Ngày ${dayInfo.day} - Điểm đến số #${dayInfo.seq}
+            <div class="bg-stone-100 p-2 rounded-xl border border-stone-200 text-[11px] font-medium text-[#1C382B] flex items-center gap-1.5">
+              <span>✨</span> Lộ trình Ngày ${dayInfo.day} • Chặng ghé thăm #${dayInfo.seq}
             </div>` : ''}
-          <button id="poi-detail-btn-${poi.id}" class="w-full mt-2 py-2 px-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition shadow-md active:scale-98 cursor-pointer">
-            <span>👁️ Xem Chi Tiết & Hình Ảnh</span>
+          <button id="poi-detail-btn-${poi.id}" class="w-full mt-1.5 py-2 px-3 bg-[#1C382B] hover:bg-[#B85D3B] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer">
+            <span>Xem chi tiết & gợi ý</span>
           </button>
         </div>
       `);
@@ -420,34 +497,33 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       markersRef.current.push(marker);
     });
 
-    // B. Vẽ Marker Trung vị Hình học (Geometric Median Weiszfeld) 🎯
+    // B. Vẽ Marker Trung vị Hình học (Tâm Không Gian Lý Tưởng) 🎯
     if (plan && plan.geometric_median) {
       const med = plan.geometric_median;
       const el = document.createElement('div');
-      el.className = 'relative flex items-center justify-center cursor-pointer z-30';
+      el.className = 'relative flex items-center justify-center cursor-pointer z-25';
       el.innerHTML = `
         <div class="radar-ring-1"></div>
         <div class="radar-ring-2"></div>
-        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-red-500 text-white flex items-center justify-center border-2 border-white shadow-xl text-sm font-bold z-10 transition-transform hover:scale-125">
+        <div class="w-7 h-7 rounded-full bg-[#1C382B] text-white flex items-center justify-center border-2 border-white shadow-lg text-xs font-bold z-10 transition-transform hover:scale-125">
           🎯
         </div>
       `;
 
       const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`
-        <div class="space-y-2 max-w-sm p-0.5">
-          <div class="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase tracking-wider">
-            <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-            Trung Vị Hình Học (Geometric Median)
+        <div class="space-y-2 max-w-sm p-1 text-stone-800">
+          <div class="flex items-center gap-1.5 text-[#B85D3B] font-bold text-xs uppercase tracking-wider">
+            <span>🎯</span>
+            Tọa Độ Trung Tâm Lý Tưởng
           </div>
-          <div class="font-bold text-white text-sm">Điểm Lưu Trú Tối Ưu Toán Học (L1)</div>
-          <div class="text-xs text-slate-300">
-            Tọa độ cực tiểu hóa tổng khoảng cách tới toàn bộ các điểm tham quan đã chọn:
+          <div class="font-serif text-sm font-bold text-[#1C382B]">Điểm Lưu Trú Thuận Tiện Nhất (L1-Median)</div>
+          <div class="text-xs text-stone-600">
+            Tọa độ toán học giúp tổng quãng đường di chuyển tới các điểm tham quan là ngắn nhất.
           </div>
-          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 text-[11px] space-y-1 font-mono text-slate-300">
-            <div>📍 Vĩ độ: <b class="text-white">${med.lat.toFixed(6)}</b>, Kinh độ: <b class="text-white">${med.lon.toFixed(6)}</b></div>
-            <div>🔄 Vòng lặp Weiszfeld hội tụ: <b class="text-indigo-400">${med.iterations}</b></div>
-            <div>📏 Cự ly trung bình đến POIs: <b class="text-white">${med.mean_distance_to_pois_km} km</b></div>
-            <div class="text-emerald-400 font-bold">⚡ Tiết kiệm so với Centroid: +${med.centroid_comparison_gain_km} km</div>
+          <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 text-[11px] space-y-1 text-stone-700">
+            <div>📍 Vĩ độ: <b class="font-mono text-stone-900">${med.lat.toFixed(4)}</b>, Kinh độ: <b class="font-mono text-stone-900">${med.lon.toFixed(4)}</b></div>
+            <div>📏 Khoảng cách trung bình tới các điểm: <b class="text-[#1C382B]">${med.mean_distance_to_pois_km} km</b></div>
+            <div class="text-[#0F766E] font-semibold">⚡ Tiết kiệm so với chọn tự phát: +${med.centroid_comparison_gain_km} km</div>
           </div>
         </div>
       `);
@@ -467,7 +543,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         const isChosen = (selectedHotelId === hotel.id) || (!selectedHotelId && idx === 0);
 
         const el = document.createElement('div');
-        el.className = `cursor-pointer transition-all duration-200 ${isChosen ? 'scale-110 z-30' : 'z-15'}`;
+        el.className = `cursor-pointer transition-all duration-200 ${isChosen ? 'scale-115 z-30' : 'z-20'}`;
 
         el.addEventListener('mouseenter', () => onHoverHotel?.(hotel.id));
         el.addEventListener('mouseleave', () => onHoverHotel?.(null));
@@ -475,19 +551,23 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         const rankStr = `0${idx + 1}`.slice(-2);
 
         el.innerHTML = `
-          <div class="flex flex-col items-center">
-            <div class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold ${
+          <div class="relative flex flex-col items-center">
+            ${isChosen ? `
+              <div class="radar-hotel-1"></div>
+              <div class="radar-hotel-2"></div>
+            ` : ''}
+            <div class="px-2 py-0.5 rounded-full text-[9px] font-bold ${
               isChosen 
-                ? 'bg-emerald-500 text-slate-950 border border-emerald-300 font-black shadow-md' 
-                : 'bg-[#0B0F19] text-slate-300 border border-slate-700'
-            } shadow mb-0.5 whitespace-nowrap">
-              ${isChosen ? '★ CHỌN' : `#${rankStr}`}
+                ? 'bg-[#B85D3B] text-white shadow-md ring-2 ring-white' 
+                : 'bg-white text-stone-700 border border-stone-200 shadow-xs'
+            } mb-1 whitespace-nowrap z-10">
+              ${isChosen ? '★ ĐIỂM NGHỈ TỐI ƯU' : `#${rankStr}`}
             </div>
-            <div class="w-7 h-7 rounded-lg ${
+            <div class="w-8 h-8 rounded-2xl ${
               isChosen 
-                ? 'bg-emerald-600 ring-2 ring-emerald-400/80 text-white' 
-                : 'bg-slate-800 border border-slate-700 text-indigo-400'
-            } flex items-center justify-center shadow-lg text-xs">
+                ? 'bg-gradient-to-tr from-[#B85D3B] to-[#D97706] text-white ring-2 ring-white shadow-xl' 
+                : 'bg-white border border-stone-200 text-[#B85D3B] shadow-md'
+            } flex items-center justify-center text-sm z-10">
               🏨
             </div>
           </div>
@@ -496,26 +576,26 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         hotelMarkerElementsRef.current.set(hotel.id, el);
 
         const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`
-          <div class="space-y-2 min-w-[240px] p-0.5">
+          <div class="space-y-2.5 min-w-[240px] p-1 text-stone-800">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-md uppercase font-bold">
-                Xếp hạng #${idx + 1} &bull; ${hotel.stars}⭐
+              <span class="text-[10px] bg-[#B85D3B]/10 text-[#B85D3B] font-semibold px-2 py-0.5 rounded-full uppercase">
+                Gợi ý #${idx + 1} &bull; ${hotel.stars}★
               </span>
-              <span class="text-xs text-amber-400 font-bold">★ ${hotel.rating}</span>
+              <span class="text-xs text-amber-500 font-bold">★ ${hotel.rating}</span>
             </div>
-            <div class="font-bold text-white text-sm">${hotel.name}</div>
-            <div class="text-[11px] text-slate-400">📍 ${hotel.address || ''}</div>
-            <div class="text-xs text-emerald-400 font-bold font-mono">
+            <div class="font-serif text-sm font-bold text-[#1C382B]">${hotel.name}</div>
+            <div class="text-[11px] text-stone-500">📍 ${hotel.address || 'Hà Nội'}</div>
+            <div class="text-xs text-[#B85D3B] font-bold">
               💰 ${(hotel.price_per_night / 1000).toLocaleString()}k đ / đêm
             </div>
-            ${hotel.distance_to_median_m ? `<div class="text-[11px] text-slate-300">📏 Cách trung vị: <b class="text-cyan-400 font-mono">${hotel.distance_to_median_m.toLocaleString()} m</b></div>` : ''}
+            ${hotel.distance_to_median_m ? `<div class="text-[11px] text-stone-600">📏 Cách tâm lý tưởng: <b class="text-[#0F766E] font-medium">${hotel.distance_to_median_m.toLocaleString()} m</b></div>` : ''}
             
             <button 
               id="select-hotel-btn-${hotel.id}" 
-              class="w-full mt-2 py-2 px-3 rounded-lg text-xs font-bold transition text-center ${
+              class="w-full mt-2 py-2 px-3 rounded-xl text-xs font-semibold transition text-center cursor-pointer ${
                 isChosen 
-                  ? 'bg-emerald-600 text-white shadow-md' 
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                  ? 'bg-[#1C382B] text-white shadow-sm' 
+                  : 'bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200'
               }"
             >
               ${isChosen ? '✓ Đang chọn làm điểm lưu trú' : '👉 Chọn khách sạn này & tính lại'}
@@ -547,58 +627,228 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
     // D. Marker xem trước tọa độ đang chọn (Picked Coords)
     if (pickedCoords) {
       const el = document.createElement('div');
-      el.className = 'w-9 h-9 rounded-full bg-emerald-500 text-white flex items-center justify-center border-2 border-white shadow-2xl text-base font-bold animate-bounce z-40 ring-4 ring-emerald-500/30';
+      el.className = 'w-9 h-9 rounded-full bg-[#B85D3B] text-white flex items-center justify-center border-2 border-white shadow-2xl text-base font-bold animate-bounce z-40 ring-4 ring-[#B85D3B]/30';
       el.innerHTML = '📍';
+
       const marker = new maplibregl.Marker({ element: el })
         .setLngLat([pickedCoords.lon, pickedCoords.lat])
         .addTo(map);
+
       markersRef.current.push(marker);
     }
-  }, [pois, selectedPoiIds, plan, selectedHotelId, onSelectHotel, pickedCoords]);
+  }, [pois, selectedPoiIds, plan, selectedHotelId, pickedCoords]);
 
-  // 4b. Đồng bộ hiệu ứng Hover hai chiều (Bi-directional Highlight)
+  // 5. Đồng bộ hiệu ứng hover khách sạn từ Sidebar
   useEffect(() => {
     hotelMarkerElementsRef.current.forEach((el, id) => {
-      const isHovered = hoveredHotelId === id;
-      const isChosen = (selectedHotelId === id);
-
-      if (isHovered) {
-        el.style.transform = 'scale(1.28)';
-        el.style.zIndex = '60';
-        el.style.filter = 'drop-shadow(0 0 12px rgba(99, 102, 241, 0.85))';
-      } else if (isChosen) {
-        el.style.transform = 'scale(1.1)';
-        el.style.zIndex = '30';
-        el.style.filter = '';
+      if (id === hoveredHotelId) {
+        el.classList.add('scale-125', 'z-40');
       } else {
-        el.style.transform = 'scale(1.0)';
-        el.style.zIndex = '15';
-        el.style.filter = '';
+        el.classList.remove('scale-125', 'z-40');
       }
     });
-  }, [hoveredHotelId, selectedHotelId]);
+  }, [hoveredHotelId]);
 
-  // 5. Bắt sự kiện click trên map để chọn tọa độ
+  // 6. Xử lý sự kiện click chọn tọa độ trên bản đồ
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
+    const handleMapClick = (e: maplibregl.MapMouseEvent) => {
+      if (isPickingLocation && onLocationPicked) {
+        onLocationPicked(e.lngLat.lat, e.lngLat.lng);
+      }
+    };
+
     if (isPickingLocation) {
       map.getCanvas().style.cursor = 'crosshair';
-      const handleClick = (e: maplibregl.MapMouseEvent) => {
-        if (onLocationPicked) {
-          onLocationPicked(e.lngLat.lat, e.lngLat.lng);
-        }
-      };
-      map.on('click', handleClick);
-      return () => {
-        map.off('click', handleClick);
-        map.getCanvas().style.cursor = '';
-      };
+      map.on('click', handleMapClick);
     } else {
       map.getCanvas().style.cursor = '';
+      map.off('click', handleMapClick);
     }
+
+    return () => {
+      map.off('click', handleMapClick);
+    };
   }, [isPickingLocation, onLocationPicked]);
+
+  // Quản lý Layer Vùng Tản Bộ 15 Phút (Walking Isochrone)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const sourceId = 'hotel-isochrone-source';
+    const fillLayerId = 'hotel-isochrone-fill';
+    const lineLayerId = 'hotel-isochrone-line';
+
+    const updateIsochrone = () => {
+      if (map.getLayer(lineLayerId)) map.removeLayer(lineLayerId);
+      if (map.getLayer(fillLayerId)) map.removeLayer(fillLayerId);
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+      if (!showIsochrone || !plan || !plan.selected_hotel) return;
+
+      const geojsonData = createCircleGeoJSON(plan.selected_hotel.lon, plan.selected_hotel.lat, 1000);
+
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: geojsonData
+      });
+
+      // Chèn phía dưới các layer route
+      const layers = map.getStyle().layers;
+      let beforeId: string | undefined = undefined;
+      if (layers) {
+        for (const l of layers) {
+          if (l.id.startsWith('route-')) {
+            beforeId = l.id;
+            break;
+          }
+        }
+      }
+
+      map.addLayer(
+        {
+          id: fillLayerId,
+          type: 'fill',
+          source: sourceId,
+          paint: {
+            'fill-color': '#D97706',
+            'fill-opacity': 0.14
+          }
+        },
+        beforeId
+      );
+
+      map.addLayer(
+        {
+          id: lineLayerId,
+          type: 'line',
+          source: sourceId,
+          paint: {
+            'line-color': '#D97706',
+            'line-width': 2,
+            'line-dasharray': [2, 2],
+            'line-opacity': 0.8
+          }
+        },
+        beforeId
+      );
+    };
+
+    if (map.isStyleLoaded()) {
+      updateIsochrone();
+    } else {
+      map.once('load', updateIsochrone);
+    }
+  }, [showIsochrone, plan?.selected_hotel, currentBasemap]);
+
+  // Module 2: 3D Cinematic Route Fly-Through
+  const stopCinematicFlyThrough = () => {
+    if (cinematicTimeoutRef.current) {
+      window.clearTimeout(cinematicTimeoutRef.current);
+      cinematicTimeoutRef.current = null;
+    }
+    setIsCinematicPlaying(false);
+    setCinematicStop(null);
+    handleFitBounds();
+  };
+
+  const startCinematicFlyThrough = () => {
+    const map = mapRef.current;
+    if (!map || !plan || !plan.daily_itineraries || plan.daily_itineraries.length === 0) return;
+
+    if (cinematicTimeoutRef.current) {
+      window.clearTimeout(cinematicTimeoutRef.current);
+    }
+
+    setIsCinematicPlaying(true);
+
+    const stopsToFly: Array<{
+      lon: number;
+      lat: number;
+      name: string;
+      stage: string;
+      icon: string;
+      desc?: string;
+    }> = [];
+
+    const itineraries = activeDayTab !== null
+      ? plan.daily_itineraries.filter(d => d.day === activeDayTab)
+      : plan.daily_itineraries;
+
+    itineraries.forEach(d => {
+      // Khởi hành từ khách sạn
+      stopsToFly.push({
+        lon: plan.selected_hotel.lon,
+        lat: plan.selected_hotel.lat,
+        name: plan.selected_hotel.name,
+        stage: `Ngày ${d.day} • Khởi hành`,
+        icon: '🏨',
+        desc: 'Điểm lưu trú tối ưu thuận tiện di chuyển'
+      });
+
+      // Các điểm đến trong ngày
+      d.visit_sequence.forEach((p, pIdx) => {
+        stopsToFly.push({
+          lon: p.lon,
+          lat: p.lat,
+          name: p.name,
+          stage: `Ngày ${d.day} • Chặng #${pIdx + 1}`,
+          icon: CATEGORY_ICONS[p.category] || '📍',
+          desc: p.description
+        });
+      });
+
+      // Quay về khách sạn
+      stopsToFly.push({
+        lon: plan.selected_hotel.lon,
+        lat: plan.selected_hotel.lat,
+        name: plan.selected_hotel.name,
+        stage: `Ngày ${d.day} • Nghỉ ngơi`,
+        icon: '🏁',
+        desc: 'Khép kín hành trình thư thái'
+      });
+    });
+
+    let currentIdx = 0;
+
+    const flyToNext = () => {
+      if (currentIdx >= stopsToFly.length) {
+        stopCinematicFlyThrough();
+        return;
+      }
+
+      const stop = stopsToFly[currentIdx];
+      setCinematicStop(stop);
+
+      map.flyTo({
+        center: [stop.lon, stop.lat],
+        zoom: 15.6,
+        pitch: 52,
+        bearing: ((currentIdx * 45) % 360) - 20,
+        duration: 2500,
+        essential: true
+      });
+
+      currentIdx++;
+
+      cinematicTimeoutRef.current = window.setTimeout(() => {
+        flyToNext();
+      }, 4600);
+    };
+
+    flyToNext();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (cinematicTimeoutRef.current) {
+        window.clearTimeout(cinematicTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Map Controls: Fit Bounds
   const handleFitBounds = () => {
@@ -623,31 +873,31 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
     setIs3D(!is3D);
   };
 
-  // Map Controls: Fly to Weiszfeld Median
-  const handleFlyToMedian = () => {
+  // Map Controls: Fly to Optimal Accommodation
+  const handleFlyToHotel = () => {
     const map = mapRef.current;
-    if (!map || !plan || !plan.geometric_median) return;
+    if (!map || !plan || !plan.selected_hotel) return;
     map.flyTo({
-      center: [plan.geometric_median.lon, plan.geometric_median.lat],
-      zoom: 14.5,
+      center: [plan.selected_hotel.lon, plan.selected_hotel.lat],
+      zoom: 15,
       pitch: 35,
       duration: 1500
     });
   };
 
   return (
-    <div className="flex-1 w-full h-full relative overflow-hidden">
+    <div className="flex-1 w-full h-full relative overflow-hidden bg-[#F8F5EE]">
       {/* Banner thông báo chế độ chọn tọa độ */}
       {isPickingLocation && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 glass-panel border-indigo-500/50 text-white px-5 py-3 rounded-2xl text-xs flex items-center gap-3 shadow-2xl">
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 bg-white/95 backdrop-blur-md border border-[#B85D3B]/40 text-stone-800 px-5 py-3 rounded-2xl text-xs flex items-center gap-3 shadow-2xl">
           <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-            <b className="text-emerald-400">Chế độ Chọn Tọa độ:</b> Nhấp vào bất kỳ điểm nào trên bản đồ để ghim vị trí du lịch mới
+            <span className="w-2.5 h-2.5 rounded-full bg-[#B85D3B] animate-ping" />
+            <b className="text-[#B85D3B]">Chế độ Chọn Tọa độ:</b> Nhấp vào bất kỳ điểm nào trên bản đồ để ghim vị trí du lịch mới
           </span>
           {onCancelPick && (
             <button
               onClick={onCancelPick}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-lg text-xs font-bold border border-slate-700 transition"
+              className="bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1 rounded-lg text-xs font-semibold border border-stone-200 transition cursor-pointer"
             >
               Hủy
             </button>
@@ -655,37 +905,63 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         </div>
       )}
 
+      {/* FLOATING HUD: CINEMATIC 3D ROUTE FLY-THROUGH */}
+      {isCinematicPlaying && cinematicStop && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 bg-stone-900/90 backdrop-blur-md text-white px-5 py-3 rounded-2xl border border-stone-700 shadow-2xl flex items-center gap-3 animate-in fade-in zoom-in-95 duration-200 max-w-md">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#B85D3B] to-[#D97706] flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
+            {cinematicStop.icon}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] text-amber-300 uppercase tracking-wider font-bold">
+              🎬 {cinematicStop.stage}
+            </div>
+            <div className="font-serif text-sm font-bold text-white truncate">
+              {cinematicStop.name}
+            </div>
+            {cinematicStop.desc && (
+              <p className="text-[11px] text-stone-300 truncate mt-0.5">{cinematicStop.desc}</p>
+            )}
+          </div>
+          <button
+            onClick={stopCinematicFlyThrough}
+            className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer shrink-0"
+          >
+            ⏹ Dừng bay
+          </button>
+        </div>
+      )}
+
       {/* FLOATING TOOLBAR: BASEMAP SWITCHER & CONTROLS */}
-      <div className={`absolute top-4 left-4 md:left-[436px] z-30 flex items-center gap-2 transition-all duration-700 ease-out ${
+      <div className={`absolute top-20 left-4 md:left-[460px] z-30 flex flex-wrap items-center gap-2 transition-all duration-700 ease-out ${
         isWorkspaceActive ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-4'
       }`}>
         {/* Basemap Switcher Dropdown */}
         <div className="relative">
           <button
             onClick={() => setIsBasemapDropdownOpen(!isBasemapDropdownOpen)}
-            className="glass-panel px-3.5 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-2 hover:bg-slate-800 transition shadow-lg"
+            className="bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-2xl text-xs font-semibold text-[#1C382B] flex items-center gap-2 hover:bg-white border border-stone-200/90 shadow-sm transition cursor-pointer"
           >
             <span>{BASEMAP_STYLES[currentBasemap]?.icon}</span>
             <span>{BASEMAP_STYLES[currentBasemap]?.label}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            <ChevronDown className="w-3.5 h-3.5 text-stone-500" />
           </button>
 
           {isBasemapDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1.5 w-52 glass-panel rounded-2xl p-1.5 shadow-2xl border border-white/10 space-y-1 z-40 animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute top-full left-0 mt-1.5 w-60 bg-white/95 backdrop-blur-md rounded-2xl p-1.5 shadow-xl border border-stone-200/90 space-y-1 z-40 animate-in fade-in zoom-in-95 duration-150">
               {Object.entries(BASEMAP_STYLES).map(([key, style]) => (
                 <button
                   key={key}
                   onClick={() => switchBasemap(key)}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center gap-2.5 transition ${
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center gap-2.5 transition cursor-pointer ${
                     currentBasemap === key
-                      ? 'bg-indigo-600 text-white font-bold shadow-sm'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-[#1C382B] text-white font-semibold shadow-xs'
+                      : 'text-stone-700 hover:bg-stone-100'
                   }`}
                 >
                   <span className="text-base">{style.icon}</span>
                   <div>
                     <div className="leading-tight">{style.label}</div>
-                    <div className="text-[10px] text-slate-400 opacity-80">{style.desc}</div>
+                    <div className="text-[10px] opacity-75">{style.desc}</div>
                   </div>
                 </button>
               ))}
@@ -694,11 +970,11 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         </div>
 
         {/* Quick View Action Buttons */}
-        <div className="glass-panel p-1 rounded-xl flex items-center gap-1 shadow-lg">
+        <div className="bg-white/90 backdrop-blur-md p-1 rounded-2xl border border-stone-200/90 flex items-center gap-1 shadow-sm">
           <button
             onClick={handleFitBounds}
             title="Căn vừa toàn bộ các điểm (Fit Bounds)"
-            className="p-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition"
+            className="p-2 rounded-xl hover:bg-stone-100 text-stone-700 hover:text-[#1C382B] transition cursor-pointer"
           >
             <Maximize2 className="w-4 h-4" />
           </button>
@@ -706,8 +982,8 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           <button
             onClick={handleToggle3D}
             title={is3D ? 'Chuyển về góc nhìn 2D' : 'Góc nghiêng 3D (45° Pitch)'}
-            className={`p-2 rounded-lg transition ${
-              is3D ? 'bg-indigo-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-300 hover:text-white'
+            className={`p-2 rounded-xl transition cursor-pointer ${
+              is3D ? 'bg-[#1C382B] text-white font-bold' : 'hover:bg-stone-100 text-stone-700'
             }`}
           >
             <span className="text-xs font-bold font-mono">3D</span>
@@ -715,11 +991,43 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
 
           {plan && (
             <button
-              onClick={handleFlyToMedian}
-              title="Bay tới Trung vị Weiszfeld (Fly to Median)"
-              className="p-2 rounded-lg hover:bg-slate-800 text-rose-400 hover:text-rose-300 transition"
+              onClick={handleFlyToHotel}
+              title="Bay tới khách sạn đề xuất (Fly to Hotel)"
+              className="p-2 rounded-xl hover:bg-[#B85D3B]/10 text-[#B85D3B] transition cursor-pointer"
             >
               <Target className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Module 2: Vùng đi bộ 15 phút (Isochrone) */}
+          {plan && plan.selected_hotel && (
+            <button
+              onClick={() => setShowIsochrone(!showIsochrone)}
+              title="Bật/tắt vùng tản bộ 15 phút quanh khách sạn (~1.0 km)"
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                showIsochrone 
+                  ? 'bg-amber-600 text-white shadow-xs ring-1 ring-amber-400' 
+                  : 'hover:bg-stone-100 text-stone-700'
+              }`}
+            >
+              <span>🚶</span>
+              <span className="hidden sm:inline">Đi bộ 15p</span>
+            </button>
+          )}
+
+          {/* Module 2: 3D Cinematic Fly-Through */}
+          {plan && (
+            <button
+              onClick={isCinematicPlaying ? stopCinematicFlyThrough : startCinematicFlyThrough}
+              title={isCinematicPlaying ? 'Dừng bay mô phỏng' : 'Chuyến bay 3D mô phỏng hành trình'}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                isCinematicPlaying 
+                  ? 'bg-rose-600 text-white animate-pulse shadow-xs' 
+                  : 'bg-[#1C382B] hover:bg-[#B85D3B] text-white shadow-xs'
+              }`}
+            >
+              <span>{isCinematicPlaying ? '⏹' : '🎬'}</span>
+              <span className="hidden sm:inline">{isCinematicPlaying ? 'Dừng bay' : 'Xem trước 3D'}</span>
             </button>
           )}
         </div>
@@ -727,44 +1035,53 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
 
       {/* FLOATING BOTTOM-RIGHT: INTERACTIVE LEGEND WIDGET */}
       {isWorkspaceActive && showLegend && (
-        <div className="absolute bottom-6 right-4 z-30 glass-panel p-3.5 rounded-2xl shadow-2xl border border-white/10 text-xs max-w-xs space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200">
-          <div className="flex items-center justify-between pb-1.5 border-b border-slate-700/60">
-            <span className="font-bold text-xs text-slate-200 flex items-center gap-1.5">
-              <Compass className="w-3.5 h-3.5 text-indigo-400" />
+        <div className="absolute bottom-6 right-4 z-30 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-stone-200/90 text-xs max-w-xs space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200 text-stone-800">
+          <div className="flex items-center justify-between pb-1.5 border-b border-stone-200">
+            <span className="font-serif font-bold text-xs text-[#1C382B] flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5 text-[#B85D3B]" />
               Chú Giải Bản Đồ
             </span>
             <button
               onClick={() => setShowLegend(false)}
-              className="text-slate-400 hover:text-white text-xs px-1"
+              className="text-stone-400 hover:text-stone-700 text-xs px-1 cursor-pointer"
             >
               ×
             </button>
           </div>
 
-          <div className="space-y-1.5 text-[11px]">
-            <div className="flex items-center gap-2 text-slate-300">
-              <span className="w-4 h-4 rounded-full bg-rose-500 flex items-center justify-center text-[10px] text-white font-bold">
-                🎯
-              </span>
-              <span>Trung vị Hình học Weiszfeld (Tối ưu L1)</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-slate-300">
-              <span className="w-4 h-4 rounded-md bg-emerald-600 flex items-center justify-center text-[10px] text-white">
+          <div className="space-y-2 text-[11px]">
+            <div className="flex items-center gap-2.5">
+              <span className="w-5 h-5 rounded-lg bg-gradient-to-tr from-[#B85D3B] to-[#D97706] flex items-center justify-center text-[10px] text-white shadow-xs">
                 🏨
               </span>
-              <span>Khách sạn Được Chọn / Gợi Ý</span>
+              <span className="font-medium text-stone-700">Điểm lưu trú lý tưởng nhất</span>
             </div>
 
-            {DAY_COLORS.map((color, idx) => (
-              <div key={idx} className="flex items-center gap-2 text-slate-300">
+            <div className="flex items-center gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-[#1C382B] flex items-center justify-center text-[10px] text-white">
+                🎯
+              </span>
+              <span className="text-stone-600">Tọa độ trung tâm tối ưu (L1)</span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <span className="w-5 h-5 rounded-full rounded-br-none -rotate-45 bg-[#78716c] flex items-center justify-center text-[9px] text-white">
+                <span className="rotate-45">📍</span>
+              </span>
+              <span className="text-stone-600">Điểm tham quan du lịch</span>
+            </div>
+
+            {plan && plan.daily_itineraries && plan.daily_itineraries.map((itinerary, idx) => (
+              <div key={idx} className="flex items-center gap-2.5">
                 <span 
-                  style={{ backgroundColor: color }} 
-                  className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] text-white font-bold"
+                  style={{ backgroundColor: DAY_COLORS[idx % DAY_COLORS.length] }} 
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white font-bold shadow-xs"
                 >
-                  {idx + 1}
+                  {itinerary.day}
                 </span>
-                <span>Lộ trình & Điểm tham quan Ngày {idx + 1}</span>
+                <span className="text-stone-700 font-medium">
+                  Tuyến đường Ngày {itinerary.day} ({itinerary.visit_sequence.length} chặng)
+                </span>
               </div>
             ))}
           </div>
@@ -775,9 +1092,9 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       {isWorkspaceActive && !showLegend && (
         <button
           onClick={() => setShowLegend(true)}
-          className="absolute bottom-6 right-4 z-30 glass-panel px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-300 hover:text-white shadow-lg flex items-center gap-1.5"
+          className="absolute bottom-6 right-4 z-30 bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-2xl text-[11px] font-semibold text-stone-700 hover:text-[#1C382B] border border-stone-200/80 shadow-md flex items-center gap-1.5 cursor-pointer"
         >
-          <Info className="w-3.5 h-3.5 text-indigo-400" />
+          <Info className="w-3.5 h-3.5 text-[#B85D3B]" />
           <span>Chú Giải</span>
         </button>
       )}
@@ -787,5 +1104,3 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
     </div>
   );
 });
-
-

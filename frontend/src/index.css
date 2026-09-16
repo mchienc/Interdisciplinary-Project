@@ -103,34 +103,34 @@
   background: #475569;
 }
 
-/* MapLibre Popup Styling (Soft modern bubble) */
+/* MapLibre Popup Styling (Clean Warm Light Travel Bubble) */
 .maplibregl-popup-content {
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 16px !important;
+  color: #1c1917 !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 20px !important;
   padding: 14px 16px !important;
-  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.16) !important;
   font-family: inherit !important;
 }
 
 .maplibregl-popup-tip {
-  border-top-color: rgba(15, 23, 42, 0.95) !important;
+  border-top-color: rgba(255, 255, 255, 0.96) !important;
 }
 
 .maplibregl-popup-close-button {
-  color: #94a3b8 !important;
+  color: #78716c !important;
   font-size: 16px !important;
   padding: 4px 8px !important;
-  top: 6px !important;
-  right: 6px !important;
+  top: 8px !important;
+  right: 8px !important;
 }
 
 .maplibregl-popup-close-button:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+  color: #1c1917 !important;
+  background: rgba(0, 0, 0, 0.06) !important;
   border-radius: 8px !important;
 }
 
@@ -151,7 +151,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid #f43f5e;
+  border: 2px solid #b85d3b;
   animation: radar-pulse-soft 2.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
@@ -160,8 +160,38 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1.5px solid #fb7185;
+  border: 1.5px solid #d97706;
   animation: radar-pulse-soft 2.2s infinite 0.7s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+/* Radar Pulse for Recommended Hotel */
+@keyframes radar-pulse-hotel {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.radar-hotel-1 {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #b85d3b;
+  animation: radar-pulse-hotel 2.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.radar-hotel-2 {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #f59e0b;
+  animation: radar-pulse-hotel 2.2s infinite 0.7s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 /* Hide MapLibre UI controls when in Landing Page mode */
@@ -179,5 +209,11 @@
 /* Editorial Serif Font Family - Vietnamese Diacritic Safe (Playfair Display & Lora) */
 .font-serif {
   font-family: 'Playfair Display', 'Lora', 'Times New Roman', serif !important;
+}
+
+/* Reposition MapLibre top-right controls comfortably below the 56px top header */
+.maplibregl-ctrl-top-right {
+  top: 72px !important;
+  right: 16px !important;
 }
 

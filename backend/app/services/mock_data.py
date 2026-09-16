@@ -11,12 +11,15 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "estimated_duration_min": 60,
         "opening_hours": "07:00 - 18:00",
         "ticket_price": 30000,
-        "image_url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80",
-        "tips": "Nên đi bộ quanh bờ hồ lúc sáng sớm hoặc hoàng hôn. Vào cuối tuần có phố đi bộ với nhiều hoạt động nghệ thuật đường phố đặc sắc."
+        "image_url": "/ho-hoan-kiem.jpg",
+        "tips": "Nên đi bộ quanh bờ hồ lúc sáng sớm hoặc hoàng hôn. Vào cuối tuần có phố đi bộ với nhiều hoạt động nghệ thuật đường phố đặc sắc.",
+        "ideal_time": "morning",
+        "closed_days": [],
+        "closed_time": "18:00"
     },
     {
         "id": 2,
-        "name": "Lăng Chủ tịch Hồ Chí Minh & Quảng trường Ba Đình",
+        "name": "Lăng Chủ tịch Hồ Chí Minh & Ba Đình",
         "category": "heritage",
         "description": "Nơi an nghỉ của Chủ tịch Hồ Chí Minh vĩ đại, Quảng trường Ba Đình lịch sử, Nhà sàn, Phủ Chủ tịch và chùa Một Cột ngàn năm tuổi.",
         "lat": 21.0368,
@@ -24,8 +27,11 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "estimated_duration_min": 120,
         "opening_hours": "07:30 - 11:00 (Đóng cửa thứ 2 & thứ 6)",
         "ticket_price": 0,
-        "image_url": "https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&w=800&q=80",
-        "tips": "Mặc trang phục lịch sự trang nghiêm (quần dài, áo có tay). Không mang theo máy quay phim hoặc đồ ăn uống vào trong lăng."
+        "image_url": "/lang-bac.jpg",
+        "tips": "Mặc trang phục lịch sự trang nghiêm (quần dài, áo có tay). Không mang theo máy quay phim hoặc đồ ăn uống vào trong lăng.",
+        "ideal_time": "morning",
+        "closed_days": [0, 4], # Thứ 2 & Thứ 6
+        "closed_time": "11:00"
     },
     {
         "id": 3,
@@ -37,8 +43,11 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "estimated_duration_min": 90,
         "opening_hours": "08:00 - 17:00",
         "ticket_price": 30000,
-        "image_url": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80",
-        "tips": "Nhiều góc chụp ảnh đẹp tại giếng Thiên Quang và cổng Đại Thành. Các sĩ tử thường đến xin chữ cầu may trước các kỳ thi quan trọng."
+        "image_url": "/landing-bg.webp",
+        "tips": "Nhiều góc chụp ảnh đẹp tại giếng Thiên Quang và cổng Đại Thành. Các sĩ tử thường đến xin chữ cầu may trước các kỳ thi quan trọng.",
+        "ideal_time": "morning",
+        "closed_days": [],
+        "closed_time": "17:00"
     },
     {
         "id": 4,
@@ -50,21 +59,27 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "estimated_duration_min": 90,
         "opening_hours": "Cả ngày",
         "ticket_price": 0,
-        "image_url": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=800&q=80",
-        "tips": "Nên trải nghiệm đi bộ hoặc xích lô luồn lách qua các ngõ nhỏ Hàng Mã, Hàng Ngang, Hàng Đào và thưởng thức cà phê trứng Giảng."
+        "image_url": "/36-pho_phuong.jpg",
+        "tips": "Nên trải nghiệm đi bộ hoặc xích lô luồn lách qua các ngõ nhỏ Hàng Mã, Hàng Ngang, Hàng Đào và thưởng thức cà phê trứng Giảng.",
+        "ideal_time": "morning",
+        "closed_days": [],
+        "closed_time": None
     },
     {
         "id": 5,
-        "name": "Hồ Tây & Bãi Đá Sông Hồng",
+        "name": "Hồ Tây & Chùa Trấn Quốc",
         "category": "nature",
         "description": "Hồ nước tự nhiên lớn nhất Thủ đô với chùa Trấn Quốc cổ kính hơn 1500 năm tuổi và không gian dã ngoại cúc họa mi sông Hồng thơ mộng.",
         "lat": 21.0545,
         "lon": 105.8285,
         "estimated_duration_min": 90,
         "opening_hours": "Cả ngày",
-        "ticket_price": 50000,
-        "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-        "tips": "Thời điểm ngắm hoàng hôn đẹp nhất Hà Nội là tại đường Thanh Niên hoặc bến Hàn Quốc. Thưởng thức bánh tôm Hồ Tây nóng giòn."
+        "ticket_price": 0,
+        "image_url": "/chua-tran-quoc.jpg",
+        "tips": "Thời điểm ngắm hoàng hôn đẹp nhất Hà Nội là tại đường Thanh Niên hoặc bến Hàn Quốc. Thưởng thức bánh tôm Hồ Tây nóng giòn.",
+        "ideal_time": "evening",
+        "closed_days": [],
+        "closed_time": None
     },
     {
         "id": 6,
@@ -76,8 +91,11 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "estimated_duration_min": 120,
         "opening_hours": "08:00 - 17:00",
         "ticket_price": 30000,
-        "image_url": "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80",
-        "tips": "Khu di tích khảo cổ 18 Hoàng Diệu rất rộng, hãy dành thời gian tham quan điện Kính Thiên và hầm chỉ huy D67 thời kháng chiến."
+        "image_url": "/hoang-thanh.jpg",
+        "tips": "Khu di tích khảo cổ 18 Hoàng Diệu rất rộng, hãy dành thời gian tham quan điện Kính Thiên và hầm chỉ huy D67 thời kháng chiến.",
+        "ideal_time": "afternoon",
+        "closed_days": [],
+        "closed_time": "17:00"
     },
     {
         "id": 7,
@@ -89,8 +107,11 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "estimated_duration_min": 120,
         "opening_hours": "08:30 - 17:30 (Đóng cửa thứ 2)",
         "ticket_price": 40000,
-        "image_url": "https://images.unsplash.com/photo-1568084680786-a84f91d1153c?auto=format&fit=crop&w=800&q=80",
-        "tips": "Khu trưng bày ngoài trời có nhà rông Tây Nguyên, nhà sàn Ê Đê, nhà mồ Gia Rai rất ấn tượng, có múa rối nước vào cuối tuần."
+        "image_url": "/bao_tang_dan_toc.webp",
+        "tips": "Khu trưng bày ngoài trời có nhà rông Tây Nguyên, nhà sàn Ê Đê, nhà mồ Gia Rai rất ấn tượng, có múa rối nước vào cuối tuần.",
+        "ideal_time": "afternoon",
+        "closed_days": [0], # Thứ 2
+        "closed_time": "17:30"
     },
     {
         "id": 8,
@@ -103,7 +124,10 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "Cả ngày",
         "ticket_price": 0,
         "image_url": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=800&q=80",
-        "tips": "Điểm chụp ảnh phong cách hoài cổ lý tưởng lúc bình minh hoặc hoàng hôn. Có thể thưởng thức ngô nướng, khoai nướng trên cầu vào mùa đông."
+        "tips": "Điểm chụp ảnh phong cách hoài cổ lý tưởng lúc bình minh hoặc hoàng hôn. Có thể thưởng thức ngô nướng, khoai nướng trên cầu vào mùa đông.",
+        "ideal_time": "evening",
+        "closed_days": [],
+        "closed_time": None
     },
     {
         "id": 9,
@@ -116,7 +140,10 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "08:00 - 20:00",
         "ticket_price": 0,
         "image_url": "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80",
-        "tips": "Trải nghiệm văn hóa 'trà chanh Nhà thờ' và nem chua rán vỉa hè số 10 Ấu Triệu ngay sát bên hông nhà thờ."
+        "tips": "Trải nghiệm văn hóa 'trà chanh Nhà thờ' và nem chua rán vỉa hè số 10 Ấu Triệu ngay sát bên hông nhà thờ.",
+        "ideal_time": "afternoon",
+        "closed_days": [],
+        "closed_time": "20:00"
     },
     {
         "id": 10,
@@ -129,7 +156,10 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "08:00 - 17:00",
         "ticket_price": 30000,
         "image_url": "https://images.unsplash.com/photo-1578925518470-4def7a0f08bb?auto=format&fit=crop&w=800&q=80",
-        "tips": "Nên thuê thiết bị thuyết minh tự động (audio guide) để nghe câu chuyện cảm động về ý chí kiên cường của các chiến sĩ cách mạng."
+        "tips": "Nên thuê thiết bị thuyết minh tự động (audio guide) để nghe câu chuyện cảm động về ý chí kiên cường của các chiến sĩ cách mạng.",
+        "ideal_time": "afternoon",
+        "closed_days": [],
+        "closed_time": "17:00"
     },
     {
         "id": 11,
@@ -142,7 +172,10 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "Cả ngày",
         "ticket_price": 0,
         "image_url": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a1b?auto=format&fit=crop&w=800&q=80",
-        "tips": "Địa điểm lý tưởng để chụp ảnh lưu niệm kiến trúc châu Âu giữa lòng Hà Nội và đi dạo mua sắm tại Tràng Tiền Plaza."
+        "tips": "Địa điểm lý tưởng để chụp ảnh lưu niệm kiến trúc châu Âu giữa lòng Hà Nội và đi dạo mua sắm tại Tràng Tiền Plaza.",
+        "ideal_time": "evening",
+        "closed_days": [],
+        "closed_time": None
     },
     {
         "id": 12,
@@ -155,7 +188,10 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "07:00 - 23:00 (Chợ đêm mở từ 18:00 thứ 6-CN)",
         "ticket_price": 0,
         "image_url": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-        "tips": "Ngõ Đồng Xuân là thiên đường ăn vặt nức tiếng: bún ốc chuối đậu, chè sắn nóng, bánh tôm và phở tíu thơm lừng."
+        "tips": "Ngõ Đồng Xuân là thiên đường ăn vặt nức tiếng: bún ốc chuối đậu, chè sắn nóng, bánh tôm và phở tíu thơm lừng.",
+        "ideal_time": "evening",
+        "closed_days": [],
+        "closed_time": "23:00"
     },
     {
         "id": 13,
@@ -168,7 +204,10 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "08:00 - 16:30 (Đóng cửa thứ 2 & thứ 6)",
         "ticket_price": 0,
         "image_url": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80",
-        "tips": "Khuôn viên rất rộng lớn bên cạnh đại lộ Thăng Long, trang bị công nghệ tương tác 3D mapping và sa bàn chiến dịch hiện đại."
+        "tips": "Khuôn viên rất rộng lớn bên cạnh đại lộ Thăng Long, trang bị công nghệ tương tác 3D mapping và sa bàn chiến dịch hiện đại.",
+        "ideal_time": "morning",
+        "closed_days": [0, 4], # Thứ 2 & Thứ 6
+        "closed_time": "16:30"
     },
     {
         "id": 14,
@@ -181,7 +220,10 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "08:30 - 19:00",
         "ticket_price": 180000,
         "image_url": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80",
-        "tips": "Thích hợp cho gia đình và nhóm bạn vui chơi giải nhiệt mùa hè, kết hợp ngắm sen Tây Hồ và thưởng thức ẩm thực sen độc đáo."
+        "tips": "Thích hợp cho gia đình và nhóm bạn vui chơi giải nhiệt mùa hè, kết hợp ngắm sen Tây Hồ và thưởng thức ẩm thực sen độc đáo.",
+        "ideal_time": "afternoon",
+        "closed_days": [],
+        "closed_time": "19:00"
     },
     {
         "id": 15,
@@ -194,6 +236,89 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "opening_hours": "08:00 - 18:00",
         "ticket_price": 50000,
         "image_url": "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80",
-        "tips": "Trung tâm Tinh hoa Làng nghề Việt (Bảo tàng gốm Bát Tràng) có kiến trúc 7 cánh xoáy tráng lệ, check-in sống ảo cực đẹp."
+        "tips": "Trung tâm Tinh hoa Làng nghề Việt (Bảo tàng gốm Bát Tràng) có kiến trúc 7 cánh xoáy tráng lệ, check-in sống ảo cực đẹp.",
+        "ideal_time": "morning",
+        "closed_days": [],
+        "closed_time": "18:00"
+    },
+    {
+        "id": 16,
+        "name": "Lotte Mall West Lake Hanoi (Lotte Tây Hồ)",
+        "category": "shopping",
+        "description": "Đại siêu thị và tổ hợp mua sắm - giải trí phức hợp hiện đại bậc nhất Thủ đô rộng 354.000m² view Hồ Tây, quy tụ thủy cung Lotte World Aquarium và đại lộ thời trang quốc tế.",
+        "lat": 21.0754,
+        "lon": 105.8122,
+        "estimated_duration_min": 120,
+        "opening_hours": "09:30 - 22:00",
+        "ticket_price": 0,
+        "image_url": "https://images.unsplash.com/photo-1519642918688-7e43b19245d8?auto=format&fit=crop&w=800&q=80",
+        "tips": "Thủy cung trong nhà lớn nhất Hà Nội nằm tại tầng B1. Tầng 4 và 5 có hàng chục nhà hàng ẩm thực Á - Âu cùng ban công view hoàng hôn Hồ Tây cực chill.",
+        "ideal_time": "afternoon",
+        "closed_days": [],
+        "closed_time": "22:00"
+    },
+    {
+        "id": 17,
+        "name": "Tràng Tiền Plaza & Phố Đi Bộ Hồ Gươm",
+        "category": "shopping",
+        "description": "Biểu tượng trung tâm thương mại xa xỉ và cổ kính bậc nhất Thủ đô từ năm 1901 thời Pháp thuộc, quy tụ các thương hiệu thời trang haute couture quốc tế (Dior, Louis Vuitton, Rolex) ngay sát Hồ Gươm.",
+        "lat": 21.0258,
+        "lon": 105.8546,
+        "estimated_duration_min": 60,
+        "opening_hours": "09:30 - 21:30",
+        "ticket_price": 0,
+        "image_url": "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=800&q=80",
+        "tips": "Vị trí đắc địa ngay góc Tràng Tiền - Đinh Tiên Hoàng, cực kỳ thuận tiện kết hợp đi dạo phố đi bộ, chụp ảnh kiến trúc Pháp cổ và thưởng thức kem Tràng Tiền.",
+        "ideal_time": "evening",
+        "closed_days": [],
+        "closed_time": "21:30"
+    },
+    {
+        "id": 18,
+        "name": "Vincom Mega Mall Times City & Thủy Cung",
+        "category": "shopping",
+        "description": "Đại trung tâm thương mại ngầm khổng lồ quy mô hàng chục nghìn mét vuông với thủy cung Vinpearl Aquarium đường hầm vòm kính sinh động, khu vui chơi VinKE và quảng trường nhạc nước.",
+        "lat": 20.9950,
+        "lon": 105.8677,
+        "estimated_duration_min": 120,
+        "opening_hours": "10:00 - 22:00",
+        "ticket_price": 0,
+        "image_url": "https://images.unsplash.com/photo-1567449303078-57ad995bd301?auto=format&fit=crop&w=800&q=80",
+        "tips": "Show nhạc nước miễn phí diễn ra lúc 19:00 hàng ngày tại hồ trung tâm. Thủy cung Vinpearl có hàng chục ngàn cá thể sinh vật biển quý hiếm.",
+        "ideal_time": "evening",
+        "closed_days": [],
+        "closed_time": "22:00"
+    },
+    {
+        "id": 19,
+        "name": "Aeon Mall Long Biên",
+        "category": "shopping",
+        "description": "Đại siêu thị mua sắm và giải trí chuẩn phong cách Nhật Bản Omotenashi, khu ẩm thực đa dạng món ngon xứ sở hoa anh đào, rạp CGV lớn và bãi đỗ xe thênh thang miễn phí.",
+        "lat": 21.0264,
+        "lon": 105.9015,
+        "estimated_duration_min": 120,
+        "opening_hours": "10:00 - 22:00 (Cuối tuần từ 09:00)",
+        "ticket_price": 0,
+        "image_url": "https://images.unsplash.com/photo-1581539250439-c96689b516dd?auto=format&fit=crop&w=800&q=80",
+        "tips": "Khu Food Court tại tầng 1 và tầng 3 có bạt ngàn món sushi, sashimi, bánh bạch tuộc takoyaki ngon - bổ - rẻ.",
+        "ideal_time": "afternoon",
+        "closed_days": [],
+        "closed_time": "22:00"
+    },
+    {
+        "id": 20,
+        "name": "Lotte Center Hà Nội (Liễu Giai) & Đài Quan Sát Sky Walk",
+        "category": "shopping",
+        "description": "Tòa tháp 65 tầng biểu tượng hiện đại với TTTM Lotte Department Store cao cấp, siêu thị Lotte Mart ngầm và đài quan sát sàn kính trong suốt Sky Walk ngắm trọn vẹn toàn cảnh Hà Nội từ độ cao 272m.",
+        "lat": 21.0333,
+        "lon": 105.8130,
+        "estimated_duration_min": 90,
+        "opening_hours": "09:30 - 22:00",
+        "ticket_price": 0,
+        "image_url": "https://images.unsplash.com/photo-1561069489-c5c56c21e3f8?auto=format&fit=crop&w=800&q=80",
+        "tips": "Thời điểm lên đài quan sát Sky Walk tầng 65 đẹp nhất là lúc 17:30 ngắm hoàng hôn buông xuống thủ đô và thành phố lên đèn lung linh.",
+        "ideal_time": "evening",
+        "closed_days": [],
+        "closed_time": "22:00"
     }
 ]

@@ -242,6 +242,7 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
     total_trip_dur_min = 0.0
 
     hotel_coord = (selected_hotel.lat, selected_hotel.lon)
+    transport_mode = request.transport_mode or "driving"
 
     for day_idx, cluster_pois in enumerate(daily_clusters, start=1):
         if not cluster_pois:
@@ -250,12 +251,13 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
         # Nút 0 = Khách sạn, Nút 1..M = POIs trong ngày
         nodes_coords = [hotel_coord] + [(p["lat"], p["lon"]) for p in cluster_pois]
         nodes_info = [{"name": selected_hotel.name, "type": "hotel"}] + cluster_pois
+        ideal_times = ["any"] + [p.get("ideal_time", "any") for p in cluster_pois]
 
-        # 4.1 Lấy Ma trận Thời gian / Khoảng cách từ OSRM (kèm fallback Haversine)
-        dist_matrix, duration_matrix = await get_osrm_table_matrix(nodes_coords)
+        # 4.1 Lấy Ma trận Thời gian / Khoảng cách từ OSRM theo phương tiện (kèm fallback Haversine)
+        dist_matrix, duration_matrix = await get_osrm_table_matrix(nodes_coords, mode=transport_mode)
 
-        # 4.2 Giải bài toán TSP bằng Google OR-Tools (Depot = 0)
-        optimal_indices = solve_tsp_ortools(duration_matrix, depot_index=0)
+        # 4.2 Giải bài toán TSP bằng Google OR-Tools (Depot = 0) kết hợp định hướng khung giờ vàng
+        optimal_indices = solve_tsp_ortools(duration_matrix, depot_index=0, ideal_times=ideal_times)
 
         # 4.3 Tái tạo chuỗi hành trình tối ưu và tính các chặng (legs)
         visit_sequence_pois: List[POIRead] = []
@@ -291,15 +293,15 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
         for idx in optimal_indices:
             ordered_route_coords.append(nodes_coords[idx])
 
-        # 4.4 Lấy GeoJSON chi tiết cung đường từ OSRM Route API
-        route_geojson = await get_route_geometry_geojson(ordered_route_coords)
+        # 4.4 Lấy GeoJSON chi tiết cung đường từ OSRM Route API theo phương tiện
+        route_geojson = await get_route_geometry_geojson(ordered_route_coords, mode=transport_mode)
         route_geojson["properties"]["day"] = day_idx
         route_geojson["properties"]["color"] = (
-            "#10b981" if day_idx == 1 else
-            "#6366f1" if day_idx == 2 else
-            "#f59e0b" if day_idx == 3 else
-            "#ec4899" if day_idx == 4 else
-            "#06b6d4"
+            "#B85D3B" if day_idx == 1 else
+            "#0F766E" if day_idx == 2 else
+            "#2563EB" if day_idx == 3 else
+            "#D97706" if day_idx == 4 else
+            "#7C3AED"
         )
 
         day_dist_km = round(day_dist_m / 1000.0, 2)
@@ -327,5 +329,6 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
         selected_hotel=selected_hotel,
         daily_itineraries=daily_itineraries,
         total_trip_distance_km=round(total_trip_dist_km, 2),
-        total_trip_duration_min=round(total_trip_dur_min, 1)
+        total_trip_duration_min=round(total_trip_dur_min, 1),
+        transport_mode=transport_mode
     )

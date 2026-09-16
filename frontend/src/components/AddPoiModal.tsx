@@ -21,7 +21,8 @@ const CATEGORIES = [
   { id: 'bridge', label: 'Cầu & Biểu tượng', icon: '🌉' },
   { id: 'museum', label: 'Bảo tàng & Văn hóa', icon: '🎨' },
   { id: 'entertainment', label: 'Khu vui chơi / Giải trí', icon: '🎡' },
-  { id: 'culinary', label: 'Ẩm thực & Chợ đêm', icon: '🍜' }
+  { id: 'culinary', label: 'Ẩm thực & Chợ đêm', icon: '🍜' },
+  { id: 'shopping', label: 'Mua sắm & TTTM', icon: '🛍️' }
 ];
 
 export const AddPoiModal: React.FC<AddPoiModalProps> = ({
@@ -92,7 +93,8 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
     };
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/pois', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+      const res = await fetch(`${apiBaseUrl}/pois`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
