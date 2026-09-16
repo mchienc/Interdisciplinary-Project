@@ -14,7 +14,7 @@ export const CuratedItinerariesSection: React.FC<CuratedItinerariesSectionProps>
       title: 'Phố Cổ Hoài Niệm & Ẩm Thực',
       vibe: 'Ẩm thực & Di sản rêu phong',
       duration: 'Buổi sáng hoặc Chiều',
-      image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
+      image: '/36-pho_phuong.jpg',
       stops: ['Hồ Hoàn Kiếm', 'Cà phê Trứng Giảng', 'Ô Quan Chưởng', 'Chợ Đồng Xuân'],
       desc: 'Lang thang ngắm nhìn những mái ngói rêu phong, thưởng thức ly cà phê trứng trứ danh và đắm mình trong nhịp sống 36 phố phường.',
       poiIds: [1, 4, 3]
@@ -24,7 +24,7 @@ export const CuratedItinerariesSection: React.FC<CuratedItinerariesSectionProps>
       title: 'Chiều Hoàng Hôn Hồ Tây Thư Thái',
       vibe: 'Lãng mạn & Yên bình',
       duration: 'Nửa ngày thư thái',
-      image: 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&w=800&q=80',
+      image: '/chua-tran-quoc.jpg',
       stops: ['Chùa Trấn Quốc', 'Phủ Tây Hồ', 'Đường Thanh Niên', 'Bánh tôm Hồ Tây'],
       desc: 'Hít hà làn gió mát lành ven hồ, ngắm ngôi chùa cổ kính nghìn năm tuổi khi mặt trời dần lặn và thưởng thức đặc sản bên hồ lộng gió.',
       poiIds: [5, 6, 4]
@@ -34,7 +34,7 @@ export const CuratedItinerariesSection: React.FC<CuratedItinerariesSectionProps>
       title: 'Dấu Ấn Di Sản Ba Đình Nghìn Năm',
       vibe: 'Lịch sử & Chiều sâu văn hóa',
       duration: 'Trọn vẹn 1 ngày',
-      image: '/landing-bg.webp',
+      image: '/hoang-thanh.jpg',
       stops: ['Lăng Bác', 'Chùa Một Cột', 'Hoàng Thành Thăng Long', 'Văn Miếu'],
       desc: 'Hành trình ngược dòng lịch sử hào hùng, dạo bước qua quảng trường Ba Đình rợp bóng cây và quần thể Hoàng Thành ngàn năm văn hiến.',
       poiIds: [2, 6, 7, 3]

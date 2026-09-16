@@ -28,16 +28,16 @@ const ITINERARIES: ItineraryCardData[] = [
     category: 'ẨM THỰC & PHỐ CỔ HOÀI NIỆM',
     title: 'Phố Cổ Thảnh Thơi & Cà Phê Ban Mai',
     duration: 'Nửa ngày • Thong dong ngắm phố',
-    desc: 'Lang thang qua những con ngõ nhỏ ngập tràn hương cà phê rang xay và hoa tươi ban sớm. Tận hưởng nhịp sống chậm rãi giữa lòng 36 phố phường rêu phong nghìn năm văn hiến.',
+    desc: 'Lang thang qua những con ngõ nhỏ ngập tràn hoa tươi, đèn lồng rực rỡ và hương cà phê ban sớm. Tận hưởng nhịp sống chậm rãi giữa lòng 36 phố phường rêu phong nghìn năm văn hiến.',
     benefits: [
       'Gợi ý khách sạn ngay cửa ngõ Hoàn Kiếm',
       'Tiết kiệm 40 phút đi lại giữa các điểm',
       '4 chặng dừng chân liền mạch không quay đầu'
     ],
     stops: ['Hồ Hoàn Kiếm', 'Cà phê Trứng Giảng', 'Ô Quan Chưởng', 'Chợ Đồng Xuân'],
-    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=85',
-    badge: '☕ Cà phê Trứng & Góc phố ngàn năm',
-    badgeSub: 'Trải nghiệm ẩm thực biểu tượng',
+    image: '/36-pho_phuong.jpg',
+    badge: '🏮 Sắc màu Phố Cổ & Phố Hàng Mã',
+    badgeSub: '36 Phố Phường & Ẩm thực nức tiếng',
     poiIds: [1, 4, 3]
   },
   {
@@ -55,7 +55,7 @@ const ITINERARIES: ItineraryCardData[] = [
     stops: ['Chùa Trấn Quốc', 'Phủ Tây Hồ', 'Đường Thanh Niên', 'Bánh tôm Hồ Tây'],
     image: '/chua-tran-quoc.jpg',
     badge: '⛵ Hoàng hôn bên Chùa Trấn Quốc',
-    badgeSub: 'Cổ tự nghìn năm trên đảo cá',
+    badgeSub: 'Cổ tự nghìn năm trên đảo cá Hồ Tây',
     poiIds: [5, 6, 4]
   },
   {
@@ -71,9 +71,9 @@ const ITINERARIES: ItineraryCardData[] = [
       'Khám phá trọn vẹn văn hiến Thăng Long'
     ],
     stops: ['Lăng Bác', 'Chùa Một Cột', 'Hoàng Thành Thăng Long', 'Văn Miếu'],
-    image: '/landing-bg.webp',
-    badge: '🏛️ Quần thể di sản ngàn năm văn hiến',
-    badgeSub: 'Không gian linh thiêng & tôn kính',
+    image: '/hoang-thanh.jpg',
+    badge: '🏛️ Di sản Hoàng Thành Thăng Long',
+    badgeSub: 'Quần thể di sản ngàn năm văn hiến',
     poiIds: [2, 6, 7, 3]
   }
 ];
@@ -125,7 +125,7 @@ export const StackingCardsSection: React.FC<StackingCardsSectionProps> = ({
       card1Ref.current.style.filter = `brightness(${brightness1})`;
 
       if (card1ImgRef.current) {
-        card1ImgRef.current.style.transform = `translateY(${-overlap1 * 12}%)`;
+        card1ImgRef.current.style.transform = `scale(${1 + overlap1 * 0.04})`;
       }
 
       // Thẻ 2: Thu nhỏ nhẹ và hơi tối khi Thẻ 3 trượt lên đè lên nó
@@ -136,7 +136,7 @@ export const StackingCardsSection: React.FC<StackingCardsSectionProps> = ({
       card2Ref.current.style.filter = `brightness(${brightness2})`;
 
       if (card2ImgRef.current) {
-        card2ImgRef.current.style.transform = `translateY(${-overlap2 * 12}%)`;
+        card2ImgRef.current.style.transform = `scale(${1 + overlap2 * 0.04})`;
       }
     };
 
@@ -421,7 +421,7 @@ const EditorialCardInner: React.FC<EditorialCardInnerProps> = ({
           ref={imgRef}
           src={item.image}
           alt={item.title}
-          className="w-full h-[125%] object-cover object-center filter brightness-[0.92] will-change-transform transform -translate-y-[8%]"
+          className="w-full h-full object-cover object-center filter brightness-[0.95] will-change-transform transition-transform duration-700 ease-out"
         />
         
         {/* Soft Vignette / Gradient Overlay */}
