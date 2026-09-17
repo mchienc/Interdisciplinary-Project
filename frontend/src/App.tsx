@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { Sidebar } from './components/Sidebar';
-import { MapView, MapViewHandle } from './components/MapView';
-import { AddPoiModal } from './components/AddPoiModal';
-import { PoiDetailModal } from './components/PoiDetailModal';
-import { LandingHero } from './components/LandingHero';
-import { GoogleMapsQrModal } from './components/editorial/GoogleMapsQrModal';
-import { StoryCardModal } from './components/editorial/StoryCardModal';
+import { Sidebar } from './components/workspace/Sidebar';
+import { MapView, MapViewHandle } from './components/map/MapView';
+import { AddPoiModal } from './components/common/AddPoiModal';
+import { PoiDetailModal } from './components/common/PoiDetailModal';
+import { LandingHero } from './components/landing/LandingHero';
+import { GoogleMapsQrModal } from './components/common/GoogleMapsQrModal';
+import { StoryCardModal } from './components/common/StoryCardModal';
 import { POI, PlanResponse, PlanRequest, WeightsConfig } from './types';
 import { exportItineraryToExcel } from './utils/excelExport';
+import { FALLBACK_POIS } from './constants/mockData';
+import { fetchPoisApi, optimizeItineraryApi } from './services/api';
 import { 
   Compass, 
   Sparkles, 
@@ -19,8 +21,6 @@ import {
   Edit3, 
   ArrowLeft 
 } from 'lucide-react';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
 export const App: React.FC = () => {
   const [pois, setPois] = useState<POI[]>([]);
@@ -74,155 +74,18 @@ export const App: React.FC = () => {
   useEffect(() => {
     const fetchPois = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/pois`);
-        if (res.ok) {
-          const data = await res.json();
-          setPois(data);
-          setSelectedPoiIds(data.slice(0, 6).map((p: POI) => p.id));
-          setApiStatus('online');
-          return;
-        }
-      } catch (err) {
+        const data = await fetchPoisApi();
+        setPois(data);
+        setSelectedPoiIds(data.slice(0, 6).map((p: POI) => p.id));
+        setApiStatus('online');
+        return;
+      } catch {
         setApiStatus('offline');
       }
 
-      // Fallback cục bộ nếu backend chưa kết nối (kèm ảnh chất lượng cao)
-      const fallbackPois: POI[] = [
-        { 
-          id: 1, 
-          name: 'Hồ Hoàn Kiếm & Đền Ngọc Sơn', 
-          category: 'heritage', 
-          lat: 21.0287, 
-          lon: 105.8523, 
-          estimated_duration_min: 60, 
-          ticket_price: 30000, 
-          description: 'Trái tim của Thủ đô ngàn năm văn hiến, cầu Thê Húc đỏ son và Tháp Rùa cổ kính.',
-          image_url: '/ho-hoan-kiem.jpg'
-        },
-        { 
-          id: 2, 
-          name: 'Lăng Chủ tịch Hồ Chí Minh & Ba Đình', 
-          category: 'heritage', 
-          lat: 21.0368, 
-          lon: 105.8346, 
-          estimated_duration_min: 120, 
-          ticket_price: 0, 
-          description: 'Quảng trường Ba Đình lịch sử, Lăng Bác và chùa Một Cột ngàn năm tuổi.',
-          image_url: '/lang-bac.jpg'
-        },
-        { 
-          id: 3, 
-          name: 'Văn Miếu - Quốc Tử Giám', 
-          category: 'heritage', 
-          lat: 21.0293, 
-          lon: 105.8359, 
-          estimated_duration_min: 90, 
-          ticket_price: 30000, 
-          description: 'Trường đại học đầu tiên của Việt Nam với Khuê Văn Các biểu tượng hiếu học.',
-          image_url: '/landing-bg.webp'
-        },
-        { 
-          id: 4, 
-          name: 'Khu Phố Cổ Hà Nội (36 Phố Phường)', 
-          category: 'culinary', 
-          lat: 21.0366, 
-          lon: 105.8500, 
-          estimated_duration_min: 90, 
-          ticket_price: 0, 
-          description: 'Mái ngói rêu phong và thiên đường ẩm thực phở, bún chả, cà phê trứng trứ danh.',
-          image_url: '/36-pho_phuong.jpg'
-        },
-        { 
-          id: 5, 
-          name: 'Hồ Tây & Chùa Trấn Quốc', 
-          category: 'nature', 
-          lat: 21.0545, 
-          lon: 105.8285, 
-          estimated_duration_min: 90, 
-          ticket_price: 0, 
-          description: 'Hồ nước tự nhiên lộng gió và ngôi cổ tự nghìn năm trên đảo cá.',
-          image_url: '/chua-tran-quoc.jpg'
-        },
-        { 
-          id: 6, 
-          name: 'Hoàng thành Thăng Long', 
-          category: 'heritage', 
-          lat: 21.0353, 
-          lon: 105.8402, 
-          estimated_duration_min: 120, 
-          ticket_price: 30000, 
-          description: 'Quần thể di sản văn hóa thế giới nghìn năm lịch sử Thăng Long.',
-          image_url: '/hoang-thanh.jpg'
-        },
-        { 
-          id: 7, 
-          name: 'Bảo tàng Dân tộc học Việt Nam', 
-          category: 'museum', 
-          lat: 21.0406, 
-          lon: 105.7984, 
-          estimated_duration_min: 120, 
-          ticket_price: 40000, 
-          description: 'Không gian văn hóa đặc sắc của 54 dân tộc anh em Việt Nam.',
-          image_url: '/bao_tang_dan_toc.webp'
-        },
-        {
-          id: 16,
-          name: 'Lotte Mall West Lake Hanoi (Lotte Tây Hồ)',
-          category: 'shopping',
-          lat: 21.0754,
-          lon: 105.8122,
-          estimated_duration_min: 120,
-          ticket_price: 0,
-          description: 'Đại siêu thị và tổ hợp mua sắm, thủy cung và đại lộ thời trang view Hồ Tây tuyệt đẹp.',
-          image_url: 'https://images.unsplash.com/photo-1519642918688-7e43b19245d8?auto=format&fit=crop&w=800&q=80'
-        },
-        {
-          id: 17,
-          name: 'Tràng Tiền Plaza & Phố Đi Bộ Hồ Gươm',
-          category: 'shopping',
-          lat: 21.0258,
-          lon: 105.8546,
-          estimated_duration_min: 60,
-          ticket_price: 0,
-          description: 'Biểu tượng mua sắm xa xỉ và cổ kính nhất Thủ đô từ năm 1901 ngay sát bờ Hồ Gươm.',
-          image_url: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=800&q=80'
-        },
-        {
-          id: 18,
-          name: 'Vincom Mega Mall Times City & Thủy Cung',
-          category: 'shopping',
-          lat: 20.9950,
-          lon: 105.8677,
-          estimated_duration_min: 120,
-          ticket_price: 0,
-          description: 'Đại TTTM ngầm khổng lồ với thủy cung Vinpearl Aquarium và quảng trường nhạc nước.',
-          image_url: 'https://images.unsplash.com/photo-1567449303078-57ad995bd301?auto=format&fit=crop&w=800&q=80'
-        },
-        {
-          id: 19,
-          name: 'Aeon Mall Long Biên',
-          category: 'shopping',
-          lat: 21.0264,
-          lon: 105.9015,
-          estimated_duration_min: 120,
-          ticket_price: 0,
-          description: 'Đại siêu thị mua sắm và ẩm thực chuẩn phong cách Nhật Bản Omotenashi rộng rãi.',
-          image_url: 'https://images.unsplash.com/photo-1581539250439-c96689b516dd?auto=format&fit=crop&w=800&q=80'
-        },
-        {
-          id: 20,
-          name: 'Lotte Center Hà Nội (Liễu Giai) & Sky Walk',
-          category: 'shopping',
-          lat: 21.0333,
-          lon: 105.8130,
-          estimated_duration_min: 90,
-          ticket_price: 0,
-          description: 'Tòa tháp 65 tầng biểu tượng với TTTM cao cấp và đài quan sát sàn kính Sky Walk tầng 65.',
-          image_url: 'https://images.unsplash.com/photo-1561069489-c5c56c21e3f8?auto=format&fit=crop&w=800&q=80'
-        }
-      ];
-      setPois(fallbackPois);
-      setSelectedPoiIds(fallbackPois.slice(0, 6).map(p => p.id));
+      // Fallback cục bộ nếu backend chưa kết nối
+      setPois(FALLBACK_POIS);
+      setSelectedPoiIds(FALLBACK_POIS.slice(0, 6).map(p => p.id));
     };
 
     fetchPois();
@@ -254,17 +117,16 @@ export const App: React.FC = () => {
         onComplete: () => {
           setIsWorkspaceActive(true);
           setIsTransitioning(false);
-          // Bước 5: Kích hoạt render tuyến đường và tối ưu hóa
-          const targetIds = (presetPoiIds && presetPoiIds.length >= 2) ? presetPoiIds : selectedPoiIds;
-          if (targetIds.length >= 2) {
-            handleRunOptimization(undefined, targetIds);
+          // Tự động kích hoạt tính toán lộ trình ngay khi vừa chuyển màn hình nếu đã có presets
+          if (presetPoiIds && presetPoiIds.length > 0) {
+            handleRunOptimization(undefined, presetPoiIds);
           }
         }
       });
 
-      // Bước 1: Fade-out và trượt nhẹ tiêu đề Landing Page lên trên
+      // Bước 1: Trượt fade-up nhẹ toàn bộ nội dung Hero lên trên
       tl.to(landingHeroRef.current, {
-        y: -35,
+        y: -40,
         opacity: 0,
         duration: 0.45,
         ease: 'power2.in'
@@ -356,9 +218,8 @@ export const App: React.FC = () => {
     }, appContainerRef);
   };
 
-  // 5. Chức năng chạy Tối ưu hóa (Call FastAPI Endpoint)
+  // 5. Chức năng chạy Tối ưu hóa (Call FastAPI Endpoint qua Service)
   const handleRunOptimization = async (overrideHotelId?: number | unknown, overridePoiIds?: number[] | unknown) => {
-    // Chỉ nhận ID số hợp lệ, tuyệt đối không nhận React MouseEvent object
     const validHotelId = typeof overrideHotelId === 'number' ? overrideHotelId : undefined;
     const hotelIdToUse = validHotelId !== undefined ? validHotelId : selectedHotelId;
 
@@ -386,27 +247,13 @@ export const App: React.FC = () => {
     };
 
     try {
-      const res = await fetch(`${API_BASE_URL}/itinerary/plan`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        const data: PlanResponse = await res.json();
-        setPlan(data);
-        setSelectedHotelId(data.selected_hotel.id);
-        setApiStatus('online');
-      } else {
-        const errText = await res.text();
-        console.error('FastAPI error response:', res.status, errText);
-        setNotification('Không tìm thấy lộ trình phù hợp với bộ lọc hiện tại. Vui lòng mở rộng ngân sách hoặc bán kính!');
-        setTimeout(() => setNotification(null), 4000);
-      }
-    } catch (err) {
-      console.warn('Lỗi kết nối FastAPI backend:', err);
+      const data = await optimizeItineraryApi(payload);
+      setPlan(data);
+      setSelectedHotelId(data.selected_hotel.id);
+      setApiStatus('online');
+    } catch {
       setApiStatus('offline');
-      setNotification('Không thể kết nối đến máy chủ tính toán. Vui lòng kiểm tra lại dịch vụ backend!');
+      setNotification('Không tìm thấy lộ trình phù hợp với bộ lọc hoặc máy chủ đang ngoại tuyến. Vui lòng thử lại!');
       setTimeout(() => setNotification(null), 4000);
     } finally {
       setLoading(false);
@@ -431,48 +278,51 @@ export const App: React.FC = () => {
     setSelectedPoiIds(pois.map(p => p.id));
   };
 
-  // Xóa toàn bộ lựa chọn POI
+  // Bỏ chọn tất cả
   const handleClearPois = () => {
     setSelectedPoiIds([]);
   };
 
-  // Chọn 6 địa điểm tiêu biểu
+  // Chọn 6 điểm nổi tiếng
   const handleSelectPopularPois = () => {
     setSelectedPoiIds(pois.slice(0, 6).map(p => p.id));
   };
 
-  // Nhận tọa độ chọn trên bản đồ
+  // Bật chế độ Pick vị trí trên bản đồ
+  const handleStartPickLocation = () => {
+    setIsPickingLocation(true);
+    setNotification('Click vào bất kỳ điểm nào trên bản đồ để chọn tọa độ!');
+    setTimeout(() => setNotification(null), 4000);
+  };
+
+  // Nhận tọa độ đã pick từ MapView
   const handleLocationPicked = (lat: number, lon: number) => {
     setPickedCoords({ lat, lon });
     setIsPickingLocation(false);
-    setIsAddModalOpen(true);
+    setIsAddModalOpen(true); // Tự động mở lại modal với tọa độ vừa chọn
+    setNotification(`Đã chọn tọa độ: ${lat.toFixed(4)}, ${lon.toFixed(4)}`);
+    setTimeout(() => setNotification(null), 3000);
   };
 
-  // Xử lý khi thêm POI thành công
-  const handlePoiAdded = (newPoi: POI) => {
+  // Thêm POI mới vào state danh sách
+  const handlePoiCreated = (newPoi: POI) => {
     setPois(prev => [newPoi, ...prev]);
     setSelectedPoiIds(prev => [newPoi.id, ...prev]);
-    setNotification(`Đã thêm thành công địa điểm: ${newPoi.name}`);
+    setPickedCoords(null);
+    setNotification(`Đã thêm "${newPoi.name}" vào danh sách!`);
     setTimeout(() => setNotification(null), 3500);
   };
 
-  // Toggle Toàn màn hình
-  const handleToggleFullscreen = () => {
+  // Bật/tắt Fullscreen
+  const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
+      document.documentElement.requestFullscreen().catch(() => {});
       setIsFullscreen(true);
     } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
-
-  // Chia sẻ lộ trình
-  const handleShare = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-      setNotification('Đã sao chép liên kết chia sẻ lộ trình của bạn!');
-      setTimeout(() => setNotification(null), 3500);
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+        setIsFullscreen(false);
+      }
     }
   };
 
@@ -560,55 +410,84 @@ export const App: React.FC = () => {
               <Edit3 className="w-3.5 h-3.5 text-stone-400 group-hover:text-[#B85D3B] transition" />
             </div>
           )}
+
+          {/* Badge Trạng thái Máy chủ API */}
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100/90 border border-stone-200 text-[11px] font-medium text-stone-600">
+            <span className={`w-2 h-2 rounded-full ${apiStatus === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+            <span>{apiStatus === 'online' ? 'SDSS Engine Sẵn sàng' : 'Dữ liệu Nội bộ (Offline)'}</span>
+          </div>
         </div>
 
-        {/* PHẢI: Chia sẻ, Xuất Excel, Toàn màn hình & Avatar */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Nút Chia sẻ lộ trình */}
+        {/* PHẢI: Actions Bar & Công cụ Xuất dữ liệu */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Nút Thêm POI tùy chỉnh */}
           <button
-            onClick={handleShare}
-            className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-            title="Chia sẻ lộ trình"
+            onClick={() => setIsAddModalOpen(true)}
+            className="hidden sm:flex px-3.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-[#1C382B] text-xs font-semibold items-center gap-1.5 transition cursor-pointer shadow-2xs"
           >
-            <Share2 className="w-3.5 h-3.5 text-[#B85D3B]" />
-            <span className="hidden md:inline">Chia sẻ</span>
+            <span>✨</span>
+            <span>Thêm điểm đến</span>
           </button>
 
-          {/* Nút Xuất Excel */}
+          {/* Nút Xuất file Excel Kế hoạch chi tiết */}
           <button
             onClick={handleExportExcel}
-            className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-800 border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-            title="Xuất file Excel kế hoạch du lịch"
+            className="px-3.5 py-1.5 rounded-full bg-stone-100 hover:bg-emerald-50 hover:text-emerald-800 border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Xuất kế hoạch chi tiết ra file Excel (.xlsx)"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="hidden md:inline">Xuất Excel</span>
+            <span className="hidden sm:inline">Xuất Excel</span>
           </button>
 
-          <div className="h-4 w-px bg-stone-200 hidden sm:block" />
-
-          {/* Toàn màn hình */}
+          {/* Nút Quét QR Google Maps trên điện thoại */}
           <button
-            onClick={handleToggleFullscreen}
-            title={isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'}
-            className="p-2 rounded-full hover:bg-stone-100 text-stone-500 hover:text-stone-800 transition cursor-pointer"
+            onClick={() => {
+              if (plan) {
+                setIsQrModalOpen(true);
+              } else {
+                setNotification('Vui lòng tạo lộ trình trước khi mở bản đồ di động!');
+                setTimeout(() => setNotification(null), 3000);
+              }
+            }}
+            className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Quét mã QR mở lộ trình trực tiếp trên Google Maps điện thoại"
           >
-            {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            <Share2 className="w-3.5 h-3.5 text-[#B85D3B]" />
+            <span className="hidden md:inline">Google Maps</span>
           </button>
 
-          {/* User Avatar */}
-          <div 
-            title="Tài khoản du khách" 
-            className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#1C382B] to-[#B85D3B] text-white flex items-center justify-center font-bold text-xs shadow-xs ring-2 ring-white cursor-pointer select-none"
+          {/* Nút Xuất Ảnh Thẻ Hành Trình (Story Card) */}
+          <button
+            onClick={() => {
+              if (plan) {
+                setIsStoryModalOpen(true);
+              } else {
+                setNotification('Vui lòng tạo lộ trình trước khi lưu ảnh kỷ niệm!');
+                setTimeout(() => setNotification(null), 3000);
+              }
+            }}
+            className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Tạo ảnh kỷ niệm hành trình đẹp để chia sẻ mạng xã hội"
           >
-            HN
-          </div>
+            <span>📸</span>
+            <span className="hidden md:inline">Lưu ảnh</span>
+          </button>
+
+          {/* Nút Toàn màn hình */}
+          <button
+            onClick={toggleFullscreen}
+            className="p-2 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 transition cursor-pointer shadow-2xs"
+            title={isFullscreen ? 'Thu nhỏ cửa sổ' : 'Bật toàn màn hình'}
+          >
+            {isFullscreen ? <Minimize className="w-3.5 h-3.5" /> : <Maximize className="w-3.5 h-3.5" />}
+          </button>
         </div>
       </header>
 
-      {/* 4. WEBGIS WORKSPACE SIDEBAR (.webgis-sidebar, z-30) */}
+      {/* 4. WORKSPACE SIDEBAR WRAPPER (.webgis-sidebar, z-25) */}
       <div 
         ref={sidebarWrapperRef} 
-        className="webgis-sidebar absolute left-0 top-14 bottom-0 z-30 w-[420px] lg:w-[440px] shadow-2xl"
+        className="webgis-sidebar absolute top-14 left-0 bottom-0 w-full sm:w-[460px] lg:w-[480px] z-25 transition-transform"
       >
         <Sidebar
           pois={pois}
@@ -617,8 +496,6 @@ export const App: React.FC = () => {
           onSelectAllPois={handleSelectAllPois}
           onClearPois={handleClearPois}
           onSelectPopularPois={handleSelectPopularPois}
-          onOpenAddPoiModal={() => setIsAddModalOpen(true)}
-          onOpenPoiDetail={(poi: POI) => setSelectedPoiForDetail(poi)}
           days={days}
           onChangeDays={setDays}
           transportMode={transportMode}
@@ -629,66 +506,70 @@ export const App: React.FC = () => {
           onChangeMinStars={setMinStars}
           radiusMeters={radiusMeters}
           onChangeRadiusMeters={setRadiusMeters}
-          onRunOptimization={() => handleRunOptimization()}
-          loading={loading}
+          weights={weights}
+          onChangeWeights={setWeights}
+          onRunOptimization={handleRunOptimization}
           plan={plan}
+          loading={loading}
           selectedHotelId={selectedHotelId}
           onSelectHotel={handleSelectHotel}
           hoveredHotelId={hoveredHotelId}
           onHoverHotel={setHoveredHotelId}
           activeDayTab={activeDayTab}
           setActiveDayTab={setActiveDayTab}
-          weights={weights}
-          onChangeWeights={setWeights}
-          onOpenQrModal={() => setIsQrModalOpen(true)}
-          onOpenStoryModal={() => setIsStoryModalOpen(true)}
+          onOpenAddPoiModal={() => setIsAddModalOpen(true)}
+          onOpenPoiDetail={(poi: POI) => setSelectedPoiForDetail(poi)}
         />
       </div>
 
-      {/* TOAST THÔNG BÁO LIGHT TRAVEL */}
+      {/* 5. FLOATING NOTIFICATION TOAST (z-50) */}
       {notification && (
-        <div className="fixed top-16 right-5 z-50 bg-[#1C382B] text-[#F8F5EE] font-medium text-xs py-3 px-4 rounded-2xl shadow-xl flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-18 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-[#1C382B] text-white text-xs font-semibold rounded-2xl shadow-xl border border-[#B85D3B]/40 flex items-center gap-2.5 animate-in fade-in slide-in-from-top-4 duration-200">
           <Sparkles className="w-4 h-4 text-[#B85D3B]" />
           <span>{notification}</span>
         </div>
       )}
 
-      {/* MODAL THÊM ĐỊA ĐIỂM DU LỊCH MỚI */}
+      {/* 6. MODAL THÊM POI TÙY BIẾN (z-50) */}
       <AddPoiModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSuccess={handlePoiAdded}
-        pickedCoords={pickedCoords}
-        onStartPickOnMap={() => {
+        onClose={() => {
           setIsAddModalOpen(false);
-          setIsPickingLocation(true);
+          setIsPickingLocation(false);
         }}
+        onSuccess={handlePoiCreated}
+        onStartPickOnMap={handleStartPickLocation}
+        pickedCoords={pickedCoords}
       />
 
-      {/* MODAL CHI TIẾT ĐỊA ĐIỂM DU LỊCH & HÌNH ẢNH */}
+      {/* 7. MODAL CHI TIẾT ĐỊA ĐIỂM (z-50) */}
       <PoiDetailModal
         poi={selectedPoiForDetail}
-        isOpen={!!selectedPoiForDetail}
+        isOpen={selectedPoiForDetail !== null}
         onClose={() => setSelectedPoiForDetail(null)}
         onTogglePoi={handleTogglePoi}
         isSelected={selectedPoiForDetail ? selectedPoiIds.includes(selectedPoiForDetail.id) : false}
       />
 
-      {/* MODULE 1: MODAL DẪN ĐƯỜNG GOOGLE MAPS (QR CODE) */}
-      <GoogleMapsQrModal
-        isOpen={isQrModalOpen}
-        onClose={() => setIsQrModalOpen(false)}
-        plan={plan}
-        pois={pois}
-      />
+      {/* 8. MODAL DẪN ĐƯỜNG GOOGLE MAPS (QR Code, z-50) */}
+      {plan && (
+        <GoogleMapsQrModal
+          isOpen={isQrModalOpen}
+          onClose={() => setIsQrModalOpen(false)}
+          plan={plan}
+        />
+      )}
 
-      {/* MODULE 1: MODAL XUẤT STORY CARD 9:16 */}
-      <StoryCardModal
-        isOpen={isStoryModalOpen}
-        onClose={() => setIsStoryModalOpen(false)}
-        plan={plan}
-        tripTitle={itineraryTitle}
-      />
+      {/* 9. MODAL THẺ HÀNH TRÌNH ĐỂ LƯU ẢNH (Story Card Modal, z-50) */}
+      {plan && (
+        <StoryCardModal
+          isOpen={isStoryModalOpen}
+          onClose={() => setIsStoryModalOpen(false)}
+          plan={plan}
+          tripTitle={itineraryTitle}
+        />
+      )}
+
     </div>
   );
 };

@@ -216,40 +216,42 @@ VITE_API_BASE_URL=http://localhost:8000
 Interdisciplinary-Project/
 ├── backend/                        # Máy chủ tính toán không gian & tối ưu hóa
 │   ├── app/
-│   │   ├── main.py                 # Điểm khởi tạo ứng dụng FastAPI & cấu hình CORS
+│   │   ├── main.py                 # FastAPI Application Factory & CORS
 │   │   ├── db.py                   # Kết nối cơ sở dữ liệu SQLAlchemy & fallback
-│   │   ├── models/                 # ORM Models (POI, Accommodation, Category)
+│   │   ├── models/                 # ORM Models (POI, Accommodation)
 │   │   ├── schemas/                # Khung dữ liệu Pydantic Request/Response
 │   │   ├── services/
 │   │   │   ├── spatial_service.py  # Thuật toán Weiszfeld L1-Median & K-Means
 │   │   │   ├── routing_service.py  # Google OR-Tools TSP & kết nối OSRM
 │   │   │   └── recommendation_service.py # Xếp hạng MCDA & truy vấn PostGIS
-│   │   └── routers/                # API Endpoints (itinerary, poi, hotel)
+│   │   └── routers/
+│   │       ├── itinerary.py        # API Endpoints (Itinerary, POI, Hotel)
+│   │       └── urban_analysis.py   # API Endpoints phân tích không gian đô thị
 │   ├── Dockerfile
-│   └── requirements.txt            # Danh sách thư viện Python
+│   └── requirements.txt            # Danh sách thư viện Python tinh gọn
 │
-├── frontend/                       # Giao diện WebGIS người dùng
+├── frontend/                       # Giao diện WebGIS người dùng (Clean Architecture)
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── LandingHero.tsx     # Trang chào đón với hiệu ứng thị sai
-│   │   │   ├── MapView.tsx         # Bản đồ vector tương tác MapLibre GL
-│   │   │   ├── Sidebar.tsx         # Bảng điều khiển chọn POI & trọng số MCDA
-│   │   │   ├── AddPoiModal.tsx     # Hộp thoại thêm điểm đến tùy biến
-│   │   │   └── editorial/          # Các component trình bày phong cách tạp chí
-│   │   │       ├── StackingCardsSection.tsx # Khối thẻ xếp chồng mượt mà
-│   │   │       ├── ComparisonSection.tsx    # Minh họa trực quan nghịch lý du lịch
-│   │   │       └── HowItWorksSection.tsx    # Hướng dẫn 3 bước thao tác
-│   │   ├── types.ts                # Khai báo kiểu dữ liệu TypeScript
-│   │   ├── App.tsx                 # Điều phối trạng thái chính của ứng dụng
+│   │   │   ├── common/             # UI Modals dùng chung (AddPoi, PoiDetail, QR, Story)
+│   │   │   ├── landing/            # Toàn bộ Sections trang chủ (Hero, StackingCards, Nav...)
+│   │   │   ├── map/                # Quản lý Canvas bản đồ & Markers (MapView)
+│   │   │   └── workspace/          # Bảng điều khiển lập kế hoạch & bộ lọc (Sidebar)
+│   │   ├── constants/              # Hằng số bản đồ, danh mục, tọa độ, dữ liệu mẫu
+│   │   ├── services/               # Tầng giao tiếp API Backend & OSRM (api.ts)
+│   │   ├── utils/                  # Định dạng dữ liệu (formatters) & Xuất Excel
+│   │   ├── types/                  # TypeScript Data Interfaces
+│   │   ├── App.tsx                 # Master State Coordinator
+│   │   ├── main.tsx
 │   │   └── index.css               # Phong cách Tailwind CSS & Typography
-│   ├── vercel.json                 # Cấu hình sẵn sàng triển khai trên Vercel
+│   ├── vercel.json                 # Cấu hình triển khai Vercel
 │   └── package.json
 │
 ├── docker/                         # Cấu hình container hóa
 │   ├── docker-compose.yml          # Điều phối cụm container dịch vụ
 │   └── init.sql                    # Kịch bản khởi tạo CSDL & kích hoạt PostGIS
 │
-└── README.md                       # Tài liệu hướng dẫn dự án
+└── README.md                       # Tài liệu hướng dẫn dự án chuẩn hóa
 ```
 
 ---

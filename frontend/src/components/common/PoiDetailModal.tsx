@@ -14,7 +14,7 @@ import {
   Calendar,
   Share2
 } from 'lucide-react';
-import { POI } from '../types';
+import { POI } from '../../types';
 
 gsap.registerPlugin(useGSAP);
 

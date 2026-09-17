@@ -14,7 +14,9 @@ import {
   Clock,
   Ticket
 } from 'lucide-react';
-import { POI, Accommodation, PlanResponse } from '../types';
+import { POI, Accommodation, PlanResponse } from '../../types';
+import { DAY_COLORS, BASEMAP_STYLES, HANOI_LNG_LAT, MAP_DEFAULT_ZOOM } from '../../constants/map';
+import { CATEGORY_ICONS, CATEGORY_NAMES } from '../../constants/categories';
 
 export interface MapViewHandle {
   flyDownToWorkspace: (onArrival?: () => void) => void;
@@ -40,54 +42,13 @@ interface MapViewProps {
 }
 
 // Màu sắc tươi sáng, hài hòa theo phong cách du lịch thảnh thơi
-const DAY_COLORS = ['#B85D3B', '#0F766E', '#2563EB', '#D97706', '#7C3AED'];
+// DAY_COLORS imported from constants/map
 
-const CATEGORY_ICONS: Record<string, string> = {
-  heritage: '🏛️',
-  culinary: '🍜',
-  nature: '⛵',
-  museum: '🎨',
-  bridge: '🌉',
-  entertainment: '🎡',
-  shopping: '🛍️'
-};
+// CATEGORY_ICONS imported from constants/categories
 
-const CATEGORY_NAMES: Record<string, string> = {
-  heritage: 'Di tích',
-  culinary: 'Ẩm thực',
-  nature: 'Thiên nhiên',
-  museum: 'Bảo tàng',
-  bridge: 'Cầu di sản',
-  entertainment: 'Giải trí',
-  shopping: 'Mua sắm & TTTM'
-};
+// CATEGORY_NAMES imported from constants/categories
 
-const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileUrl: string; desc: string }> = {
-  voyager: {
-    label: 'Du Lịch Thảnh Thơi',
-    icon: '🗺️',
-    tileUrl: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    desc: 'Carto Voyager: Nước hồ ngọc lam, công viên xanh non'
-  },
-  light: {
-    label: 'Tối Giản Tinh Tế',
-    icon: '🏛️',
-    tileUrl: 'https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png',
-    desc: 'Carto Positron: Gam màu xám ấm thanh lịch'
-  },
-  osm: {
-    label: 'OpenStreetMap Chuẩn',
-    icon: '🧭',
-    tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    desc: 'Bản đồ mở quốc tế, chi tiết từng ngõ ngách'
-  },
-  satellite: {
-    label: 'Ảnh Vệ Tinh Trực Quan',
-    icon: '🛰️',
-    tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    desc: 'Esri World Imagery chân thực'
-  }
-};
+// BASEMAP_STYLES imported from constants/map
 
 // Helper tính toán vòng tròn địa lý 1km (~15 phút đi bộ) xung quanh khách sạn
 const createCircleGeoJSON = (lon: number, lat: number, radiusMeters: number = 1000, points: number = 64) => {
@@ -948,7 +909,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
 
           {isBasemapDropdownOpen && (
             <div className="absolute top-full left-0 mt-1.5 w-60 bg-white/95 backdrop-blur-md rounded-2xl p-1.5 shadow-xl border border-stone-200/90 space-y-1 z-40 animate-in fade-in zoom-in-95 duration-150">
-              {Object.entries(BASEMAP_STYLES).map(([key, style]) => (
+              {Object.entries(BASEMAP_STYLES).map(([key, style]: [string, any]) => (
                 <button
                   key={key}
                   onClick={() => switchBasemap(key)}

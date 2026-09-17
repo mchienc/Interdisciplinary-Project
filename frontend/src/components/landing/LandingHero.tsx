@@ -8,13 +8,13 @@ import {
   ChevronDown,
   Sparkles
 } from 'lucide-react';
-import { Navigation } from './editorial/Navigation';
-import { SpatialLandmarkCard } from './editorial/SpatialLandmarkCard';
-import { ComparisonSection } from './editorial/ComparisonSection';
-import { HowItWorksSection } from './editorial/HowItWorksSection';
-import { StackingCardsSection } from './editorial/StackingCardsSection';
-import { FooterBannerSection } from './editorial/FooterBannerSection';
-import { POI } from '../types';
+import { Navigation } from './Navigation';
+import { SpatialLandmarkCard } from './SpatialLandmarkCard';
+import { ComparisonSection } from './ComparisonSection';
+import { HowItWorksSection } from './HowItWorksSection';
+import { StackingCardsSection } from './StackingCardsSection';
+import { FooterBannerSection } from './FooterBannerSection';
+import { POI } from '../../types';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { X, MapPin, Sparkles, Clock, DollarSign, Tag, Info, Navigation, Check } from 'lucide-react';
-import { POI } from '../types';
+import { POI } from '../../types';
 
 gsap.registerPlugin(useGSAP);
 

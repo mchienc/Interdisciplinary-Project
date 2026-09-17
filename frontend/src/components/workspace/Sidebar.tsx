@@ -23,8 +23,10 @@ import {
   Building2,
   DollarSign
 } from 'lucide-react';
-import { POI, Accommodation, PlanResponse, WeightsConfig } from '../types';
-import { exportItineraryToExcel } from '../utils/excelExport';
+import { POI, Accommodation, PlanResponse, WeightsConfig } from '../../types';
+import { DAY_COLORS } from '../../constants/map';
+import { CATEGORY_META } from '../../constants/categories';
+import { exportItineraryToExcel } from '../../utils/excelExport';
 
 gsap.registerPlugin(useGSAP);
 
@@ -62,17 +64,9 @@ interface SidebarProps {
   onOpenStoryModal?: () => void;
 }
 
-const CATEGORY_META: Record<string, { label: string; icon: string; bg: string; text: string }> = {
-  heritage: { label: 'Di tích', icon: '🏛️', bg: 'bg-amber-50 border-amber-200/80', text: 'text-amber-800' },
-  culinary: { label: 'Ẩm thực', icon: '🍜', bg: 'bg-orange-50 border-orange-200/80', text: 'text-orange-800' },
-  nature: { label: 'Thiên nhiên', icon: '⛵', bg: 'bg-emerald-50 border-emerald-200/80', text: 'text-emerald-800' },
-  museum: { label: 'Bảo tàng', icon: '🎨', bg: 'bg-purple-50 border-purple-200/80', text: 'text-purple-800' },
-  bridge: { label: 'Cầu di sản', icon: '🌉', bg: 'bg-blue-50 border-blue-200/80', text: 'text-blue-800' },
-  entertainment: { label: 'Giải trí', icon: '🎡', bg: 'bg-pink-50 border-pink-200/80', text: 'text-pink-800' },
-  shopping: { label: 'Mua sắm', icon: '🛍️', bg: 'bg-rose-50 border-rose-200/80', text: 'text-rose-800' }
-};
+// CATEGORY_META imported from constants/categories
 
-const DAY_COLORS = ['#B85D3B', '#0F766E', '#2563EB', '#D97706', '#7C3AED'];
+// DAY_COLORS imported from constants/map
 
 export const Sidebar: React.FC<SidebarProps> = ({
   pois,
@@ -516,7 +510,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 >
                   Tất cả
                 </button>
-                {Object.entries(CATEGORY_META).map(([cat, meta]) => (
+                {Object.entries(CATEGORY_META).map(([cat, meta]: [string, any]) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
