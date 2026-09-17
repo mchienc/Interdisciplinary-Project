@@ -1,220 +1,164 @@
-# Hanoi SDSS — Spatial Decision Support System for Smart Urban Tourism
-`EPSG:4326` | `EPSG:32649` | `Google OR-Tools v9.7` | `OSRM Engine` | `PostGIS 3.4` | `FastAPI` | `React GSAP`
+# 🏛️ Hanoi Tourism SDSS — Spatial Decision Support System
+> **Hệ thống WebGIS Hỗ trợ Ra Quyết định Không gian Tối ưu Lịch trình & Vị trí Lưu trú Du lịch Hà Nội**
 
-Hệ thống Hỗ trợ Ra Quyết định Không gian (Spatial Decision Support System - SDSS) ứng dụng hình học tính toán (Computational Geometry), tối ưu hóa tổ hợp (Combinatorial Optimization) và phân tích GIS đa tiêu chí nhằm giải quyết bài toán định vị cơ sở lưu trú và quy hoạch hành trình du lịch thông minh tại Thủ đô Hà Nội.
+<div align="center">
 
----
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostGIS](https://img.shields.io/badge/PostGIS-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgis.net/)
+[![MapLibre GL](https://img.shields.io/badge/MapLibre_GL-3B82F6?style=for-the-badge&logo=maplibre&logoColor=white)](https://maplibre.org/)
+[![Google OR-Tools](https://img.shields.io/badge/Google_OR--Tools-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/optimization)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-## 1. Bản chất bài toán (Problem Formulation)
+**Một giải pháp WebGIS kết hợp Trí tuệ Không gian & Tối ưu hóa Tổ hợp để xóa bỏ nghịch lý di chuyển lòng vòng khi du lịch Thủ đô.**
 
-### 1.1. Nghịch lý quy hoạch du lịch tự phát trong đô thị lịch sử
-Trong hành vi du lịch đô thị truyền thống, du khách thường ra quyết định theo quy trình tuần tự rời rạc:
-1. Đặt khách sạn dựa trên cảm tính hoặc khuyến mãi ngẫu nhiên mà chưa xác định các điểm đến cụ thể.
-2. Lập danh sách các điểm tham quan rời rạc trong suốt kỳ nghỉ.
-3. Di chuyển tự phát giữa các điểm đến theo từng ngày.
+[🌟 Tính năng chính](#-tính-năng-nổi-bật) • [🎯 Bản chất bài toán](#-vấn-đề--giải-pháp-problem--solution) • [🧠 Mô hình thuật toán](#-mô-hình-thuật-toán-lõi-core-algorithms) • [🚀 Khởi chạy nhanh](#-hướng-dẫn-cài-đặt--khởi-chạy) • [🏗️ Kiến trúc hệ thống](#-kiến-trúc-hệ-thống)
 
-Quy trình này tạo ra **nghịch lý di chuyển zíc-zắc (The Zigzag Commuting Paradox)**:
-- Điểm lưu trú nằm lệch khỏi trọng tâm không gian của cụm điểm đến, biến khách sạn thành "nút thắt cổ chai" sinh ra các chuyến đi hồi quy vô ích (Backtracking Commutes).
-- Quãng đường di chuyển cộng dồn tăng từ 35% đến 65% so với ngưỡng tối ưu.
-- Gia tăng áp lực phương tiện cá nhân lên mạng lưới giao thông vốn đã quá tải tại khu vực trung tâm (quận Hoàn Kiếm, Ba Đình, Đống Đa).
-
-### 1.2. Chuyển dịch mô hình: Không gian dẫn dắt lịch trình (Spatial-First Paradigm)
-Hanoi SDSS tái cấu trúc hoàn toàn quy trình ra quyết định theo chuỗi thuật toán khép kín:
-```
-[Tập hợp n Điểm POI] 
-       │
-       ▼
-[K-Means Spatial Clustering] ──► Phân bổ cụm điểm tham quan theo ngày (K-Days)
-       │
-       ▼
-[Weiszfeld L1-Median Solver] ──► Định vị Tọa độ Trung vị Hình học Lý tưởng (H*)
-       │
-       ▼
-[PostGIS ST_DWithin + MCDA]  ──► Lọc & Xếp hạng Cơ sở Lưu trú Thực tế (Hotels/Homestays)
-       │
-       ▼
-[OSRM Network Cost Matrix]   ──► Trích xuất Ma trận Thời gian/Khoảng cách Đường bộ
-       │
-       ▼
-[Google OR-Tools TSP Engine] ──► Lập Lịch trình Vòng kín Tối ưu (Closed-Loop Tours)
-```
+</div>
 
 ---
 
-## 2. Mô hình toán học & Thuật toán lõi (Mathematical Foundations)
+## 📌 Vấn đề & Giải pháp (Problem & Solution)
 
-### 2.1. Định vị cơ sở lưu trú: Bài toán Fermat-Weber & Thuật toán Weiszfeld ($L_1$-Median)
+### Nghịch lý di chuyển zíc-zắc trong du lịch truyền thống
+Du khách khi đến Hà Nội thường gặp vấn đề:
+1. **Đặt phòng trước theo cảm tính**: Chọn khách sạn xa các điểm tham quan hoặc không cân đối không gian.
+2. **Chọn điểm đến ngẫu nhiên**: Lên danh sách điểm tham quan theo ngày mà không tính đến khoảng cách thực tế.
+3. **Di chuyển zíc-zắc**: Khách sạn trở thành "nút thắt cổ chai", phải quay lại khách sạn nhiều lần hoặc di chuyển ngược chiều xuyên qua các điểm ùn tắc của thành phố.
 
-Cho tập hợp $n$ điểm du lịch đã chọn:
-$$\mathcal{P} = \{P_1, P_2, \dots, P_n\}, \quad P_i \in \mathbb{R}^2$$
+```
+❌ TRUYỀN THỐNG: Đi lại lộn xộn, tốn 40-60% thời gian vô ích vì ngược đường
+[Khách sạn ngoại vi] ──► [Điểm phía Bắc] ──► [Điểm phía Nam] ──► [Khách sạn] ──► [Quay lại trung tâm]
 
-Vị trí lưu trú lý tưởng $H^*(x, y)$ là điểm tối thiểu hóa tổng khoảng cách Euclidean tới toàn bộ các điểm tham quan:
+✅ HANOI SDSS: Quy hoạch thông minh 1 chiều khép kín
+[Tập hợp POI] ──► [Tự động tính Vị trí Khách sạn tối ưu] ──► [Định tuyến vòng kín TSP mượt mà]
+```
+
+### Bảng so sánh thực nghiệm (8 điểm tham quan phổ biến tại Hà Nội)
+*(Hồ Hoàn Kiếm, Cà phê Giảng, Ô Quan Chưởng, Chợ Đồng Xuân, Chùa Trấn Quốc, Lăng Bác, Hoàng Thành, Văn Miếu)*
+
+| Chỉ số đánh giá | Du lịch tự phát | Sử dụng Hanoi SDSS | Mức độ tối ưu |
+| :--- | :---: | :---: | :---: |
+| 📍 **Vị trí khách sạn** | Đặt ngẫu nhiên (Cầu Giấy / Mỹ Đình) | Trung tâm tối ưu $H^*$ (Quận Hoàn Kiếm) | **Giảm 68%** cự ly tiếp cận lõi |
+| 🚗 **Tổng quãng đường** | 38.4 km | **21.2 km** | **Tiết kiệm 44.8%** quãng đường |
+| ⏱️ **Thời gian ngồi xe** | 118 phút | **64 phút** | **Tiết kiệm 45.8%** thời gian (54 phút) |
+| 🔄 **Lượt quay đầu / ngược chiều** | 5 lần | **0 lần** (Vòng kín khép kín) | **Triệt tiêu 100%** xung đột lộ trình |
+
+---
+
+## 🔄 Luồng hoạt động hệ thống (System Workflow)
+
+```mermaid
+flowchart TD
+    A[🎯 1. Du khách chọn các điểm đến yêu thích POI] --> B[📅 2. K-Means gom cụm điểm theo số ngày du lịch]
+    B --> C[📍 3. Thuật toán Weiszfeld L1-Median tính vị trí khách sạn lý tưởng H*]
+    C --> D[🏨 4. PostGIS ST_DWithin & MCDA xếp hạng khách sạn phù hợp nhất]
+    D --> E[🛣️ 5. Google OR-Tools TSP & OSRM Engine tối ưu hóa thứ tự tham quan]
+    E --> F[🗺️ 6. Hiển thị trực quan trên bản đồ WebGIS & Xuất file Excel / QR Code]
+```
+
+---
+
+## ✨ Tính năng nổi bật
+
+| Biểu tượng | Tính năng | Chi tiết kỹ thuật |
+| :---: | :--- | :--- |
+| 🎯 | **Tìm khách sạn tối ưu không gian** | Giải bài toán Fermat-Weber bằng thuật toán **Weiszfeld ($L_1$-Median)**. Khắc phục hoàn toàn hiện tượng lệch trọng tâm của trung bình cộng ($L_2^2$-Centroid) khi có điểm tham quan ở ngoại thành. |
+| ⚖️ | **Lọc khách sạn đa tiêu chí (MCDA)** | Kết hợp 3 yếu tố: **Khoảng cách tới tâm lý tưởng ($w_1$)**, **Đánh giá sao/review ($w_2$)**, và **Giá phòng/đêm ($w_3$)** theo ngân sách tùy biến của người dùng. |
+| 📅 | **Phân cụm hành trình đa ngày** | Tự động phân nhóm điểm đến theo từng ngày bằng **K-Means Clustering** trên hệ tọa độ phẳng mét (`EPSG:32649`), đảm bảo mỗi ngày chỉ tham quan một khu vực tập trung. |
+| 🏎️ | **Tối ưu thứ tự ghé thăm (TSP)** | Ứng dụng **Google OR-Tools** và ma trận giao thông thực tế **OSRM Engine** để tìm thứ tự đi vòng kín xuất phát từ khách sạn và quay về khách sạn với thời gian di chuyển ngắn nhất. |
+| 🛍️ | **Danh mục POI đa dạng** | Tích hợp sẵn hàng chục điểm đến đặc trưng: Di tích lịch sử, Văn hóa nghệ thuật, Ẩm thực phố cổ, Cà phê truyền thống và các **Đại siêu thị / TTTM sầm uất** (Lotte Mall West Lake, Tràng Tiền Plaza, Times City, Aeon Mall Long Biên...). |
+| 🎨 | **Giao diện WebGIS cao cấp** | Thiết kế phong cách **Warm Editorial** đậm chất Hà Nội, hỗ trợ cuộn mượt mà **Lenis**, hiệu ứng thẻ xếp tầng **GSAP**, và bản đồ vector **MapLibre GL**. |
+| 📱 | **Xuất kế hoạch đa nền tảng** | Xuất lịch trình chi tiết ra file **Excel (.xlsx)**, tạo **Mã QR** để quét mở nhanh trên Google Maps điện thoại, hoặc chụp ảnh lưu giữ lịch trình. |
+
+---
+
+## 🧠 Mô hình thuật toán lõi (Core Algorithms)
+
+### 1. Thuật toán Weiszfeld ($L_1$-Median) tìm khách sạn lý tưởng
+Cho tập hợp $n$ điểm du lịch: $\mathcal{P} = \{P_1, P_2, \dots, P_n\}$. Vị trí lưu trú tối ưu $H^*$ là nghiệm của bài toán cực tiểu hóa tổng khoảng cách:
 $$H^* = \arg\min_{H \in \mathbb{R}^2} \sum_{i=1}^{n} \| H - P_i \|_2$$
 
-#### Tại sao sử dụng Geometric Median ($L_1$-Norm) thay vì Centroid ($L_2^2$-Norm)?
-- **Trọng tâm số học (Arithmetic Mean / Centroid):** Tối thiểu hóa tổng bình phương khoảng cách $\sum \|H - P_i\|_2^2$. Khi du khách chọn một điểm tham quan nằm xa vùng trung tâm (ví dụ: Bảo tàng Dân tộc học ở Cầu Giấy, Làng gốm Bát Tràng, hoặc Thiên Đường Bảo Sơn), bình phương khoảng cách sẽ khuếch đại sai số, kéo vị trí khách sạn lệch hẳn khỏi khu vực tập trung dày đặc của phố cổ và di tích Ba Đình.
-- **Trung vị hình học ($L_1$-Median):** Có điểm phá vỡ (Breakdown Point) đạt 50%, miễn nhiễm với các điểm dị biệt không gian (Spatial Outliers), đảm bảo tổng năng lượng di chuyển thực tế của du khách luôn đạt cực tiểu toàn cục.
-
-#### Công thức lặp Weiszfeld (Iteratively Reweighted Least Squares — IRLS)
-Tọa độ được chiếu từ hệ quy chiếu trắc địa WGS84 (`EPSG:4326`) sang hệ tọa độ phẳng mét UTM Zone 49N (`EPSG:32649`):
+Công thức lặp cải biên Weiszfeld (Iteratively Reweighted Least Squares):
 $$H^{(k+1)} = \frac{\displaystyle\sum_{i=1}^{n} \frac{P_i}{\|H^{(k)} - P_i\|_2 + \epsilon}}{\displaystyle\sum_{i=1}^{n} \frac{1}{\|H^{(k)} - P_i\|_2 + \epsilon}}$$
 
-Trong đó:
-- $\epsilon = 10^{-6}$ là hệ số ổn định số học chống chia cho 0 khi $H^{(k)}$ trùng với một điểm $P_i$.
-- Điểm khởi tạo: $H^{(0)} = \frac{1}{n} \sum_{i=1}^{n} P_i$ (Trọng tâm số học).
-- Điều kiện hội tụ dừng: $\| H^{(k+1)} - H^{(k)} \|_2 < 10^{-4}\text{ m}$.
+> **💡 Tại sao dùng $L_1$-Median thay vì Centroid?**
+> Trọng tâm số học (Centroid) bình phương khoảng cách nên khi bạn chọn 1 điểm ở xa (ví dụ: Làng gốm Bát Tràng hoặc Thiên Đường Bảo Sơn), khách sạn sẽ bị kéo lệch hẳn ra ngoại vi. **$L_1$-Median có điểm phá vỡ (breakdown point) tới 50%**, giúp vị trí gợi ý luôn bám sát khu vực tập trung chính ở nội thành.
+
+### 2. Tối ưu thứ tự tham quan: Traveling Salesperson Problem (TSP)
+Với mỗi ngày du lịch gồm khách sạn $H$ và $m$ điểm tham quan, hệ thống giải bài toán Người du lịch vòng kín (Closed-Loop TSP) trên ma trận thời gian thực tế trích xuất từ **OSRM Table API**:
+$$\min \sum_{u} \sum_{v} \text{Duration}(u, v) \cdot x_{u,v}$$
+Được giải tối ưu bởi thư viện **Google OR-Tools** với chiến lược tìm kiếm cục bộ có định hướng (`GUIDED_LOCAL_SEARCH`).
+
+### 3. Đánh giá đa tiêu chí PostGIS (Spatial MCDA)
+Truy vấn các khách sạn thực tế xung quanh tâm lý tưởng $H^*$ qua hàm `ST_DWithin` của PostGIS và xếp hạng theo điểm tổng hợp:
+$$\text{Score}(H) = w_{\text{dist}} \cdot \left(1 - \frac{\text{dist}}{R}\right) + w_{\text{rating}} \cdot \left(\frac{\text{Rating}}{5.0}\right) + w_{\text{price}} \cdot \left(1 - \frac{\text{Price} - \text{Price}_{\min}}{\text{Price}_{\max} - \text{Price}_{\min}}\right)$$
 
 ---
 
-### 2.2. Tối ưu hóa thứ tự hành trình: Travelling Salesperson Problem (TSP)
-
-Với mỗi cụm hành trình trong ngày gồm khách sạn xuất phát $H$ và $m$ điểm tham quan $\mathcal{S} = \{P_{\pi(1)}, P_{\pi(2)}, \dots, P_{\pi(m)}\}$, hệ thống giải bài toán Người du lịch vòng kín (Closed-Loop TSP):
-
-$$\min \sum_{u \in \mathcal{V}} \sum_{v \in \mathcal{V}} C(u, v) \cdot x_{u,v}$$
-
-Thỏa mãn các ràng buộc:
-$$\sum_{v \in \mathcal{V}, v \neq u} x_{u,v} = 1, \quad \forall u \in \mathcal{V}$$
-$$\sum_{u \in \mathcal{V}, u \neq v} x_{u,v} = 1, \quad \forall v \in \mathcal{V}$$
-$$u_i - u_j + |\mathcal{V}| \cdot x_{i,j} \le |\mathcal{V}| - 1, \quad \forall 2 \le i \neq j \le |\mathcal{V}| \quad \text{(Miller-Tucker-Zemlin Sub-tour Elimination)}$$
-
-Trong đó:
-- Tập đỉnh: $\mathcal{V} = \{H\} \cup \mathcal{S}$.
-- $C(u, v)$: Chi phí thời gian thực tế (Duration in seconds) được trích xuất trực tiếp từ ma trận giao thông OSRM Table API, phản ánh đúng mạng lưới đường 1 chiều và tốc độ lưu thông nội đô Hà Nội.
-- Thuật toán giải: Google OR-Tools Routing Engine áp dụng chiến lược tìm kiếm ban đầu `PATH_CHEAPEST_ARC` kết hợp giải thuật siêu phỏng đoán `GUIDED_LOCAL_SEARCH` để thoát khỏi các cực tiểu địa phương.
-
----
-
-### 2.3. Lọc không gian & Đánh giá đa tiêu chí PostGIS (Spatial MCDA)
-
-Sau khi xác định tọa độ lý tưởng $H^*$, hệ thống truy vấn các cơ sở lưu trú thực tế trong bán kính khả thi $R$ bằng phép toán quan hệ không gian PostGIS:
-
-```sql
-SELECT 
-    id, name, type, stars, rating, price_per_night, address, lat, lon,
-    ST_Distance(geom::geography, ST_SetSRID(ST_MakePoint(:median_lon, :median_lat), 4326)::geography) AS dist_m
-FROM accommodations
-WHERE ST_DWithin(
-    geom::geography, 
-    ST_SetSRID(ST_MakePoint(:median_lon, :median_lat), 4326)::geography, 
-    :radius_meters
-)
-AND (:max_budget IS NULL OR price_per_night <= :max_budget)
-AND (:min_stars IS NULL OR stars >= :min_stars)
-ORDER BY dist_m ASC
-LIMIT 20;
-```
-
-Điểm đánh giá tổng hợp của từng khách sạn ứng viên được chuẩn hóa theo mô hình MCDA tuyến tính:
-$$\text{Score}(H) = w_{\text{dist}} \cdot \left(1 - \frac{d(H, H^*)}{R}\right) + w_{\text{rating}} \cdot \left(\frac{\text{Rating}(H)}{5.0}\right) + w_{\text{price}} \cdot \left(1 - \frac{\text{Price}(H) - \text{Price}_{\min}}{\text{Price}_{\max} - \text{Price}_{\min}}\right)$$
-
-Thỏa mãn điều kiện chuẩn tắc trọng số: $w_{\text{dist}} + w_{\text{rating}} + w_{\text{price}} = 1.0$.
-
----
-
-## 3. Kiến trúc hệ thống (System Architecture)
-
-Hệ thống được thiết kế theo mô hình vi dịch vụ phân lớp (Decoupled Micro-architecture):
+## 🏗️ Kiến trúc hệ thống
 
 ```
-+-----------------------------------------------------------------------------------+
-|                            CLIENT PRESENTATION LAYER                              |
-|                                                                                   |
-|  [ Landing Page: Warm Editorial ]           [ WebGIS Analysis Workstation ]       |
-|  - Lenis Smooth Inertia Scroll              - MapLibre GL Interactive Map Canvas  |
-|  - GSAP Stacking Cards Presets               - GeoJSON Layer Management (Line/Pt)  |
-|  - Diacritic-Safe Typography (Lora)         - Dynamic MCDA Weight Sliders Panel   |
-+-----------------------------------------------------------------------------------+
-                                         │
-                 REST API (GeoJSON / JSON Payload)
-                                         ▼
-+-----------------------------------------------------------------------------------+
-|                        FASTAPI GEOPROCESSING BACKEND                              |
-|                                                                                   |
-|  [ Spatial Service ]        [ Routing Service ]         [ Recommendation Service ]|
-|  - PyProj EPSG:32649 Metric - Google OR-Tools TSP       - Spatial MCDA Scoring    |
-|  - Weiszfeld L1-Median      - Haversine Distance Matrix - Radius Fallback Handler |
-|  - Scikit-learn K-Means     - Route LineString Builder  - Hotel Attribute Filter  |
-+-----------------------------------------------------------------------------------+
-           │                                                 │
-           ▼ (SQLAlchemy ORM / Raw SQL)                      ▼ (HTTP REST)
-+---------------------------------------+   +---------------------------------------+
-|        POSTGIS SPATIAL DATABASE       |   |          OSRM ROUTING ENGINE          |
-|                                       |   |                                       |
-|  - PostgreSQL 16 + PostGIS 3.4        |   |  - OpenStreetMap Vietnam/Hanoi PBF    |
-|  - Spatial Indexing: GiST on `geom`   |   |  - Table API (Driving Distance/Time)  |
-|  - Distance Metric: `ST_DWithin`      |   |  - Route API (Turn-by-turn Geometry)  |
-+---------------------------------------+   +---------------------------------------+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       CLIENT: REACT 18 + TYPESCRIPT                     │
+│  • MapLibre GL Canvas (Vector Tiles)       • GSAP 3 & Lenis Inertia     │
+│  • MCDA Weight Sliders & Filter Controls   • Excel / QR Code Exporter   │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │ REST API (JSON / GeoJSON)
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       SERVER: FASTAPI (PYTHON 3.11)                     │
+│  ┌───────────────────────┐ ┌──────────────────────┐ ┌────────────────┐  │
+│  │    Spatial Service    │ │   Routing Service    │ │  MCDA Service  │  │
+│  │ • PyProj EPSG:32649   │ │ • Google OR-Tools    │ │ • Score Rank   │  │
+│  │ • Weiszfeld L1-Median │ │ • Closed-Loop TSP    │ │ • Filter Spec  │  │
+│  │ • Scikit-learn K-Means│ │ • GeoJSON LineString │ │ • Fallback R   │  │
+│  └───────────────────────┘ └──────────────────────┘ └────────────────┘  │
+└──────────────────┬─────────────────────────────────┬────────────────────┘
+                   │ SQLAlchemy (Raw SQL / ORM)      │ HTTP REST
+                   ▼                                 ▼
+┌─────────────────────────────────────┐   ┌───────────────────────────────┐
+│     POSTGRESQL 16 + POSTGIS 3.4     │   │      OSRM ROUTING ENGINE      │
+│  • Spatial Indexing (GiST geom)     │   │  • OpenStreetMap Hà Nội       │
+│  • Quan hệ không gian: ST_DWithin   │   │  • Bảng ma trận thời gian     │
+│  • Tính khoảng cách: ST_Distance    │   │  • Lộ trình thực tế đường bộ  │
+└─────────────────────────────────────┘   └───────────────────────────────┘
 ```
 
 ---
 
-## 4. Ngôn ngữ thiết kế & Kỹ thuật giao diện (Design & Motion Engineering)
+## 🚀 Hướng dẫn cài đặt & Khởi chạy
 
-Khác với các ứng dụng WebGIS truyền thống vốn nặng tính kỹ thuật khô cứng, giao diện người dùng của Hanoi SDSS được định hướng theo phong cách **Warm Editorial / Organic Studio**:
-
-- **Bảng màu Di sản Thủ đô (Heritage Palette):**
-  • Canvas nền trang giấy yến mạch: `#F8F5EE` và `#FDFBF7`.
-  • Sắc độ văn bản chính: Xanh rêu di sản `#1C382B` kết hợp Slate xám mềm `#1F2421`.
-  • Màu sắc nhấn định hướng: Đất nung gốm Bát Tràng (Terracotta) `#B85D3B`.
-- **Hệ thống Font chữ chuẩn Tiếng Việt:** 
-  • Tiêu đề: Font Serif Google Lora & Playfair Display, cấu hình `font-feature-settings: 'kern' 1` triệt tiêu lỗi tách rời dấu thanh và nguyên âm ghép (`ô`, `ơ`, `ư`).
-  • Giao diện tham số: Font Sans-serif Plus Jakarta Sans cân bằng với Font Monospace cho dữ liệu không gian.
-- **GSAP & Motion Choreography:**
-  • **Lenis Smooth Scroll Engine:** Khởi tạo cuộn quán tính đồng bộ trực tiếp với vòng lặp `gsap.ticker.add((time) => lenis.raf(time * 1000))` và `gsap.ticker.lagSmoothing(0)`, đảm bảo không có hiện tượng giật cục (jitter) hay lệch tọa độ cuộn (scroll desync).
-  • **Hiệu ứng Thẻ trượt Xếp chồng (Stacking Cards):** Section "Lịch trình theo gu" sử dụng ScrollTrigger liên kết với container `h-[260vh]`. Khi cuộn, các thẻ trượt lên đè lên nhau, đồng thời thẻ phía dưới co nhỏ dần (`scale: 0.93`), giảm độ sáng (`brightness: 0.72`) và tạo hiệu ứng chiều sâu không gian 3D.
-  • **Seamless Camera Fly-Down:** Khi du khách bấm "Tự tạo lịch trình ngay", GSAP Timeline thực hiện chuyển cảnh liền mạch: Landing Page trượt mờ và vô hiệu hóa tương tác, để lộ bản đồ nền MapLibre GL đang thực hiện hiệu ứng camera `flyTo` từ góc nhìn toàn cảnh (zoom 10.5) xuống khu vực lõi di sản (zoom 13.8) mà không cần tải lại trang.
-
----
-
-## 5. Kết quả thực nghiệm (Empirical Benchmarks)
-
-Thử nghiệm so sánh trên kịch bản thực tế gồm **8 điểm tham quan phổ biến** tại Hà Nội:
-*Hồ Hoàn Kiếm, Cà phê Giảng, Ô Quan Chưởng, Chợ Đồng Xuân, Chùa Trấn Quốc, Lăng Bác, Hoàng Thành Thăng Long, Văn Miếu Quốc Tử Giám.*
-
-| Tiêu chí Đánh giá | Lựa chọn Khách sạn Tự phát & Điểm ngẫu nhiên | Giải pháp Tối ưu Hanoi SDSS (Weiszfeld + TSP) | Hiệu quả Cải thiện |
-| :--- | :---: | :---: | :---: |
-| **Vị trí cơ sở lưu trú** | Khách sạn ngẫu nhiên ngoại vi (Cầu Giấy / Mỹ Đình) | Khách sạn bán kính 1.2 km quanh $H^*$ (Cửa Nam / Hoàn Kiếm) | **Giảm 68%** khoảng cách tiếp cận lõi |
-| **Tổng quãng đường di chuyển (km)** | 38.4 km | 21.2 km | **Tiết kiệm 44.8%** quãng đường |
-| **Tổng thời gian ngồi xe (phút)** | 118 phút | 64 phút | **Tiết kiệm 45.8%** thời gian (54 phút) |
-| **Số lần quay đầu / ngược đường** | 5 lần | 0 lần (Hành trình 1 chiều khép kín) | **Triệt tiêu hoàn toàn** xung đột giao thông |
-| **Độ dịch chuyển so với tâm tối ưu** | 4.8 km | 0.35 km | **Tiệm cận ngưỡng lý tưởng** |
-
----
-
-## 6. Khởi chạy dự án (Local Deployment)
-
-### 6.1. Yêu cầu hệ thống
-- Docker & Docker Compose v2.20+
-- Python 3.11+
-- Node.js 18.0+ & npm 9.0+
-
-### 6.2. Khởi chạy bằng Docker Compose (Khuyến nghị)
-Hệ thống đi kèm cấu hình Docker đa tầng sẵn sàng phục vụ:
+### Cách 1: Khởi chạy siêu tốc bằng Docker (Khuyến nghị)
+Chỉ cần máy tính có cài đặt [Docker](https://www.docker.com/) và Docker Compose:
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/your-username/hanoi-tourism-sdss.git
-cd hanoi-tourism-sdss
+# 1. Clone mã nguồn
+git clone https://github.com/mchienc/Interdisciplinary-Project.git
+cd Interdisciplinary-Project
 
-# 2. Khởi động toàn bộ cụm dịch vụ (PostGIS, Backend FastAPI, Frontend Vite, pgAdmin)
+# 2. Khởi chạy toàn bộ hệ thống (PostGIS + Backend + Frontend)
 cd docker
 docker compose up -d --build
-
-# 3. Kiểm tra trạng thái các container
-docker compose ps
 ```
 
-Các dịch vụ sẽ lắng nghe trên các cổng sau:
-- Frontend Application: `http://localhost:5173`
-- Backend API Docs (Swagger UI): `http://localhost:8000/docs`
-- PostgreSQL / PostGIS Database: `localhost:5432` (User: `postgres`, Password: `postgis_password`, DB: `webgis_db`)
-- pgAdmin Web Dashboard: `http://localhost:5050` (Email: `admin@sdss.vn`, Password: `admin`)
+Sau khi hoàn tất:
+- 🌐 **Frontend (Giao diện người dùng)**: [http://localhost:5173](http://localhost:5173)
+- ⚙️ **Backend API Docs (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- 🗄️ **pgAdmin (Quản trị CSDL)**: [http://localhost:5050](http://localhost:5050) *(Tài khoản: `admin@sdss.vn` / `admin`)*
 
 ---
 
-### 6.3. Khởi chạy môi trường phát triển cục bộ (Local Development)
+### Cách 2: Khởi chạy thủ công (Manual Development)
 
-#### Khởi tạo Backend (FastAPI):
+#### 1. Yêu cầu môi trường
+- Python 3.11+
+- Node.js 18+ & npm
+- PostgreSQL 15+ tích hợp extension PostGIS
+
+#### 2. Khởi chạy Backend (FastAPI)
 ```bash
 cd backend
 
@@ -222,72 +166,102 @@ cd backend
 python -m venv venv
 # Windows:
 .\venv\Scripts\activate
-# Linux/macOS:
+# Linux / macOS:
 source venv/bin/activate
 
-# Cài đặt các gói phụ thuộc
+# Cài đặt thư viện phụ thuộc
 pip install -r requirements.txt
 
-# Khởi chạy máy chủ API phát triển
+# Khởi chạy Backend Server
 python -m uvicorn app.main:app --port 8000 --reload
 ```
+*Backend sẽ chạy tại: `http://localhost:8000` (Tự động chuyển đổi sang Mock Database nếu chưa kết nối PostgreSQL).*
 
-#### Khởi tạo Frontend (React + Vite):
+#### 3. Khởi chạy Frontend (React + Vite)
 ```bash
 cd frontend
 
-# Cài đặt các gói thư viện
+# Cài đặt thư viện
 npm install
 
-# Khởi chạy Vite dev server
+# Khởi chạy máy chủ phát triển
 npm run dev
 ```
+*Frontend sẽ chạy tại: `http://localhost:5173`.*
 
 ---
 
-## 7. Cấu trúc thư mục dự án (Repository Layout)
+## ⚙️ Cấu hình biến môi trường (Environment Variables)
 
+### Backend (`backend/.env`)
+```env
+# URL kết nối cơ sở dữ liệu PostgreSQL / PostGIS
+DATABASE_URL=postgresql://postgres:postgis_password@localhost:5432/webgis_db
+
+# Máy chủ định tuyến OSRM (mặc định sử dụng demo public server)
+OSRM_BASE_URL=https://router.project-osrm.org
 ```
-do_an_lien_nganh/
-├── backend/                        # Geoprocessing & Optimization Backend
+
+### Frontend (`frontend/.env`)
+```env
+# Địa chỉ gọi API backend
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+---
+
+## 📂 Cấu trúc thư mục dự án
+
+```text
+Interdisciplinary-Project/
+├── backend/                        # Máy chủ tính toán không gian & tối ưu hóa
 │   ├── app/
-│   │   ├── main.py                 # FastAPI Application Factory & CORS
-│   │   ├── db.py                   # SQLAlchemy Engine & Session Factory
-│   │   ├── models/                 # SQLAlchemy Spatial ORM Models
-│   │   ├── schemas/                # Pydantic Request/Response Schemas
+│   │   ├── main.py                 # Điểm khởi tạo ứng dụng FastAPI & cấu hình CORS
+│   │   ├── db.py                   # Kết nối cơ sở dữ liệu SQLAlchemy & fallback
+│   │   ├── models/                 # ORM Models (POI, Accommodation, Category)
+│   │   ├── schemas/                # Khung dữ liệu Pydantic Request/Response
 │   │   ├── services/
-│   │   │   ├── spatial_service.py  # Weiszfeld L1-Median & K-Means
-│   │   │   ├── routing_service.py  # Google OR-Tools TSP & OSRM Client
-│   │   │   └── recommendation_service.py # PostGIS Query & Spatial MCDA
-│   │   └── routers/                # API Endpoints (Itinerary, POI, Hotel)
+│   │   │   ├── spatial_service.py  # Thuật toán Weiszfeld L1-Median & K-Means
+│   │   │   ├── routing_service.py  # Google OR-Tools TSP & kết nối OSRM
+│   │   │   └── recommendation_service.py # Xếp hạng MCDA & truy vấn PostGIS
+│   │   └── routers/                # API Endpoints (itinerary, poi, hotel)
 │   ├── Dockerfile
-│   └── requirements.txt
+│   └── requirements.txt            # Danh sách thư viện Python
 │
-├── frontend/                       # Editorial WebGIS Client
+├── frontend/                       # Giao diện WebGIS người dùng
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── LandingHero.tsx     # Editorial Hero Viewport & Lenis Syncer
-│   │   │   ├── MapView.tsx         # MapLibre GL Canvas & Vector GeoJSON
-│   │   │   ├── Sidebar.tsx         # GIS Control Panel & Optimization Tuning
-│   │   │   └── editorial/
-│   │   │       ├── StackingCardsSection.tsx # GSAP Stacking Cards Timeline
-│   │   │       ├── ComparisonSection.tsx    # Visual Tourism Paradox
-│   │   │       ├── HowItWorksSection.tsx    # 3-Step Guided Workflow
-│   │   │       └── Navigation.tsx           # Heritage Minimalist Header
-│   │   ├── types.ts                # TypeScript Spatial Data Definitions
-│   │   ├── App.tsx                 # Master Coordinator & GSAP Stage Switcher
-│   │   └── index.css               # Tailwind Directives & Diacritic Rules
-│   ├── Dockerfile
+│   │   │   ├── LandingHero.tsx     # Trang chào đón với hiệu ứng thị sai
+│   │   │   ├── MapView.tsx         # Bản đồ vector tương tác MapLibre GL
+│   │   │   ├── Sidebar.tsx         # Bảng điều khiển chọn POI & trọng số MCDA
+│   │   │   ├── AddPoiModal.tsx     # Hộp thoại thêm điểm đến tùy biến
+│   │   │   └── editorial/          # Các component trình bày phong cách tạp chí
+│   │   │       ├── StackingCardsSection.tsx # Khối thẻ xếp chồng mượt mà
+│   │   │       ├── ComparisonSection.tsx    # Minh họa trực quan nghịch lý du lịch
+│   │   │       └── HowItWorksSection.tsx    # Hướng dẫn 3 bước thao tác
+│   │   ├── types.ts                # Khai báo kiểu dữ liệu TypeScript
+│   │   ├── App.tsx                 # Điều phối trạng thái chính của ứng dụng
+│   │   └── index.css               # Phong cách Tailwind CSS & Typography
+│   ├── vercel.json                 # Cấu hình sẵn sàng triển khai trên Vercel
 │   └── package.json
 │
-├── docker/
-│   ├── docker-compose.yml          # Container Orchestration Spec
-│   └── init.sql                    # PostGIS Extension & Spatial Schema DDL
+├── docker/                         # Cấu hình container hóa
+│   ├── docker-compose.yml          # Điều phối cụm container dịch vụ
+│   └── init.sql                    # Kịch bản khởi tạo CSDL & kích hoạt PostGIS
 │
-└── README.md                       # High-Taste Technical Documentation
+└── README.md                       # Tài liệu hướng dẫn dự án
 ```
 
 ---
 
-## 8. Giấy phép (License)
-Dự án được phân phối dưới giấy phép mã nguồn mở **MIT License**. Mọi đóng góp và tái sử dụng cho mục đích học thuật, nghiên cứu khoa học GIS và quy hoạch đô thị đều được khuyến khích.
+## 👨‍💻 Tác giả & Đóng góp
+
+- **Họ và tên**: Đồ án Nghiên cứu & Ứng dụng Liên ngành (Interdisciplinary Project)
+- **Repository**: [https://github.com/mchienc/Interdisciplinary-Project.git](https://github.com/mchienc/Interdisciplinary-Project.git)
+- Mọi đóng góp, báo cáo lỗi (issues) và ý tưởng cải tiến (pull requests) đều được hoan nghênh nồng nhiệt!
+
+---
+
+## 📄 Giấy phép (License)
+
+Dự án được phân phối theo giấy phép **MIT License**. Bạn được tự do tham khảo, học tập và phát triển tiếp nối cho các mục đích học thuật và cộng đồng.
