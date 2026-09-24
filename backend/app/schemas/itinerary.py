@@ -16,6 +16,7 @@ class POIRead(BaseModel):
     ideal_time: Optional[str] = "morning"
     closed_days: Optional[List[int]] = []
     closed_time: Optional[str] = None
+    venue_type: Optional[str] = "outdoor"
 
 class POICreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=255, description="Tên địa điểm du lịch")
@@ -31,6 +32,7 @@ class POICreate(BaseModel):
     ideal_time: Optional[str] = Field(default="morning", description="Khung giờ vàng: morning, afternoon, evening, any")
     closed_days: Optional[List[int]] = Field(default=[], description="Các ngày đóng cửa định kỳ (0: Thứ 2, 4: Thứ 6...)")
     closed_time: Optional[str] = Field(default="17:00", description="Giờ đóng cửa")
+    venue_type: Optional[str] = Field(default="outdoor", description="Loại không gian: indoor, outdoor, semi-indoor")
 
 class ScoreBreakdown(BaseModel):
     distance_score: float = Field(..., description="Điểm cự ly chuẩn hóa (gần hơn = điểm cao hơn)")
@@ -67,6 +69,8 @@ class PlanRequest(BaseModel):
     weights: Optional[WeightsConfig] = Field(default_factory=WeightsConfig, description="Cấu hình trọng số hàm chấm điểm đa tiêu chí")
     selected_hotel_id: Optional[int] = Field(default=None, description="Khách sạn người dùng chủ động chọn từ Top 5 đề xuất")
     transport_mode: Optional[str] = Field(default="driving", description="Phương tiện di chuyển: walking, bike, driving")
+    traffic_multiplier: Optional[float] = Field(default=1.0, ge=0.5, le=3.0, description="Hệ số giao thông giờ cao điểm (1.0x - 1.8x)")
+    weather_condition: Optional[str] = Field(default="FAVORABLE", description="Trạng thái thời tiết: FAVORABLE, RAIN, HEAT_PEAK")
 
 class GeometricMedianResult(BaseModel):
     lat: float

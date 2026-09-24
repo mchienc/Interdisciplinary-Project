@@ -15,7 +15,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Nên đi bộ quanh bờ hồ lúc sáng sớm hoặc hoàng hôn. Vào cuối tuần có phố đi bộ với nhiều hoạt động nghệ thuật đường phố đặc sắc.",
         "ideal_time": "morning",
         "closed_days": [],
-        "closed_time": "18:00"
+        "closed_time": "18:00",
+        "venue_type": "outdoor"
     },
     {
         "id": 2,
@@ -31,7 +32,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Mặc trang phục lịch sự trang nghiêm (quần dài, áo có tay). Không mang theo máy quay phim hoặc đồ ăn uống vào trong lăng.",
         "ideal_time": "morning",
         "closed_days": [0, 4], # Thứ 2 & Thứ 6
-        "closed_time": "11:00"
+        "closed_time": "11:00",
+        "venue_type": "semi-indoor"
     },
     {
         "id": 3,
@@ -47,7 +49,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Nhiều góc chụp ảnh đẹp tại giếng Thiên Quang và cổng Đại Thành. Các sĩ tử thường đến xin chữ cầu may trước các kỳ thi quan trọng.",
         "ideal_time": "morning",
         "closed_days": [],
-        "closed_time": "17:00"
+        "closed_time": "17:00",
+        "venue_type": "semi-indoor"
     },
     {
         "id": 4,
@@ -63,7 +66,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Nên trải nghiệm đi bộ hoặc xích lô luồn lách qua các ngõ nhỏ Hàng Mã, Hàng Ngang, Hàng Đào và thưởng thức cà phê trứng Giảng.",
         "ideal_time": "morning",
         "closed_days": [],
-        "closed_time": None
+        "closed_time": None,
+        "venue_type": "outdoor"
     },
     {
         "id": 5,
@@ -79,7 +83,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Thời điểm ngắm hoàng hôn đẹp nhất Hà Nội là tại đường Thanh Niên hoặc bến Hàn Quốc. Thưởng thức bánh tôm Hồ Tây nóng giòn.",
         "ideal_time": "evening",
         "closed_days": [],
-        "closed_time": None
+        "closed_time": None,
+        "venue_type": "outdoor"
     },
     {
         "id": 6,
@@ -95,7 +100,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Khu di tích khảo cổ 18 Hoàng Diệu rất rộng, hãy dành thời gian tham quan điện Kính Thiên và hầm chỉ huy D67 thời kháng chiến.",
         "ideal_time": "afternoon",
         "closed_days": [],
-        "closed_time": "17:00"
+        "closed_time": "17:00",
+        "venue_type": "semi-indoor"
     },
     {
         "id": 7,
@@ -111,7 +117,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Khu trưng bày ngoài trời có nhà rông Tây Nguyên, nhà sàn Ê Đê, nhà mồ Gia Rai rất ấn tượng, có múa rối nước vào cuối tuần.",
         "ideal_time": "afternoon",
         "closed_days": [0], # Thứ 2
-        "closed_time": "17:30"
+        "closed_time": "17:30",
+        "venue_type": "indoor"
     },
     {
         "id": 8,
@@ -127,7 +134,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Điểm chụp ảnh phong cách hoài cổ lý tưởng lúc bình minh hoặc hoàng hôn. Có thể thưởng thức ngô nướng, khoai nướng trên cầu vào mùa đông.",
         "ideal_time": "evening",
         "closed_days": [],
-        "closed_time": None
+        "closed_time": None,
+        "venue_type": "outdoor"
     },
     {
         "id": 9,
@@ -143,7 +151,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Trải nghiệm văn hóa 'trà chanh Nhà thờ' và nem chua rán vỉa hè số 10 Ấu Triệu ngay sát bên hông nhà thờ.",
         "ideal_time": "afternoon",
         "closed_days": [],
-        "closed_time": "20:00"
+        "closed_time": "20:00",
+        "venue_type": "semi-indoor"
     },
     {
         "id": 10,
@@ -159,7 +168,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Nên thuê thiết bị thuyết minh tự động (audio guide) để nghe câu chuyện cảm động về ý chí kiên cường của các chiến sĩ cách mạng.",
         "ideal_time": "afternoon",
         "closed_days": [],
-        "closed_time": "17:00"
+        "closed_time": "17:00",
+        "venue_type": "indoor"
     },
     {
         "id": 11,
@@ -175,7 +185,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Địa điểm lý tưởng để chụp ảnh lưu niệm kiến trúc châu Âu giữa lòng Hà Nội và đi dạo mua sắm tại Tràng Tiền Plaza.",
         "ideal_time": "evening",
         "closed_days": [],
-        "closed_time": None
+        "closed_time": None,
+        "venue_type": "indoor"
     },
     {
         "id": 12,
@@ -191,7 +202,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Ngõ Đồng Xuân là thiên đường ăn vặt nức tiếng: bún ốc chuối đậu, chè sắn nóng, bánh tôm và phở tíu thơm lừng.",
         "ideal_time": "evening",
         "closed_days": [],
-        "closed_time": "23:00"
+        "closed_time": "23:00",
+        "venue_type": "semi-indoor"
     },
     {
         "id": 13,
@@ -207,7 +219,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Khuôn viên rất rộng lớn bên cạnh đại lộ Thăng Long, trang bị công nghệ tương tác 3D mapping và sa bàn chiến dịch hiện đại.",
         "ideal_time": "morning",
         "closed_days": [0, 4], # Thứ 2 & Thứ 6
-        "closed_time": "16:30"
+        "closed_time": "16:30",
+        "venue_type": "indoor"
     },
     {
         "id": 14,
@@ -223,7 +236,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Thích hợp cho gia đình và nhóm bạn vui chơi giải nhiệt mùa hè, kết hợp ngắm sen Tây Hồ và thưởng thức ẩm thực sen độc đáo.",
         "ideal_time": "afternoon",
         "closed_days": [],
-        "closed_time": "19:00"
+        "closed_time": "19:00",
+        "venue_type": "outdoor"
     },
     {
         "id": 15,
@@ -239,7 +253,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Trung tâm Tinh hoa Làng nghề Việt (Bảo tàng gốm Bát Tràng) có kiến trúc 7 cánh xoáy tráng lệ, check-in sống ảo cực đẹp.",
         "ideal_time": "morning",
         "closed_days": [],
-        "closed_time": "18:00"
+        "closed_time": "18:00",
+        "venue_type": "semi-indoor"
     },
     {
         "id": 16,
@@ -255,7 +270,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Thủy cung trong nhà lớn nhất Hà Nội nằm tại tầng B1. Tầng 4 và 5 có hàng chục nhà hàng ẩm thực Á - Âu cùng ban công view hoàng hôn Hồ Tây cực chill.",
         "ideal_time": "afternoon",
         "closed_days": [],
-        "closed_time": "22:00"
+        "closed_time": "22:00",
+        "venue_type": "indoor"
     },
     {
         "id": 17,
@@ -271,7 +287,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Vị trí đắc địa ngay góc Tràng Tiền - Đinh Tiên Hoàng, cực kỳ thuận tiện kết hợp đi dạo phố đi bộ, chụp ảnh kiến trúc Pháp cổ và thưởng thức kem Tràng Tiền.",
         "ideal_time": "evening",
         "closed_days": [],
-        "closed_time": "21:30"
+        "closed_time": "21:30",
+        "venue_type": "indoor"
     },
     {
         "id": 18,
@@ -287,7 +304,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Show nhạc nước miễn phí diễn ra lúc 19:00 hàng ngày tại hồ trung tâm. Thủy cung Vinpearl có hàng chục ngàn cá thể sinh vật biển quý hiếm.",
         "ideal_time": "evening",
         "closed_days": [],
-        "closed_time": "22:00"
+        "closed_time": "22:00",
+        "venue_type": "indoor"
     },
     {
         "id": 19,
@@ -303,7 +321,8 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Khu Food Court tại tầng 1 và tầng 3 có bạt ngàn món sushi, sashimi, bánh bạch tuộc takoyaki ngon - bổ - rẻ.",
         "ideal_time": "afternoon",
         "closed_days": [],
-        "closed_time": "22:00"
+        "closed_time": "22:00",
+        "venue_type": "indoor"
     },
     {
         "id": 20,
@@ -319,6 +338,7 @@ MOCK_POIS: List[Dict[str, Any]] = [
         "tips": "Thời điểm lên đài quan sát Sky Walk tầng 65 đẹp nhất là lúc 17:30 ngắm hoàng hôn buông xuống thủ đô và thành phố lên đèn lung linh.",
         "ideal_time": "evening",
         "closed_days": [],
-        "closed_time": "22:00"
+        "closed_time": "22:00",
+        "venue_type": "indoor"
     }
 ]

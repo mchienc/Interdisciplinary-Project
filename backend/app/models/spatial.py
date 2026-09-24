@@ -14,6 +14,7 @@ class POI(Base):
     estimated_duration_min = Column(Integer, default=90)
     opening_hours = Column(String(100), default="07:30 - 18:00")
     ticket_price = Column(Integer, default=0)
+    venue_type = Column(String(30), default="outdoor") # indoor, outdoor, semi-indoor
     geom = Column(Geometry("POINT", srid=4326), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
 
@@ -27,7 +28,8 @@ class POI(Base):
             "lon": self.lon,
             "estimated_duration_min": self.estimated_duration_min,
             "opening_hours": self.opening_hours,
-            "ticket_price": self.ticket_price
+            "ticket_price": self.ticket_price,
+            "venue_type": getattr(self, "venue_type", "outdoor") or "outdoor"
         }
 
 class Accommodation(Base):

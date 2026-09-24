@@ -27,6 +27,7 @@ import { POI, Accommodation, PlanResponse, WeightsConfig } from '../../types';
 import { DAY_COLORS } from '../../constants/map';
 import { CATEGORY_META } from '../../constants/categories';
 import { exportItineraryToExcel } from '../../utils/excelExport';
+import { useContextAwareness } from '../../context/ContextAwareContext';
 
 gsap.registerPlugin(useGSAP);
 
@@ -106,6 +107,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showHotelPicker, setShowHotelPicker] = useState(false);
+
+  // Context-Aware Traffic & Weather Engine
+  const { traffic, weather } = useContextAwareness();
 
   // Module 4: State chia tiền nhóm (1, 2, 4 người)
   const [splitPeople, setSplitPeople] = useState<number>(1);
@@ -580,6 +584,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <span className={`text-[10px] px-2 py-0.5 rounded-md border font-medium ${meta.bg} ${meta.text}`}>
                             {meta.label}
                           </span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-md border font-medium ${
+                            poi.venue_type === 'indoor'
+                              ? 'bg-blue-50 text-blue-700 border-blue-200'
+                              : poi.venue_type === 'semi-indoor'
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          }`}>
+                            {poi.venue_type === 'indoor' ? '🏢 Trong nhà' : poi.venue_type === 'semi-indoor' ? '🏛️ Bán lộ thiên' : '🌳 Ngoài trời'}
+                          </span>
                           <span className="text-[10px] text-stone-500 flex items-center gap-1">
                             <Clock className="w-2.5 h-2.5 text-[#B85D3B]" />
                             <span>~{poi.estimated_duration_min}p</span>
@@ -846,9 +859,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           />
                           Lịch trình Ngày {dayItin.day}
                         </span>
-                        <span className="text-[11px] text-stone-500">
-                          {dayItin.total_distance_km} km • ~{Math.round(dayItin.total_duration_min)} phút
-                        </span>
+                        <div className="flex items-center gap-1.5 text-[11px] text-stone-500">
+                          <span>{dayItin.total_distance_km} km • ~{Math.round(dayItin.total_duration_min)} phút</span>
+                          {traffic && traffic.extraMinutes > 0 && (
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-rose-50 text-rose-700 font-semibold border border-rose-200">
+                              +{Math.round(traffic.extraMinutes / plan.daily_itineraries.length)}p kẹt xe
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       {/* Stops list */}
@@ -876,6 +894,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             <div className="flex-1">
                               <div className="font-bold text-[#1C382B] flex items-center gap-1.5 flex-wrap">
                                 <span>{poi.name}</span>
+                                {poi.venue_type && (
+                                  <span className={`text-[9px] px-1.5 py-0.2 rounded font-medium border ${
+                                    poi.venue_type === 'indoor'
+                                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                      : poi.venue_type === 'semi-indoor'
+                                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                      : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                  }`}>
+                                    {poi.venue_type === 'indoor' ? '🏢 Trong nhà' : poi.venue_type === 'semi-indoor' ? '🏛️ Bán lộ thiên' : '🌳 Ngoài trời'}
+                                  </span>
+                                )}
                                 {poi.ideal_time && (
                                   <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-medium">
                                     {poi.ideal_time === 'morning' ? '🌅 Sáng' : poi.ideal_time === 'afternoon' ? '☀️ Chiều' : '🌙 Tối'}

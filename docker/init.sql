@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS pois (
     estimated_duration_min INT DEFAULT 90, -- Thời gian tham quan ước tính (phút)
     opening_hours VARCHAR(100) DEFAULT '07:30 - 18:00',
     ticket_price INT DEFAULT 0,            -- Giá vé vào cổng (VND)
+    venue_type VARCHAR(30) DEFAULT 'outdoor', -- indoor, outdoor, semi-indoor
     geom GEOMETRY(Point, 4326) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -17,6 +17,8 @@ import {
 import { POI, Accommodation, PlanResponse } from '../../types';
 import { DAY_COLORS, BASEMAP_STYLES, HANOI_LNG_LAT, MAP_DEFAULT_ZOOM } from '../../constants/map';
 import { CATEGORY_ICONS, CATEGORY_NAMES } from '../../constants/categories';
+import { useContextAwareness } from '../../context/ContextAwareContext';
+import { buildTrafficColoredSegments } from '../../services/trafficService';
 
 export interface MapViewHandle {
   flyDownToWorkspace: (onArrival?: () => void) => void;
@@ -97,6 +99,10 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const hotelMarkerElementsRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const routeTweensRef = useRef<gsap.core.Tween[]>([]);
+
+  // Context-Aware Traffic Engine
+  const { traffic } = useContextAwareness();
+  const [showTrafficLayer, setShowTrafficLayer] = useState<boolean>(true);
 
   // State điều khiển bản đồ - Mặc định là 'voyager' (Carto Voyager Light Travel)
   const [currentBasemap, setCurrentBasemap] = useState<string>('voyager');
@@ -255,6 +261,8 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
 
       // Xóa các layer route cũ
       for (let d = 1; d <= 7; d++) {
+        if (map.getLayer(`traffic-line-day-${d}`)) map.removeLayer(`traffic-line-day-${d}`);
+        if (map.getSource(`traffic-source-day-${d}`)) map.removeSource(`traffic-source-day-${d}`);
         if (map.getLayer(`route-casing-day-${d}`)) map.removeLayer(`route-casing-day-${d}`);
         if (map.getLayer(`route-line-day-${d}`)) map.removeLayer(`route-line-day-${d}`);
         if (map.getSource(`route-source-day-${d}`)) map.removeSource(`route-source-day-${d}`);
@@ -314,9 +322,38 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           paint: {
             'line-color': color,
             'line-width': isDimmed ? 2.5 : 4.5,
-            'line-opacity': isDimmed ? 0.25 : 0.95
+            'line-opacity': isDimmed ? 0.25 : (showTrafficLayer ? 0.35 : 0.95)
           }
         });
+
+        // Phân đoạn màu mật độ giao thông (Traffic Colored Polylines) nếu bật chế độ giao thông
+        if (showTrafficLayer && traffic && fullCoords.length >= 2) {
+          const trafficSourceId = `traffic-source-day-${day}`;
+          const segments = buildTrafficColoredSegments(fullCoords, traffic);
+          
+          map.addSource(trafficSourceId, {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: segments
+            }
+          });
+
+          map.addLayer({
+            id: `traffic-line-day-${day}`,
+            type: 'line',
+            source: trafficSourceId,
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': ['get', 'color'],
+              'line-width': isDimmed ? 3 : 5.5,
+              'line-opacity': isDimmed ? 0.35 : 0.95
+            }
+          });
+        }
 
         // GSAP Polyline interpolation vẽ mượt mà từ điểm đầu đến các điểm kế tiếp
         if (shouldAnimate && fullCoords.length > 2) {
@@ -365,7 +402,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       routeTweensRef.current.forEach(t => t.kill());
       routeTweensRef.current = [];
     };
-  }, [plan, activeDayTab]);
+  }, [plan, activeDayTab, showTrafficLayer, traffic]);
 
   // 4. Render Markers (POIs giọt nước, Điểm lưu trú đề xuất, Tâm lý tưởng)
   useEffect(() => {
@@ -414,6 +451,18 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         </div>
       `;
 
+      const venueLabel = poi.venue_type === 'indoor'
+        ? '🏢 Trong nhà'
+        : poi.venue_type === 'semi-indoor'
+        ? '🏛️ Bán lộ thiên'
+        : '🌳 Ngoài trời';
+
+      const venueBadgeClass = poi.venue_type === 'indoor'
+        ? 'bg-blue-100 text-blue-800 border-blue-200'
+        : poi.venue_type === 'semi-indoor'
+        ? 'bg-amber-100 text-amber-800 border-amber-200'
+        : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
       const popup = new maplibregl.Popup({ offset: 20, closeButton: true }).setHTML(`
         <div class="space-y-2.5 max-w-xs p-1 text-stone-800">
           ${poi.image_url ? `
@@ -425,6 +474,16 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
               </span>
             </div>
           ` : ''}
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold border ${venueBadgeClass}">
+              ${venueLabel}
+            </span>
+            ${!poi.image_url ? `
+              <span class="text-[10px] bg-[#B85D3B] text-white font-semibold px-2 py-0.5 rounded-full shadow-xs">
+                ${CATEGORY_NAMES[poi.category] || poi.category}
+              </span>
+            ` : ''}
+          </div>
           <div class="font-serif text-sm font-bold text-[#1C382B] leading-snug">${poi.name}</div>
           <p class="text-xs text-stone-600 leading-relaxed line-clamp-2">${poi.description || ''}</p>
           <div class="text-[11px] text-stone-500 pt-1.5 border-t border-stone-200 flex items-center justify-between">
@@ -991,6 +1050,25 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
               <span className="hidden sm:inline">{isCinematicPlaying ? 'Dừng bay' : 'Xem trước 3D'}</span>
             </button>
           )}
+
+          {/* Traffic Congestion Polyline Toggle */}
+          {plan && (
+            <button
+              onClick={() => setShowTrafficLayer(!showTrafficLayer)}
+              title="Bật/Tắt phân đoạn màu mật độ giao thông OSRM"
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border ${
+                showTrafficLayer 
+                  ? 'bg-[#1C382B] text-white border-[#1C382B] shadow-xs' 
+                  : 'hover:bg-stone-100 text-stone-700 border-stone-200'
+              }`}
+            >
+              <span 
+                className="w-2 h-2 rounded-full inline-block" 
+                style={{ backgroundColor: traffic?.color || '#10B981' }} 
+              />
+              <span className="hidden sm:inline">Giao thông</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -1045,6 +1123,25 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
                 </span>
               </div>
             ))}
+
+            {showTrafficLayer && (
+              <div className="pt-2 border-t border-stone-200/80 space-y-1">
+                <div className="font-semibold text-stone-700 flex items-center gap-1.5 text-[11px]">
+                  <span>🚦</span> Mật độ giao thông OSRM:
+                </div>
+                <div className="grid grid-cols-3 gap-1 pt-0.5">
+                  <div className="flex items-center gap-1 text-[10px] text-stone-600">
+                    <span className="w-2 h-2 rounded-full bg-[#10B981]" /> Thoáng
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px] text-stone-600">
+                    <span className="w-2 h-2 rounded-full bg-[#F59E0B]" /> Chậm
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px] text-stone-600">
+                    <span className="w-2 h-2 rounded-full bg-[#DC2626]" /> Ùn tắc
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

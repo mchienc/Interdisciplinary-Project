@@ -70,6 +70,7 @@ def create_poi(poi_data: POICreate, db: Session = Depends(get_db)):
             estimated_duration_min=poi_data.estimated_duration_min,
             opening_hours=poi_data.opening_hours,
             ticket_price=poi_data.ticket_price,
+            venue_type=poi_data.venue_type or "outdoor",
             geom=point_wkt
         )
         db.add(poi_record)
@@ -89,7 +90,8 @@ def create_poi(poi_data: POICreate, db: Session = Depends(get_db)):
             "lon": poi_data.lon,
             "estimated_duration_min": poi_data.estimated_duration_min,
             "opening_hours": poi_data.opening_hours,
-            "ticket_price": poi_data.ticket_price
+            "ticket_price": poi_data.ticket_price,
+            "venue_type": poi_data.venue_type or "outdoor"
         }
 
     if new_poi_dict and not any(p["id"] == new_poi_dict["id"] for p in MOCK_POIS):
@@ -255,6 +257,11 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
 
         # 4.1 Lấy Ma trận Thời gian / Khoảng cách từ OSRM theo phương tiện (kèm fallback Haversine)
         dist_matrix, duration_matrix = await get_osrm_table_matrix(nodes_coords, mode=transport_mode)
+
+        # 4.1b Tích hợp Hệ số Giao thông Giờ cao điểm (Congestion-Aware TSP)
+        traffic_mult = float(getattr(request, "traffic_multiplier", 1.0) or 1.0)
+        if traffic_mult > 1.0:
+            duration_matrix = [[round(cell * traffic_mult, 1) for cell in row] for row in duration_matrix]
 
         # 4.2 Giải bài toán TSP bằng Google OR-Tools (Depot = 0) kết hợp định hướng khung giờ vàng
         optimal_indices = solve_tsp_ortools(duration_matrix, depot_index=0, ideal_times=ideal_times)

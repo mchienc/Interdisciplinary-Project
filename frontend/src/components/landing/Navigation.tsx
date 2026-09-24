@@ -1,5 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { ContextStatusPill } from '../common/ContextStatusPill';
 
 interface NavigationProps {
   onLaunch?: () => void;
@@ -19,19 +20,22 @@ export const Navigation: React.FC<NavigationProps> = ({ onLaunch }) => {
         </span>
       </div>
 
-      {/* User-friendly Navigation Links */}
-      <div className="flex items-center gap-6 sm:gap-8">
-        <div className="hidden md:flex items-center space-x-7 text-xs text-[#6E6A63] font-sans tracking-wide">
+      {/* User-friendly Navigation Links + Context Status */}
+      <div className="flex items-center gap-3 sm:gap-6">
+        <div className="hidden lg:flex items-center space-x-6 text-xs text-[#6E6A63] font-sans tracking-wide">
           <a href="#thau-hieu" className="hover:text-[#1C382B] transition font-medium">Thấu hiểu</a>
           <a href="#cach-hoat-dong" className="hover:text-[#1C382B] transition font-medium">Cách hoạt động</a>
           <a href="#lich-trinh-mau" className="hover:text-[#1C382B] transition font-medium">Lịch trình mẫu</a>
         </div>
 
+        {/* Real-time Weather & Traffic Status Pill */}
+        <ContextStatusPill />
+
         {/* Start Button */}
         {onLaunch && (
           <button
             onClick={onLaunch}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1C382B] hover:bg-[#B85D3B] text-[#F8F5EE] text-xs font-medium transition active:scale-95 shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1C382B] hover:bg-[#B85D3B] text-[#F8F5EE] text-xs font-medium transition active:scale-95 shadow-sm cursor-pointer shrink-0"
           >
             <span>Tự tạo lịch trình ngay</span>
             <ArrowRight className="w-3.5 h-3.5" />

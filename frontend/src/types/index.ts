@@ -13,6 +13,56 @@ export interface POI {
   ideal_time?: 'morning' | 'afternoon' | 'evening' | 'any';
   closed_days?: number[];
   closed_time?: string;
+  venue_type?: 'indoor' | 'outdoor' | 'semi-indoor';
+}
+
+export type WeatherConditionType = 'FAVORABLE' | 'RAIN' | 'HEAT_PEAK';
+
+export interface CurrentWeather {
+  temperature: number;
+  apparentTemperature: number;
+  humidity: number;
+  precipitation: number;
+  weatherCode: number;
+  uvIndex: number;
+  condition: WeatherConditionType;
+  conditionLabel: string;
+  conditionIcon: string;
+  advice: string;
+  updatedAt: string;
+}
+
+export interface HourlyForecastItem {
+  time: string;
+  hour: number;
+  rainProb: number;
+  weatherCode: number;
+  temp?: number;
+}
+
+export type CongestionLevel = 'LOW' | 'MODERATE' | 'HEAVY';
+
+export interface TrafficStatus {
+  level: CongestionLevel;
+  multiplier: number;
+  label: string;
+  color: string;
+  extraMinutes: number;
+  description: string;
+  isPeakHour: boolean;
+}
+
+export type SimulationScenario = 'LIVE' | 'RAIN_STORM' | 'HEAT_WAVE' | 'PEAK_EVENING' | 'AUTUMN_PERFECT';
+
+export interface ContextSuggestion {
+  id: string;
+  type: 'weather_rain' | 'weather_heat' | 'traffic_congestion';
+  title: string;
+  message: string;
+  beforePoiName?: string;
+  recommendedPoiName?: string;
+  applied: boolean;
+  adaptedPlan?: PlanResponse;
 }
 
 export interface ScoreBreakdown {
@@ -92,4 +142,6 @@ export interface PlanRequest {
   weights: WeightsConfig;
   selected_hotel_id?: number;
   transport_mode?: string;
+  traffic_multiplier?: number;
+  weather_condition?: string;
 }

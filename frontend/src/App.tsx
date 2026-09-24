@@ -7,6 +7,9 @@ import { PoiDetailModal } from './components/common/PoiDetailModal';
 import { LandingHero } from './components/landing/LandingHero';
 import { GoogleMapsQrModal } from './components/common/GoogleMapsQrModal';
 import { StoryCardModal } from './components/common/StoryCardModal';
+import { ContextStatusPill } from './components/common/ContextStatusPill';
+import { SmartContextBanner } from './components/common/SmartContextBanner';
+import { ContextAwareProvider, useContextAwareness } from './context/ContextAwareContext';
 import { POI, PlanResponse, PlanRequest, WeightsConfig } from './types';
 import { exportItineraryToExcel } from './utils/excelExport';
 import { FALLBACK_POIS } from './constants/mockData';
@@ -22,7 +25,7 @@ import {
   ArrowLeft 
 } from 'lucide-react';
 
-export const App: React.FC = () => {
+const WebGisApp: React.FC = () => {
   const [pois, setPois] = useState<POI[]>([]);
   const [selectedPoiIds, setSelectedPoiIds] = useState<number[]>([]);
   const [days, setDays] = useState<number>(2);
@@ -42,6 +45,10 @@ export const App: React.FC = () => {
   const [activeDayTab, setActiveDayTab] = useState<number | null>(null);
   const [apiStatus, setApiStatus] = useState<'online' | 'offline'>('offline');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  // Context-Aware Engine Hooks
+  const { setBasePlan, effectivePlan, traffic, weather } = useContextAwareness();
+  const activePlan = effectivePlan || plan;
 
   // Modal Dẫn đường Google Maps & Xuất Story
   const [isQrModalOpen, setIsQrModalOpen] = useState<boolean>(false);
@@ -98,16 +105,21 @@ export const App: React.FC = () => {
       gsap.set(headerRef.current, { y: '-100%', opacity: 0 });
       // Sidebar giấu sang trái
       gsap.set(sidebarWrapperRef.current, { x: '-100%', opacity: 0 });
+      // Backdrop che mờ bản đồ
+      gsap.set(landingBackdropRef.current, { opacity: 1 });
+      // Nội dung Landing Hero nằm ở vị trí tự nhiên
+      gsap.set(landingHeroRef.current, { y: 0, opacity: 1 });
     }, appContainerRef);
 
     return () => ctx.revert();
   }, []);
 
-  // 3. Kịch bản Animation Camera Fly-Down: Landing ➔ WebGIS Workspace
+  // 3. Kịch bản Điện ảnh: Chuyển từ Landing Page vào Không gian Làm việc WebGIS
   const handleLaunchWorkspace = (presetPoiIds?: number[]) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
 
+    // Nếu người dùng chọn một Preset Lịch trình mẫu từ Landing Page
     if (presetPoiIds && presetPoiIds.length > 0) {
       setSelectedPoiIds(presetPoiIds);
     }
@@ -178,25 +190,25 @@ export const App: React.FC = () => {
         }
       });
 
-      // 1. Thu Sidebar và Header về trạng thái ẩn
-      tl.to(sidebarWrapperRef.current, {
-        x: '-100%',
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power3.in'
-      });
-
+      // Header và Sidebar thu hồi ra khỏi màn hình
       tl.to(headerRef.current, {
         y: '-100%',
         opacity: 0,
         duration: 0.45,
         ease: 'power3.in'
+      });
+
+      tl.to(sidebarWrapperRef.current, {
+        x: '-100%',
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power3.in'
       }, "-=0.3");
 
-      // 2. Camera bay ngược lại toàn cảnh Hà Nội (zoom: 10.5, pitch: 0)
+      // Camera bay ngược lên tầng bình lưu nhìn toàn cảnh Hà Nội
       mapViewRef.current?.flyBackToLanding();
 
-      // 3. Hiện lại backdrop và Hero content
+      // Hiện lại lớp kính mờ nghệ thuật và trả về vị trí ban đầu
       tl.to(landingBackdropRef.current, {
         opacity: 1,
         duration: 0.6,
@@ -218,7 +230,7 @@ export const App: React.FC = () => {
     }, appContainerRef);
   };
 
-  // 5. Chức năng chạy Tối ưu hóa (Call FastAPI Endpoint qua Service)
+  // 5. Chức năng chạy Tối ưu hóa (Call FastAPI Endpoint qua Service kèm tham số ngữ cảnh)
   const handleRunOptimization = async (overrideHotelId?: number | unknown, overridePoiIds?: number[] | unknown) => {
     const validHotelId = typeof overrideHotelId === 'number' ? overrideHotelId : undefined;
     const hotelIdToUse = validHotelId !== undefined ? validHotelId : selectedHotelId;
@@ -243,12 +255,15 @@ export const App: React.FC = () => {
       min_stars: minStars,
       radius_meters: radiusMeters,
       weights: weights,
-      selected_hotel_id: typeof hotelIdToUse === 'number' ? hotelIdToUse : undefined
+      selected_hotel_id: typeof hotelIdToUse === 'number' ? hotelIdToUse : undefined,
+      traffic_multiplier: traffic?.multiplier || 1.0,
+      weather_condition: weather?.condition || 'FAVORABLE'
     };
 
     try {
       const data = await optimizeItineraryApi(payload);
       setPlan(data);
+      setBasePlan(data);
       setSelectedHotelId(data.selected_hotel.id);
       setApiStatus('online');
     } catch {
@@ -283,19 +298,21 @@ export const App: React.FC = () => {
     setSelectedPoiIds([]);
   };
 
-  // Chọn 6 điểm nổi tiếng
+  // Chọn 6 điểm nổi tiếng nhất
   const handleSelectPopularPois = () => {
-    setSelectedPoiIds(pois.slice(0, 6).map(p => p.id));
+    const defaultIds = [1, 2, 3, 4, 5, 6];
+    setSelectedPoiIds(defaultIds);
   };
 
-  // Bật chế độ Pick vị trí trên bản đồ
+  // Kích hoạt chế độ chọn tọa độ trên bản đồ
   const handleStartPickLocation = () => {
-    setIsPickingLocation(true);
-    setNotification('Click vào bất kỳ điểm nào trên bản đồ để chọn tọa độ!');
+    setIsAddModalOpen(false); // Tạm ẩn modal thêm POI
+    setIsPickingLocation(true); // Bật cờ chọn tọa độ trên MapView
+    setNotification('Nhấp chuột vào một vị trí trên bản đồ để lấy tọa độ...');
     setTimeout(() => setNotification(null), 4000);
   };
 
-  // Nhận tọa độ đã pick từ MapView
+  // Callback nhận tọa độ sau khi người dùng nhấp trên bản đồ
   const handleLocationPicked = (lat: number, lon: number) => {
     setPickedCoords({ lat, lon });
     setIsPickingLocation(false);
@@ -328,8 +345,8 @@ export const App: React.FC = () => {
 
   // Xuất file Excel
   const handleExportExcel = () => {
-    if (plan) {
-      exportItineraryToExcel(plan);
+    if (activePlan) {
+      exportItineraryToExcel(activePlan);
       setNotification('Đã xuất file Excel kế hoạch du lịch thành công!');
       setTimeout(() => setNotification(null), 3500);
     } else {
@@ -347,7 +364,7 @@ export const App: React.FC = () => {
           ref={mapViewRef}
           pois={pois}
           selectedPoiIds={selectedPoiIds}
-          plan={plan}
+          plan={activePlan}
           selectedHotelId={selectedHotelId}
           onSelectHotel={handleSelectHotel}
           hoveredHotelId={hoveredHotelId}
@@ -360,6 +377,9 @@ export const App: React.FC = () => {
           onCancelPick={() => setIsPickingLocation(false)}
           onOpenPoiDetail={(poi: POI) => setSelectedPoiForDetail(poi)}
         />
+
+        {/* Real-time Context Adaptation Floating Banner */}
+        {isWorkspaceActive && <SmartContextBanner />}
       </div>
 
       {/* 2. LANDING PAGE OVERLAY (Dedicated LandingHero Component, z-20) */}
@@ -412,7 +432,7 @@ export const App: React.FC = () => {
           )}
 
           {/* Badge Trạng thái Máy chủ API */}
-          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100/90 border border-stone-200 text-[11px] font-medium text-stone-600">
+          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100/90 border border-stone-200 text-[11px] font-medium text-stone-600">
             <span className={`w-2 h-2 rounded-full ${apiStatus === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
             <span>{apiStatus === 'online' ? 'SDSS Engine Sẵn sàng' : 'Dữ liệu Nội bộ (Offline)'}</span>
           </div>
@@ -420,6 +440,9 @@ export const App: React.FC = () => {
 
         {/* PHẢI: Actions Bar & Công cụ Xuất dữ liệu */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Real-time Context Status Pill (Weather & Traffic) */}
+          <ContextStatusPill />
+
           {/* Nút Thêm POI tùy chỉnh */}
           <button
             onClick={() => setIsAddModalOpen(true)}
@@ -442,7 +465,7 @@ export const App: React.FC = () => {
           {/* Nút Quét QR Google Maps trên điện thoại */}
           <button
             onClick={() => {
-              if (plan) {
+              if (activePlan) {
                 setIsQrModalOpen(true);
               } else {
                 setNotification('Vui lòng tạo lộ trình trước khi mở bản đồ di động!');
@@ -453,24 +476,24 @@ export const App: React.FC = () => {
             title="Quét mã QR mở lộ trình trực tiếp trên Google Maps điện thoại"
           >
             <Share2 className="w-3.5 h-3.5 text-[#B85D3B]" />
-            <span className="hidden md:inline">Google Maps</span>
+            <span className="hidden sm:inline">Google Maps</span>
           </button>
 
-          {/* Nút Xuất Ảnh Thẻ Hành Trình (Story Card) */}
+          {/* Nút Xuất thẻ ảnh Story Card 9:16 */}
           <button
             onClick={() => {
-              if (plan) {
+              if (activePlan) {
                 setIsStoryModalOpen(true);
               } else {
-                setNotification('Vui lòng tạo lộ trình trước khi lưu ảnh kỷ niệm!');
+                setNotification('Vui lòng tạo lộ trình trước khi xuất ảnh thẻ hành trình!');
                 setTimeout(() => setNotification(null), 3000);
               }
             }}
-            className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
-            title="Tạo ảnh kỷ niệm hành trình đẹp để chia sẻ mạng xã hội"
+            className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-[#B85D3B]/10 hover:text-[#B85D3B] border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Xuất thẻ ảnh hành trình tỉ lệ 9:16 chia sẻ Instagram/Story"
           >
             <span>📸</span>
-            <span className="hidden md:inline">Lưu ảnh</span>
+            <span className="hidden sm:inline">Xuất ảnh Story</span>
           </button>
 
           {/* Nút Toàn màn hình */}
@@ -509,7 +532,7 @@ export const App: React.FC = () => {
           weights={weights}
           onChangeWeights={setWeights}
           onRunOptimization={handleRunOptimization}
-          plan={plan}
+          plan={activePlan}
           loading={loading}
           selectedHotelId={selectedHotelId}
           onSelectHotel={handleSelectHotel}
@@ -552,20 +575,20 @@ export const App: React.FC = () => {
       />
 
       {/* 8. MODAL DẪN ĐƯỜNG GOOGLE MAPS (QR Code, z-50) */}
-      {plan && (
+      {activePlan && (
         <GoogleMapsQrModal
           isOpen={isQrModalOpen}
           onClose={() => setIsQrModalOpen(false)}
-          plan={plan}
+          plan={activePlan}
         />
       )}
 
       {/* 9. MODAL THẺ HÀNH TRÌNH ĐỂ LƯU ẢNH (Story Card Modal, z-50) */}
-      {plan && (
+      {activePlan && (
         <StoryCardModal
           isOpen={isStoryModalOpen}
           onClose={() => setIsStoryModalOpen(false)}
-          plan={plan}
+          plan={activePlan}
           tripTitle={itineraryTitle}
         />
       )}
@@ -573,3 +596,12 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+export const App: React.FC = () => {
+  return (
+    <ContextAwareProvider>
+      <WebGisApp />
+    </ContextAwareProvider>
+  );
+};
+export default App;
