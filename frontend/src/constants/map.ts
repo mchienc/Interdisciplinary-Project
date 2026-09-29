@@ -20,30 +20,57 @@ export const DAY_COLORS = [
   '#7C3AED'  // Tím hoa bằng lăng (Ngày 5)
 ];
 
-// Cấu hình các phong cách bản đồ nền
-export const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileUrl: string; desc: string }> = {
+// Cấu hình các phong cách bản đồ nền (Hoàn toàn miễn phí, không watermark, không đòi hỏi API Key)
+export const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileUrl: string; tiles?: string[]; desc: string; attribution: string }> = {
   voyager: {
     label: 'Du Lịch Thảnh Thơi',
     icon: '🗺️',
-    tileUrl: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    desc: 'Carto Voyager: Nước hồ ngọc lam, công viên xanh non'
+    tileUrl: 'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+    tiles: [
+      'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      'https://b.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+    ],
+    desc: 'OSM Humanitarian: Tông màu ấm áp, hiển thị chi tiết phố cổ & danh thắng',
+    attribution: '&copy; OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team'
   },
   light: {
     label: 'Tối Giản Tinh Tế',
     icon: '🏛️',
-    tileUrl: 'https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png',
-    desc: 'Carto Positron: Gam màu xám ấm thanh lịch'
+    tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    tiles: [
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+    ],
+    desc: 'Esri Light Gray: Nền xám ấm thanh lịch, nổi bật tuyến đường',
+    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
   },
   osm: {
     label: 'OpenStreetMap Chuẩn',
     icon: '🧭',
     tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    desc: 'Bản đồ mở quốc tế, chi tiết từng ngõ ngách'
+    tiles: [
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+    ],
+    desc: 'Bản đồ mở quốc tế, chi tiết từng ngõ ngách Thủ đô',
+    attribution: '&copy; OpenStreetMap contributors'
+  },
+  topo: {
+    label: 'Địa Hình Tự Nhiên',
+    icon: '⛰️',
+    tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    tiles: [
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+    ],
+    desc: 'Esri World Topo: Bản đồ địa hình & danh thắng tự nhiên',
+    attribution: 'Tiles &copy; Esri'
   },
   satellite: {
     label: 'Ảnh Vệ Tinh Trực Quan',
     icon: '🛰️',
     tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    desc: 'Esri World Imagery chân thực'
+    tiles: [
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+    ],
+    desc: 'Esri World Imagery: Ảnh vệ tinh quang học độ nét cao',
+    attribution: 'Tiles &copy; Esri &mdash; DigitalGlobe, GeoEye, Earthstar Geographics'
   }
 };

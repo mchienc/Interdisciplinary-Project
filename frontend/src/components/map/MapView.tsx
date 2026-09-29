@@ -182,9 +182,9 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         sources: {
           'basemap-source': {
             type: 'raster',
-            tiles: [initialStyle.tileUrl],
+            tiles: initialStyle.tiles || [initialStyle.tileUrl],
             tileSize: 256,
-            attribution: '&copy; CartoDB &copy; OpenStreetMap contributors'
+            attribution: initialStyle.attribution || '&copy; OpenStreetMap contributors'
           }
         },
         layers: [
@@ -231,9 +231,9 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
 
       map.addSource('basemap-source', {
         type: 'raster',
-        tiles: [basemapConfig.tileUrl],
+        tiles: basemapConfig.tiles || [basemapConfig.tileUrl],
         tileSize: 256,
-        attribution: '&copy; CartoDB &copy; OpenStreetMap'
+        attribution: basemapConfig.attribution || '&copy; OpenStreetMap contributors'
       });
 
       // Đặt layer nền bên dưới các layer route
