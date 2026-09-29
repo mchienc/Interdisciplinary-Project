@@ -9,6 +9,7 @@ import { GoogleMapsQrModal } from './components/common/GoogleMapsQrModal';
 import { StoryCardModal } from './components/common/StoryCardModal';
 import { ContextStatusPill } from './components/common/ContextStatusPill';
 import { SmartContextBanner } from './components/common/SmartContextBanner';
+import { StorytellerChat } from './components/workspace/StorytellerChat';
 import { ContextAwareProvider, useContextAwareness } from './context/ContextAwareContext';
 import { POI, PlanResponse, PlanRequest, WeightsConfig } from './types';
 import { exportItineraryToExcel } from './utils/excelExport';
@@ -321,13 +322,17 @@ const WebGisApp: React.FC = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // Thêm POI mới vào state danh sách
+  // Thêm POI mới vào state danh sách và kích hoạt tính toán tối ưu lại lộ trình
   const handlePoiCreated = (newPoi: POI) => {
     setPois(prev => [newPoi, ...prev]);
-    setSelectedPoiIds(prev => [newPoi.id, ...prev]);
+    const updatedIds = [newPoi.id, ...selectedPoiIds];
+    setSelectedPoiIds(updatedIds);
     setPickedCoords(null);
-    setNotification(`Đã thêm "${newPoi.name}" vào danh sách!`);
+    setNotification(`Đã thêm "${newPoi.name}" và đang cập nhật tối ưu lộ trình...`);
     setTimeout(() => setNotification(null), 3500);
+
+    // Tự động kích hoạt lại hàm tính toán tâm lưu trú Weiszfeld và OR-Tools TSP
+    handleRunOptimization(undefined, updatedIds);
   };
 
   // Bật/tắt Fullscreen
@@ -355,6 +360,17 @@ const WebGisApp: React.FC = () => {
     }
   };
 
+  // Ngữ cảnh hành trình cung cấp cho Hà Nội Storyteller (AI)
+  const storytellerContext = {
+    pois: pois.filter(p => selectedPoiIds.includes(p.id)),
+    selectedHotel: activePlan?.selected_hotel || null,
+    days: days,
+    transportMode: transportMode,
+    weather: weather,
+    traffic: traffic,
+    itineraryTitle: itineraryTitle
+  };
+
   return (
     <div ref={appContainerRef} className="h-screen w-screen relative bg-[#F8F5EE] text-[#1F2421] overflow-hidden font-sans select-none">
       
@@ -376,6 +392,7 @@ const WebGisApp: React.FC = () => {
           pickedCoords={pickedCoords}
           onCancelPick={() => setIsPickingLocation(false)}
           onOpenPoiDetail={(poi: POI) => setSelectedPoiForDetail(poi)}
+          onAddCustomPoi={handlePoiCreated}
         />
 
         {/* Real-time Context Adaptation Floating Banner */}
@@ -592,6 +609,11 @@ const WebGisApp: React.FC = () => {
           tripTitle={itineraryTitle}
         />
       )}
+
+      {/* 10. TRỢ LÝ VĂN HÓA HÀ NỘI STORYTELLER (AI FAB & CHATBOX) */}
+      <StorytellerChat 
+        context={storytellerContext} 
+      />
 
     </div>
   );

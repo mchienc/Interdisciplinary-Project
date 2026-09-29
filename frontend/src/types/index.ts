@@ -14,6 +14,8 @@ export interface POI {
   closed_days?: number[];
   closed_time?: string;
   venue_type?: 'indoor' | 'outdoor' | 'semi-indoor';
+  address?: string;
+  is_custom?: boolean;
 }
 
 export type WeatherConditionType = 'FAVORABLE' | 'RAIN' | 'HEAT_PEAK';

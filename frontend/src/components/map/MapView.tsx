@@ -19,6 +19,7 @@ import { DAY_COLORS, BASEMAP_STYLES, HANOI_LNG_LAT, MAP_DEFAULT_ZOOM } from '../
 import { CATEGORY_ICONS, CATEGORY_NAMES } from '../../constants/categories';
 import { useContextAwareness } from '../../context/ContextAwareContext';
 import { buildTrafficColoredSegments } from '../../services/trafficService';
+import { useCustomMapEvents } from '../../hooks/useCustomMapEvents';
 
 export interface MapViewHandle {
   flyDownToWorkspace: (onArrival?: () => void) => void;
@@ -41,6 +42,7 @@ interface MapViewProps {
   pickedCoords?: { lat: number; lon: number } | null;
   onCancelPick?: () => void;
   onOpenPoiDetail?: (poi: POI) => void;
+  onAddCustomPoi?: (poi: POI) => void;
 }
 
 // Màu sắc tươi sáng, hài hòa theo phong cách du lịch thảnh thơi
@@ -92,13 +94,25 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
   onLocationPicked,
   pickedCoords,
   onCancelPick,
-  onOpenPoiDetail
+  onOpenPoiDetail,
+  onAddCustomPoi
 }, ref) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const hotelMarkerElementsRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const routeTweensRef = useRef<gsap.core.Tween[]>([]);
+
+  // Feature 3: Custom User POI via Map Context Menu
+  const { 
+    contextMenu, 
+    handleMapContextMenu, 
+    closeContextMenu, 
+    submitCustomPoi 
+  } = useCustomMapEvents(onAddCustomPoi);
+  const [customPoiName, setCustomPoiName] = useState<string>('');
+  const [customPoiCategory, setCustomPoiCategory] = useState<'hotel' | 'food' | 'custom'>('custom');
+  const [customPoiDuration, setCustomPoiDuration] = useState<number>(45);
 
   // Context-Aware Traffic Engine
   const { traffic } = useContextAwareness();
@@ -447,6 +461,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           <div style="background-color: ${bgColor};" class="w-8 h-8 rounded-full rounded-br-none -rotate-45 text-white font-bold text-xs flex items-center justify-center border-2 border-white shadow-md shadow-stone-900/20 transition-transform duration-200 group-hover:scale-115">
             <span class="rotate-45 select-none">${badgeText}</span>
           </div>
+          ${poi.is_custom ? '<div class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-stone-900 text-[8px] flex items-center justify-center font-bold shadow-xs border border-white">★</div>' : ''}
           ${dayInfo ? `<div class="mt-0.5 px-1.5 py-0.2 rounded-full bg-white/95 border border-stone-200 text-[9px] font-bold text-stone-800 shadow-xs whitespace-nowrap">Chặng #${dayInfo.seq}</div>` : ''}
         </div>
       `;
@@ -478,6 +493,11 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold border ${venueBadgeClass}">
               ${venueLabel}
             </span>
+            ${poi.is_custom ? `
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold border bg-purple-100 text-purple-800 border-purple-200">
+                ✨ Điểm tùy chọn
+              </span>
+            ` : ''}
             ${!poi.image_url ? `
               <span class="text-[10px] bg-[#B85D3B] text-white font-semibold px-2 py-0.5 rounded-full shadow-xs">
                 ${CATEGORY_NAMES[poi.category] || poi.category}
@@ -692,6 +712,18 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       map.off('click', handleMapClick);
     };
   }, [isPickingLocation, onLocationPicked]);
+
+  // 6b. Bắt sự kiện chuột phải (contextmenu) để thêm Custom User POI
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    map.on('contextmenu', handleMapContextMenu);
+
+    return () => {
+      map.off('contextmenu', handleMapContextMenu);
+    };
+  }, [handleMapContextMenu]);
 
   // Quản lý Layer Vùng Tản Bộ 15 Phút (Walking Isochrone)
   useEffect(() => {
@@ -1155,6 +1187,120 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           <Info className="w-3.5 h-3.5 text-[#B85D3B]" />
           <span>Chú Giải</span>
         </button>
+      )}
+
+      {/* 7. MINI POPUP THÊM ĐIỂM DỪNG TÙY CHỌN (CUSTOM USER POI) */}
+      {contextMenu && (
+        <div 
+          style={{
+            left: Math.min(window.innerWidth - 320, Math.max(16, contextMenu.screenX - 150)),
+            top: Math.min(window.innerHeight - 360, Math.max(70, contextMenu.screenY - 10))
+          }}
+          className="absolute z-50 w-76 bg-[#FDFCF7] border border-stone-300/90 rounded-2xl shadow-2xl p-4 text-xs font-sans animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md"
+        >
+          <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+            <div className="flex items-center gap-1.5 font-bold text-[#1C382B]">
+              <MapPin className="w-4 h-4 text-[#B85D3B]" />
+              <span>Thêm điểm dừng tại đây</span>
+            </div>
+            <button 
+              type="button" 
+              onClick={closeContextMenu}
+              className="text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Địa chỉ & Tọa độ */}
+          <div className="mt-2.5 space-y-1">
+            <div className="text-[11px] text-stone-700 font-medium line-clamp-2">
+              {contextMenu.isGeocoding ? (
+                <span className="flex items-center gap-1.5 text-stone-400 italic">
+                  <Sparkles className="w-3 h-3 text-[#B85D3B] animate-spin" />
+                  Đang tra cứu tên đường phố...
+                </span>
+              ) : (
+                `📍 ${contextMenu.address}`
+              )}
+            </div>
+            <div className="text-[10px] text-stone-400 font-mono">
+              Tọa độ: {contextMenu.lat.toFixed(4)}, {contextMenu.lon.toFixed(4)}
+            </div>
+          </div>
+
+          {/* Form nhập thông tin */}
+          <div className="mt-3 space-y-2.5">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-stone-500 block mb-1">
+                Tên địa điểm
+              </label>
+              <input 
+                type="text" 
+                autoFocus
+                placeholder="VD: Cafe Giảng, Homestay bạn bè..."
+                value={customPoiName}
+                onChange={(e) => setCustomPoiName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && customPoiName.trim()) {
+                    submitCustomPoi(customPoiName, customPoiCategory, customPoiDuration);
+                    setCustomPoiName('');
+                  }
+                }}
+                className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-[#B85D3B]"
+              />
+            </div>
+
+            {/* Chọn danh mục */}
+            <div>
+              <label className="text-[10px] uppercase font-bold text-stone-500 block mb-1">
+                Loại điểm dừng
+              </label>
+              <div className="grid grid-cols-3 gap-1">
+                {[
+                  { id: 'custom', label: '📍 Điểm hẹn' },
+                  { id: 'food', label: '🍜 Ăn uống' },
+                  { id: 'hotel', label: '🏨 Chỗ nghỉ' }
+                ].map(c => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setCustomPoiCategory(c.id as any)}
+                    className={`py-1 text-[10px] rounded-lg border font-semibold transition cursor-pointer ${
+                      customPoiCategory === c.id
+                        ? 'bg-[#1C382B] text-white border-[#1C382B]'
+                        : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Nút hành động */}
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={closeContextMenu}
+                className="flex-1 py-1.5 rounded-lg border border-stone-300 text-stone-600 text-xs hover:bg-stone-100 transition cursor-pointer"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                disabled={!customPoiName.trim()}
+                onClick={() => {
+                  submitCustomPoi(customPoiName, customPoiCategory, customPoiDuration);
+                  setCustomPoiName('');
+                }}
+                className="flex-1 py-1.5 rounded-lg bg-[#B85D3B] hover:bg-[#A04E2F] disabled:opacity-40 text-white font-semibold text-xs transition shadow-xs cursor-pointer"
+              >
+                + Thêm vào lộ trình
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Container bản đồ */}

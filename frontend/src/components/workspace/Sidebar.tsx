@@ -21,13 +21,16 @@ import {
   RotateCcw,
   Check,
   Building2,
-  DollarSign
+  DollarSign,
+  Feather
 } from 'lucide-react';
 import { POI, Accommodation, PlanResponse, WeightsConfig } from '../../types';
 import { DAY_COLORS } from '../../constants/map';
 import { CATEGORY_META } from '../../constants/categories';
 import { exportItineraryToExcel } from '../../utils/excelExport';
 import { useContextAwareness } from '../../context/ContextAwareContext';
+import { BudgetEstimator } from './BudgetEstimator';
+import { generateItineraryNarrative } from '../../services/aiService';
 
 gsap.registerPlugin(useGSAP);
 
@@ -175,8 +178,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
   React.useEffect(() => {
     if (plan) {
       setSidebarTab('itinerary');
+      handleGenerateNarrative(plan);
     }
   }, [plan]);
+
+  // Narrative Journey Guide State
+  const [narrative, setNarrative] = useState<string | null>(null);
+  const [isNarrativeLoading, setIsNarrativeLoading] = useState<boolean>(false);
+
+  const handleGenerateNarrative = (planToUse?: PlanResponse) => {
+    const currentPlan = planToUse || plan;
+    if (!currentPlan?.daily_itineraries) return;
+    const orderedPois: POI[] = [];
+    currentPlan.daily_itineraries.forEach(d => {
+      d.visit_sequence?.forEach(p => orderedPois.push(p));
+    });
+    if (orderedPois.length === 0) return;
+    setIsNarrativeLoading(true);
+    generateItineraryNarrative(orderedPois)
+      .then(res => setNarrative(res))
+      .catch(() => setNarrative(null))
+      .finally(() => setIsNarrativeLoading(false));
+  };
 
   // Lọc danh sách POIs theo từ khóa và danh mục
   const filteredPois = useMemo(() => {
@@ -660,86 +683,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
 
-            {/* Module 4: Reactive Budget Widget & Split Bill */}
-            {budgetBreakdown && (
-              <div className="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-[#1C382B] uppercase tracking-wider flex items-center gap-1.5">
-                    <DollarSign className="w-3.5 h-3.5 text-[#B85D3B]" />
-                    Dự toán chi phí &amp; Chia tiền
+            {/* Chức năng 1: Tự động dệt truyện hành trình (Narrative Journey Guide) */}
+            <div className="p-4 rounded-2xl bg-[#FAF7F0] border border-[#B85D3B]/30 shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-[#1C382B] uppercase tracking-wider flex items-center gap-1.5 font-serif">
+                  <Feather className="w-3.5 h-3.5 text-[#B85D3B]" />
+                  Truyện Kể Hành Trình Thủ Đô
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#B85D3B]/10 text-[#B85D3B] font-semibold">
+                    Hà Nội Storyteller
                   </span>
-                  
-                  {/* Segmented control chia tiền nhóm */}
-                  <div className="flex items-center bg-stone-100 p-0.5 rounded-xl border border-stone-200/70 text-[10px] font-semibold">
-                    {[1, 2, 4].map(num => (
-                      <button
-                        key={num}
-                        type="button"
-                        onClick={() => setSplitPeople(num)}
-                        className={`px-2 py-0.5 rounded-lg transition cursor-pointer ${
-                          splitPeople === num 
-                            ? 'bg-[#1C382B] text-white shadow-xs' 
-                            : 'text-stone-600 hover:text-stone-900'
-                        }`}
-                      >
-                        {num} người
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Số tiền trung bình mỗi người */}
-                <div className="bg-stone-50/80 p-3 rounded-xl border border-stone-100 flex items-center justify-between">
-                  <div>
-                    <div className="text-[10px] text-stone-500 uppercase tracking-wider font-medium">
-                      Dự tính / {splitPeople === 1 ? 'chuyến đi' : 'mỗi người'}
-                    </div>
-                    <div className="font-serif text-lg font-bold text-[#B85D3B]">
-                      {budgetBreakdown.costPerPerson.toLocaleString('vi-VN')} đ
-                    </div>
-                  </div>
-                  <div className="text-right text-[11px] text-stone-500">
-                    <div>Tổng nhóm ({splitPeople} người):</div>
-                    <div className="font-semibold text-stone-800">
-                      {budgetBreakdown.totalCost.toLocaleString('vi-VN')} đ
-                    </div>
-                  </div>
-                </div>
-
-                {/* Chi tiết từng mục */}
-                <div className="space-y-1.5 text-xs pt-1 border-t border-stone-100">
-                  <div className="flex items-center justify-between text-stone-600">
-                    <span className="flex items-center gap-1.5">
-                      <span>🏨</span> Chỗ ở ({budgetBreakdown.nights} đêm):
-                    </span>
-                    <span className="font-medium text-stone-800">
-                      {budgetBreakdown.hotelCost.toLocaleString('vi-VN')} đ
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-stone-600">
-                    <span className="flex items-center gap-1.5">
-                      <span>🎟️</span> Vé tham quan ({plan.total_pois} điểm):
-                    </span>
-                    <span className="font-medium text-stone-800">
-                      {budgetBreakdown.ticketCost.toLocaleString('vi-VN')} đ
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-stone-600">
-                    <span className="flex items-center gap-1.5">
-                      <span>{budgetBreakdown.mode === 'walking' ? '🚶' : budgetBreakdown.mode === 'bike' ? '🛵' : '🚗'}</span>
-                      <span>
-                        {budgetBreakdown.mode === 'walking' ? 'Tản bộ' : budgetBreakdown.mode === 'bike' ? 'GrabBike ước tính' : 'Taxi/GrabCar ước tính'}:
-                      </span>
-                    </span>
-                    <span className="font-medium text-stone-800">
-                      {budgetBreakdown.transportCost === 0 ? 'Miễn phí' : `${budgetBreakdown.transportCost.toLocaleString('vi-VN')} đ`}
-                    </span>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateNarrative()}
+                    disabled={isNarrativeLoading}
+                    title="Dệt lại câu chuyện"
+                    className="p-1 rounded-lg text-stone-400 hover:text-[#B85D3B] transition cursor-pointer"
+                  >
+                    <RotateCcw className={`w-3.5 h-3.5 ${isNarrativeLoading ? 'animate-spin text-[#B85D3B]' : ''}`} />
+                  </button>
                 </div>
               </div>
-            )}
+
+              {isNarrativeLoading ? (
+                <div className="py-3 flex items-center gap-2 text-stone-500 text-xs italic">
+                  <Sparkles className="w-4 h-4 text-[#B85D3B] animate-spin" />
+                  <span>Đang lắng nghe phong vị Thủ đô để dệt câu chuyện...</span>
+                </div>
+              ) : narrative ? (
+                <div className="font-serif italic text-xs leading-relaxed text-[#1C382B] bg-white/80 p-3.5 rounded-xl border border-stone-200/60 shadow-2xs select-text">
+                  "{narrative}"
+                </div>
+              ) : null}
+            </div>
+
+            {/* Chức năng 2: Dự toán ngân sách toàn diện & Chia tiền nhóm */}
+            <BudgetEstimator 
+              plan={plan} 
+              days={days} 
+              transportMode={transportMode} 
+              pois={pois} 
+            />
 
             {/* Optimal Hotel Card */}
             <div className="p-4 rounded-2xl bg-white border border-[#B85D3B]/40 shadow-xs space-y-3">
