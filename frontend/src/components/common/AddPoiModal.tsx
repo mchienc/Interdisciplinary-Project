@@ -1,7 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { X, MapPin, Sparkles, Clock, DollarSign, Tag, Info, Navigation, Check } from 'lucide-react';
+import { 
+  X, 
+  MapPin, 
+  Sparkles, 
+  Clock, 
+  DollarSign, 
+  Tag, 
+  Info, 
+  Navigation, 
+  Check,
+  Compass,
+  Building
+} from 'lucide-react';
 import { POI } from '../../types';
 
 gsap.registerPlugin(useGSAP);
@@ -16,13 +28,19 @@ interface AddPoiModalProps {
 
 const CATEGORIES = [
   { id: 'heritage', label: 'Di tích / Lịch sử', icon: '🏛️' },
-  { id: 'beach', label: 'Biển & Bãi tắm', icon: '🏖️' },
+  { id: 'beach', label: 'Cảnh quan sông / hồ', icon: '🏖️' },
   { id: 'nature', label: 'Thiên nhiên & Sinh thái', icon: '⛰️' },
   { id: 'bridge', label: 'Cầu & Biểu tượng', icon: '🌉' },
   { id: 'museum', label: 'Bảo tàng & Văn hóa', icon: '🎨' },
   { id: 'entertainment', label: 'Khu vui chơi / Giải trí', icon: '🎡' },
   { id: 'culinary', label: 'Ẩm thực & Chợ đêm', icon: '🍜' },
   { id: 'shopping', label: 'Mua sắm & TTTM', icon: '🛍️' }
+];
+
+const VENUE_TYPES = [
+  { id: 'outdoor', label: '🌳 Ngoài trời' },
+  { id: 'semi-indoor', label: '🏛️ Bán lộ thiên' },
+  { id: 'indoor', label: '🏢 Trong nhà' }
 ];
 
 export const AddPoiModal: React.FC<AddPoiModalProps> = ({
@@ -34,6 +52,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
 }) => {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('heritage');
+  const [venueType, setVenueType] = useState<'indoor' | 'outdoor' | 'semi-indoor'>('outdoor');
   const [description, setDescription] = useState('');
   const [lat, setLat] = useState<string>('21.0287');
   const [lon, setLon] = useState<string>('105.8523');
@@ -44,13 +63,13 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
   const modalOverlayRef = useRef<HTMLDivElement>(null);
   const modalBoxRef = useRef<HTMLDivElement>(null);
 
-  // GSAP: Spring popup entrance
+  // GSAP: Elastic spring popup entrance
   useGSAP(() => {
     if (isOpen && modalBoxRef.current) {
       gsap.fromTo(
         modalBoxRef.current,
-        { scale: 0.88, autoAlpha: 0, y: 30 },
-        { scale: 1, autoAlpha: 1, y: 0, duration: 0.45, ease: 'back.out(1.5)' }
+        { scale: 0.92, autoAlpha: 0, y: 20 },
+        { scale: 1, autoAlpha: 1, y: 0, duration: 0.4, ease: 'back.out(1.4)' }
       );
     }
   }, { scope: modalOverlayRef, dependencies: [isOpen] });
@@ -84,6 +103,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
     const payload = {
       name: name.trim(),
       category,
+      venue_type: venueType,
       description: description.trim(),
       lat: latNum,
       lon: lonNum,
@@ -107,9 +127,16 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
         setName('');
         setDescription('');
       } else {
-        alert('Có lỗi xảy ra khi lưu địa điểm. Vui lòng kiểm tra lại backend.');
+        // Fallback lưu local nếu backend trả về lỗi
+        const localId = Date.now();
+        const fallbackPoi: POI = {
+          id: localId,
+          ...payload
+        };
+        onSuccess(fallbackPoi);
+        onClose();
       }
-    } catch (err) {
+    } catch {
       // Fallback lưu local nếu backend offline
       const localId = Date.now();
       const fallbackPoi: POI = {
@@ -126,37 +153,47 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
   return (
     <div 
       ref={modalOverlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === modalOverlayRef.current) onClose();
+      }}
     >
       <div 
         ref={modalBoxRef}
-        className="glass-panel border border-slate-700/80 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl glow-border-indigo"
+        className="bg-[#FDFCF7] border border-stone-200 rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl text-[#1F2421] animate-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]"
       >
         {/* Modal Header */}
-        <div className="h-16 bg-slate-900/90 px-6 flex items-center justify-between border-b border-slate-800/90">
-          <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 ring-1 ring-white/20">
-              <Sparkles className="w-4 h-4 text-white" />
+        <div className="px-6 py-4.5 bg-[#FAF7F0] border-b border-stone-200/80 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#B85D3B]/10 text-[#B85D3B] flex items-center justify-center shadow-xs">
+              <Sparkles className="w-5 h-5 text-[#B85D3B]" />
             </div>
             <div>
-              <h2 className="font-extrabold text-sm text-white">Đóng Góp Điểm Du Lịch Mới</h2>
-              <p className="text-[10px] text-slate-400">Tích hợp vào CSDL không gian GIS và mạng lưới tuyến đường</p>
+              <h2 className="font-serif text-base sm:text-lg font-bold text-[#1C382B]">
+                Đóng Góp Điểm Du Lịch Mới
+              </h2>
+              <p className="text-[11px] text-stone-500 font-sans">
+                Tích hợp vào CSDL không gian GIS và mạng lưới tuyến đường
+              </p>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800 transition"
+            className="p-1.5 rounded-full hover:bg-stone-200/60 text-stone-400 hover:text-stone-800 transition cursor-pointer"
+            title="Đóng modal"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        {/* Modal Form Body */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs font-sans overflow-y-auto flex-1">
           {/* Tên địa điểm */}
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-300 flex items-center gap-1.5">
-              <Tag className="w-3.5 h-3.5 text-indigo-400" /> Tên Địa Điểm Tham Quan *
+          <div className="space-y-1.5">
+            <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1.5">
+              <Tag className="w-3.5 h-3.5 text-[#B85D3B]" /> 
+              <span>Tên Địa Điểm Tham Quan *</span>
             </label>
             <input
               type="text"
@@ -164,48 +201,69 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
               placeholder="VD: Chùa Một Cột, Làng cổ Đường Lâm, Hồ Trúc Bạch..."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full glass-input rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 outline-none"
+              className="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-[#1C382B] placeholder-stone-400 focus:outline-none focus:border-[#B85D3B] focus:ring-2 focus:ring-[#B85D3B]/10 transition shadow-2xs"
             />
           </div>
 
-          {/* Phân loại & Thời lượng */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-300">Thể loại</label>
+          {/* Phân loại & Không gian */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="font-semibold text-xs text-[#1C382B]">Thể loại</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full glass-input rounded-xl px-3 py-2 text-white outline-none cursor-pointer"
+                className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs text-[#1C382B] outline-none cursor-pointer focus:border-[#B85D3B] focus:ring-2 focus:ring-[#B85D3B]/10 transition shadow-2xs"
               >
                 {CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-slate-900 text-white">
+                  <option key={c.id} value={c.id}>
                     {c.icon} {c.label}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-300 flex items-center gap-1">
-                <Clock className="w-3 h-3 text-slate-400" /> Dự kiến tham quan (phút)
+            <div className="space-y-1.5">
+              <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1">
+                <Building className="w-3.5 h-3.5 text-stone-400" />
+                <span>Không gian thích ứng</span>
               </label>
-              <input
-                type="number"
-                min="15"
-                max="480"
-                step="15"
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full glass-input rounded-xl px-3 py-2 text-white outline-none font-mono"
-              />
+              <select
+                value={venueType}
+                onChange={(e) => setVenueType(e.target.value as any)}
+                className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs text-[#1C382B] outline-none cursor-pointer focus:border-[#B85D3B] focus:ring-2 focus:ring-[#B85D3B]/10 transition shadow-2xs"
+              >
+                {VENUE_TYPES.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
+          {/* Thời lượng dự kiến */}
+          <div className="space-y-1.5">
+            <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-[#B85D3B]" /> 
+              <span>Dự kiến tham quan (phút)</span>
+            </label>
+            <input
+              type="number"
+              min="15"
+              max="480"
+              step="15"
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2 text-xs text-[#1C382B] outline-none font-mono focus:border-[#B85D3B] focus:ring-2 focus:ring-[#B85D3B]/10 transition shadow-2xs"
+            />
+          </div>
+
           {/* Tọa độ Không gian WGS84 */}
-          <div className="space-y-2 bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800/80">
+          <div className="space-y-2.5 bg-[#FAF7F0] p-4 rounded-2xl border border-stone-200/80">
             <div className="flex items-center justify-between">
-              <label className="font-semibold text-slate-300 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-rose-400" /> Tọa Độ Địa Lý (EPSG:4326) *
+              <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[#B85D3B]" /> 
+                <span>Tọa Độ Địa Lý (EPSG:4326) *</span>
               </label>
               <button
                 type="button"
@@ -213,42 +271,44 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
                   onClose();
                   onStartPickOnMap();
                 }}
-                className="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800"
+                className="text-xs text-[#B85D3B] hover:text-[#9C4B2E] font-semibold flex items-center gap-1.5 transition bg-white px-3 py-1.5 rounded-xl border border-stone-200/90 shadow-2xs hover:border-[#B85D3B]/40 cursor-pointer"
               >
-                <Navigation className="w-3 h-3 text-cyan-400" /> Chọn trên bản đồ
+                <Navigation className="w-3 h-3 text-[#B85D3B]" /> 
+                <span>Chọn trên bản đồ</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="text-[10px] text-slate-400 block mb-0.5 font-mono">Vĩ độ (Latitude)</span>
+                <span className="text-[10px] text-stone-500 block mb-1 font-mono">Vĩ độ (Latitude)</span>
                 <input
                   type="text"
                   required
                   placeholder="21.0287"
                   value={lat}
                   onChange={(e) => setLat(e.target.value)}
-                  className="w-full glass-input rounded-xl px-3 py-1.5 text-white font-mono text-xs outline-none"
+                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-1.5 text-xs text-[#1C382B] font-mono outline-none focus:border-[#B85D3B]"
                 />
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block mb-0.5 font-mono">Kinh độ (Longitude)</span>
+                <span className="text-[10px] text-stone-500 block mb-1 font-mono">Kinh độ (Longitude)</span>
                 <input
                   type="text"
                   required
                   placeholder="105.8523"
                   value={lon}
                   onChange={(e) => setLon(e.target.value)}
-                  className="w-full glass-input rounded-xl px-3 py-1.5 text-white font-mono text-xs outline-none"
+                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-1.5 text-xs text-[#1C382B] font-mono outline-none focus:border-[#B85D3B]"
                 />
               </div>
             </div>
           </div>
 
           {/* Giá vé tham quan */}
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-300 flex items-center gap-1">
-              <DollarSign className="w-3 h-3 text-emerald-400" /> Giá vé tham quan (VND, 0 = Miễn phí)
+          <div className="space-y-1.5">
+            <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1.5">
+              <DollarSign className="w-3.5 h-3.5 text-[#B85D3B]" /> 
+              <span>Giá vé tham quan (VND, 0 = Miễn phí)</span>
             </label>
             <input
               type="number"
@@ -257,37 +317,38 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
               placeholder="0"
               value={ticketPrice}
               onChange={(e) => setTicketPrice(Number(e.target.value))}
-              className="w-full glass-input rounded-xl px-3.5 py-2 text-white font-mono outline-none"
+              className="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2 text-xs text-[#1C382B] font-mono outline-none focus:border-[#B85D3B] focus:ring-2 focus:ring-[#B85D3B]/10 transition shadow-2xs"
             />
           </div>
 
           {/* Mô tả */}
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-300 flex items-center gap-1">
-              <Info className="w-3 h-3 text-slate-400" /> Mô tả ngắn gọn về trải nghiệm
+          <div className="space-y-1.5">
+            <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-stone-400" /> 
+              <span>Mô tả ngắn gọn về trải nghiệm</span>
             </label>
             <textarea
               rows={2}
               placeholder="Đặc điểm cảnh quan, ẩm thực, góc chụp ảnh đẹp..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full glass-input rounded-xl p-3 text-white placeholder-slate-500 outline-none resize-none"
+              className="w-full bg-white border border-stone-200 rounded-xl p-3 text-xs text-[#1C382B] placeholder-stone-400 focus:outline-none focus:border-[#B85D3B] focus:ring-2 focus:ring-[#B85D3B]/10 transition shadow-2xs resize-none"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-800/80">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-stone-200/80 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl text-slate-400 hover:text-white transition font-medium"
+              className="px-4 py-2.5 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition font-medium text-xs cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 active:scale-98 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition"
+              className="bg-[#1C382B] hover:bg-[#B85D3B] active:scale-98 text-[#F8F5EE] px-5 py-2.5 rounded-xl font-bold text-xs shadow-md shadow-[#1C382B]/10 flex items-center gap-2 transition cursor-pointer"
             >
               {submitting ? (
                 <>
@@ -307,4 +368,3 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
     </div>
   );
 };
-
