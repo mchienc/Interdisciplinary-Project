@@ -6,6 +6,7 @@ sqlalchemy>=2.0.28
 geoalchemy2>=0.14.4
 shapely>=2.0.3
 scikit-learn>=1.4.0
+scipy>=1.11.0
 ortools>=9.9.0
 httpx>=0.27.0
 python-dotenv>=1.0.1

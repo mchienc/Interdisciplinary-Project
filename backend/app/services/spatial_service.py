@@ -2,7 +2,26 @@ import numpy as np
 from typing import List, Dict, Any, Tuple
 from pyproj import Transformer
 from sklearn.cluster import KMeans
-from scipy.optimize import linear_sum_assignment
+try:
+    from scipy.optimize import linear_sum_assignment
+except ImportError:
+    # Dự phòng an toàn nếu môi trường server chưa có scipy:
+    # Sử dụng thuật toán gán cặp tham lam (Greedy Bipartite Matching) không phụ thuộc C-lib
+    def linear_sum_assignment(cost_matrix):
+        n_rows, n_cols = cost_matrix.shape
+        assigned_cols = set()
+        flat_indices = np.argsort(cost_matrix, axis=None)
+        row_assigned = {}
+        for idx in flat_indices:
+            r = int(idx // n_cols)
+            c = int(idx % n_cols)
+            if r not in row_assigned and c not in assigned_cols:
+                row_assigned[r] = c
+                assigned_cols.add(c)
+                if len(row_assigned) == n_rows:
+                    break
+        col_ind = [row_assigned[r] for r in range(n_rows)]
+        return np.array(range(n_rows)), np.array(col_ind)
 
 # Transformer chuyển đổi giữa WGS84 (kinh độ, vĩ độ) và UTM Zone 49N (hệ tọa độ mét chuẩn cho Việt Nam)
 to_metric = Transformer.from_crs("EPSG:4326", "EPSG:32649", always_xy=True)
