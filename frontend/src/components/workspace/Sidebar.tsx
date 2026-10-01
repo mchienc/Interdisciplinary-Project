@@ -391,7 +391,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 >
                   <span className="flex items-center gap-1.5 font-medium">
                     <Sliders className="w-3.5 h-3.5 text-stone-400" />
-                    Tùy chỉnh nâng cao (dành cho chuyên gia)
+                    Tùy chỉnh nâng cao
                   </span>
                   {showAdvanced ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
@@ -912,7 +912,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           </span>
                           <div>
                             <div className="font-medium text-stone-800">Nghỉ ngơi tại khách sạn</div>
-                            <div className="text-[11px] text-stone-500">Hoàn thành cung đường 1 chiều khép kín</div>
+                            <div className="text-[11px] text-stone-500">Kết thúc ngày tham quan thuận tiện</div>
                           </div>
                         </div>
                       </div>
@@ -992,7 +992,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {loading ? (
             <>
               <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              <span>Đang tính toán tối ưu không gian...</span>
+              <span>Đang sắp xếp lộ trình tối ưu...</span>
             </>
           ) : selectedPoiIds.length < 2 ? (
             <>

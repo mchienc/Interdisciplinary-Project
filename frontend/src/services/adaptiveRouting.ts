@@ -124,8 +124,8 @@ export const evaluateAdaptiveItinerary = (
         suggestion = {
           id: 'weather_rain_swap',
           type: 'weather_rain',
-          title: 'Dự báo mưa rào tại nội thành Hà Nội',
-          message: `Hệ thống gợi ý ghé thăm [${indoorPoi.name}] (Không gian trong nhà) trước thay vì [${outdoorPoi.name}] để chuyến đi thư thái và tránh mưa.`,
+          title: 'Dự báo trời sắp có mưa',
+          message: `Nên ghé thăm [${indoorPoi.name}] (trong nhà) trước thay vì [${outdoorPoi.name}] để chuyến đi thoải mái và không bị ướt mưa.`,
           beforePoiName: outdoorPoi.name,
           recommendedPoiName: indoorPoi.name,
           applied: false
@@ -175,8 +175,8 @@ export const evaluateAdaptiveItinerary = (
           suggestion = {
             id: 'weather_heat_swap',
             type: 'weather_heat',
-            title: `Nắng gắt gay gắt ${weather.temperature.toFixed(1)}°C (UV index cao)`,
-            message: `Nhiệt độ ngoài trời rất cao giữa trưa. Hệ thống đề xuất nghỉ chân tại [${indoorPoi.name}] có điều hòa mát mẻ, dời [${outdoorPoi.name}] về sáng sớm hoặc chiều muộn.`,
+            title: `Trời nắng gắt (${weather.temperature.toFixed(1)}°C)`,
+            message: `Buổi trưa trời rất nắng. Bạn nên ghé [${indoorPoi.name}] có điều hòa mát mẻ, và dời [${outdoorPoi.name}] về lúc trời dịu mát hơn.`,
             beforePoiName: outdoorPoi.name,
             recommendedPoiName: indoorPoi.name,
             applied: false
@@ -207,7 +207,7 @@ export const evaluateAdaptiveItinerary = (
         id: 'traffic_congestion_alert',
         type: 'traffic_congestion',
         title: traffic.label,
-        message: `${traffic.description} Hệ thống đã tự động cộng thêm ${traffic.extraMinutes} phút di chuyển vào lịch trình để đảm bảo đúng giờ.`,
+        message: `${traffic.description} Thời gian di chuyển có thể chậm hơn khoảng ${traffic.extraMinutes} phút.`,
         applied: false
       };
     }

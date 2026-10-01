@@ -137,7 +137,7 @@ export const BudgetEstimator: React.FC<BudgetEstimatorProps> = ({
           </div>
           <div>
             <h4 className="text-xs font-bold text-[#1C382B] uppercase tracking-wider">
-              Dự toán Ngân sách Toàn diện
+              Dự tính Chi phí Chuyến đi
             </h4>
             <div className="text-[10px] text-stone-500">
               Tổng ~{budget.grandTotal.toLocaleString('vi-VN')} đ ({splitPeople} người)
@@ -249,14 +249,14 @@ export const BudgetEstimator: React.FC<BudgetEstimatorProps> = ({
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <Navigation className="w-3.5 h-3.5 text-stone-400" />
-                <span>Di chuyển cước công nghệ ({budget.totalDistance} km):</span>
+                <span>Chi phí di chuyển ({budget.totalDistance} km):</span>
               </span>
               <div className="text-right">
                 <span className="font-semibold text-stone-800">
                   {budget.transportCost === 0 ? 'Miễn phí' : `${budget.transportCost.toLocaleString('vi-VN')} đ`}
                 </span>
                 <span className="text-[10px] text-stone-400 block">
-                  {budget.mode === 'walking' ? 'Đi bộ' : '12k mở cửa + 9.5k/km'}
+                  {budget.mode === 'walking' ? 'Đi bộ' : 'Ước tính theo giá xe công nghệ'}
                 </span>
               </div>
             </div>

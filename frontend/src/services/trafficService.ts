@@ -32,7 +32,7 @@ export const getCurrentTrafficStatus = (date: Date = new Date()): TrafficStatus 
       label: 'Cao điểm sáng',
       color: '#DC2626',
       extraMinutes: 18,
-      description: 'Ùn tắc cục bộ trục Kim Mã, Cầu Giấy và đường gom Vành đai. Thời gian di chuyển tăng 1.6x.',
+      description: 'Ùn tắc cục bộ một số trục đường chính quanh trung tâm. Thời gian di chuyển có thể chậm hơn bình thường.',
       isPeakHour: true
     };
   }
@@ -45,7 +45,7 @@ export const getCurrentTrafficStatus = (date: Date = new Date()): TrafficStatus 
       label: 'Cao điểm tan tầm',
       color: '#DC2626',
       extraMinutes: 22,
-      description: 'Mật độ phương tiện tăng đột biến quanh Phố Cổ, Đống Đa và nút giao Ngã Tư Sở. Thời gian tăng 1.7x.',
+      description: 'Mật độ xe đông quanh khu vực Phố Cổ và các nút giao lớn. Thời gian di chuyển có thể chậm hơn.',
       isPeakHour: true
     };
   }
@@ -58,7 +58,7 @@ export const getCurrentTrafficStatus = (date: Date = new Date()): TrafficStatus 
       label: 'Tan tầm trưa',
       color: '#F59E0B',
       extraMinutes: 8,
-      description: 'Di chuyển chậm tại các khu văn phòng và trường học. Thời gian tăng 1.25x.',
+      description: 'Xe cộ đông hơn vào giờ nghỉ trưa, di chuyển chậm một chút.',
       isPeakHour: false
     };
   }
@@ -70,7 +70,7 @@ export const getCurrentTrafficStatus = (date: Date = new Date()): TrafficStatus 
     label: 'Đường thông thoáng',
     color: '#10B981',
     extraMinutes: 0,
-    description: 'Đường sá lưu thông thuận lợi, phương tiện đạt vận tốc chuẩn theo mô hình OSRM.',
+    description: 'Đường sá lưu thông thuận lợi, di chuyển nhanh chóng và dễ dàng.',
     isPeakHour: false
   };
 };

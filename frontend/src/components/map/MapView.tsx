@@ -554,16 +554,16 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         <div class="space-y-2 max-w-sm p-1 text-stone-800">
           <div class="flex items-center gap-1.5 text-[#B85D3B] font-bold text-xs uppercase tracking-wider">
             <span>🎯</span>
-            Tọa Độ Trung Tâm Lý Tưởng
+            Vị Trí Trung Tâm Thuận Tiện
           </div>
-          <div class="font-serif text-sm font-bold text-[#1C382B]">Điểm Lưu Trú Thuận Tiện Nhất (L1-Median)</div>
+          <div class="font-serif text-sm font-bold text-[#1C382B]">Điểm Lưu Trú Thuận Tiện Nhất</div>
           <div class="text-xs text-stone-600">
-            Tọa độ toán học giúp tổng quãng đường di chuyển tới các điểm tham quan là ngắn nhất.
+            Vị trí trung tâm giúp tổng quãng đường di chuyển tới các điểm tham quan là ngắn nhất.
           </div>
           <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 text-[11px] space-y-1 text-stone-700">
             <div>📍 Vĩ độ: <b class="font-mono text-stone-900">${med.lat.toFixed(4)}</b>, Kinh độ: <b class="font-mono text-stone-900">${med.lon.toFixed(4)}</b></div>
             <div>📏 Khoảng cách trung bình tới các điểm: <b class="text-[#1C382B]">${med.mean_distance_to_pois_km} km</b></div>
-            <div class="text-[#0F766E] font-semibold">⚡ Tiết kiệm so với chọn tự phát: +${med.centroid_comparison_gain_km} km</div>
+            <div class="text-[#0F766E] font-semibold">⚡ Tiết kiệm quãng đường: ~${med.centroid_comparison_gain_km} km</div>
           </div>
         </div>
       `);
@@ -1025,7 +1025,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         <div className="bg-white/90 backdrop-blur-md p-1 rounded-2xl border border-stone-200/90 flex items-center gap-1 shadow-sm">
           <button
             onClick={handleFitBounds}
-            title="Căn vừa toàn bộ các điểm (Fit Bounds)"
+            title="Xem toàn bộ các điểm trên bản đồ"
             className="p-2 rounded-xl hover:bg-stone-100 text-stone-700 hover:text-[#1C382B] transition cursor-pointer"
           >
             <Maximize2 className="w-4 h-4" />
@@ -1033,7 +1033,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
 
           <button
             onClick={handleToggle3D}
-            title={is3D ? 'Chuyển về góc nhìn 2D' : 'Góc nghiêng 3D (45° Pitch)'}
+            title={is3D ? 'Chuyển về góc nhìn 2D' : 'Góc nghiêng 3D'}
             className={`p-2 rounded-xl transition cursor-pointer ${
               is3D ? 'bg-[#1C382B] text-white font-bold' : 'hover:bg-stone-100 text-stone-700'
             }`}
@@ -1044,7 +1044,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           {plan && (
             <button
               onClick={handleFlyToHotel}
-              title="Bay tới khách sạn đề xuất (Fly to Hotel)"
+              title="Xem khách sạn đề xuất"
               className="p-2 rounded-xl hover:bg-[#B85D3B]/10 text-[#B85D3B] transition cursor-pointer"
             >
               <Target className="w-4 h-4" />
@@ -1087,7 +1087,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           {plan && (
             <button
               onClick={() => setShowTrafficLayer(!showTrafficLayer)}
-              title="Bật/Tắt phân đoạn màu mật độ giao thông OSRM"
+              title="Bật/Tắt tình trạng giao thông trên đường"
               className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border ${
                 showTrafficLayer 
                   ? 'bg-[#1C382B] text-white border-[#1C382B] shadow-xs' 
@@ -1132,7 +1132,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
               <span className="w-5 h-5 rounded-full bg-[#1C382B] flex items-center justify-center text-[10px] text-white">
                 🎯
               </span>
-              <span className="text-stone-600">Tọa độ trung tâm tối ưu (L1)</span>
+              <span className="text-stone-600">Vị trí trung tâm thuận tiện nhất</span>
             </div>
 
             <div className="flex items-center gap-2.5">
@@ -1159,7 +1159,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             {showTrafficLayer && (
               <div className="pt-2 border-t border-stone-200/80 space-y-1">
                 <div className="font-semibold text-stone-700 flex items-center gap-1.5 text-[11px]">
-                  <span>🚦</span> Mật độ giao thông OSRM:
+                  <span>🚦</span> Tình trạng đường sá:
                 </div>
                 <div className="grid grid-cols-3 gap-1 pt-0.5">
                   <div className="flex items-center gap-1 text-[10px] text-stone-600">

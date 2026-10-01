@@ -173,7 +173,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
                 Đóng Góp Điểm Du Lịch Mới
               </h2>
               <p className="text-[11px] text-stone-500 font-sans">
-                Tích hợp vào CSDL không gian GIS và mạng lưới tuyến đường
+                Thêm điểm đến vào bản đồ du lịch Hà Nội
               </p>
             </div>
           </div>
@@ -225,7 +225,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
             <div className="space-y-1.5">
               <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1">
                 <Building className="w-3.5 h-3.5 text-stone-400" />
-                <span>Không gian thích ứng</span>
+                <span>Loại không gian</span>
               </label>
               <select
                 value={venueType}
@@ -263,7 +263,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
             <div className="flex items-center justify-between">
               <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-[#B85D3B]" /> 
-                <span>Tọa Độ Địa Lý (EPSG:4326) *</span>
+                <span>Tọa độ vị trí *</span>
               </label>
               <button
                 type="button"
@@ -358,7 +358,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
               ) : (
                 <>
                   <Check className="w-4 h-4" />
-                  <span>Lưu & Tích Hợp Vào CSDL</span>
+                  <span>Lưu địa điểm</span>
                 </>
               )}
             </button>

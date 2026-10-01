@@ -228,7 +228,7 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
               />
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-stone-500">
-                  {hasCustomKey ? '✓ Đang kích hoạt Gemini 1.5 Flash' : 'Hệ thống dùng bộ văn hóa dự phòng'}
+                  {hasCustomKey ? '✓ Đang dùng Gemini AI' : 'Đang dùng dữ liệu sẵn có'}
                 </span>
                 <button
                   type="button"
@@ -299,7 +299,7 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
             {isLoading && (
               <div className="flex items-center gap-2 text-stone-500 text-xs italic bg-[#F2EDE2]/80 px-3 py-2 rounded-2xl rounded-tl-xs border border-stone-200/80 w-fit">
                 <Sparkles className="w-3.5 h-3.5 text-[#B85D3B] animate-spin" />
-                <span>Storyteller đang dệt câu trả lời...</span>
+                <span>Đang soạn câu trả lời...</span>
               </div>
             )}
 

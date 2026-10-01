@@ -112,7 +112,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
                 {tripTitle}
               </h2>
               <p className="text-[11px] text-[#6E6A63] mt-0.5">
-                Tối ưu cự ly &amp; vị trí lưu trú bằng thuật toán không gian
+                Tối ưu cự ly di chuyển &amp; điểm nghỉ chân thuận tiện
               </p>
             </div>
 
@@ -191,7 +191,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             </div>
 
             <div className="flex items-center justify-between pt-1 text-[9px] text-stone-500">
-              <span>Hà Nội SDSS • Smart Urban Tourism</span>
+              <span>Du lịch Thông minh Hà Nội</span>
               <span className="font-mono text-[#B85D3B] font-semibold">#ThongDongHaNoi</span>
             </div>
           </div>
@@ -206,12 +206,12 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
           {downloading ? (
             <>
               <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              <span>Đang kết xuất ảnh Story...</span>
+              <span>Đang tạo ảnh Story...</span>
             </>
           ) : (
             <>
               <Download className="w-4 h-4" />
-              <span>Tải ảnh Story 9:16 (PNG độ nét cao)</span>
+              <span>Tải ảnh Story (Chia sẻ mạng xã hội)</span>
             </>
           )}
         </button>

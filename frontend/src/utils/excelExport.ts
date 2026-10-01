@@ -20,8 +20,8 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
   // 1. SHEET TỔNG QUAN CHUYẾN ĐI
   // ==========================================
   const overviewRows: (string | number)[][] = [
-    ['HỆ THỐNG HỖ TRỢ RA QUYẾT ĐỊNH KHÔNG GIAN (SDSS) - DU LỊCH HÀ NỘI'],
-    ['KẾ HOẠCH LỊCH TRÌNH VÀ VỊ TRÍ LƯU TRÚ TỐI ƯU TOÀN DIỆN'],
+    ['HỆ THỐNG DU LỊCH THÔNG MINH HÀ NỘI'],
+    ['KẾ HOẠCH LỊCH TRÌNH VÀ VỊ TRÍ LƯU TRÚ THUẬN TIỆN NHẤT'],
     [],
     ['I. THÔNG TIN CHUNG VỀ CHUYẾN ĐI'],
     ['Thời gian lập kế hoạch:', dateStr],
@@ -30,15 +30,15 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
     ['Tổng cự ly di chuyển toàn chuyến:', `${plan.total_trip_distance_km} km`],
     ['Tổng thời gian di chuyển ước tính:', `${Math.round(plan.total_trip_duration_min)} phút (~${(plan.total_trip_duration_min / 60).toFixed(1)} giờ)`],
     [],
-    ['II. ĐIỂM LƯU TRÚ TỐI ƯU (GIẢI THUẬT L1-MEDIAN & MCDA)'],
+    ['II. ĐIỂM LƯU TRÚ THUẬN TIỆN NHẤT'],
     ['Tên khách sạn được chọn:', plan.selected_hotel.name],
     ['Địa chỉ:', plan.selected_hotel.address || 'Hà Nội'],
     ['Tiêu chuẩn / Đánh giá:', `${plan.selected_hotel.stars} sao (${plan.selected_hotel.rating}⭐)`],
     ['Giá phòng tham khảo:', `${plan.selected_hotel.price_per_night.toLocaleString('vi-VN')} VNĐ / đêm`],
-    ['Khoảng cách tới Trung vị Weiszfeld:', `${plan.selected_hotel.distance_to_median_m ? plan.selected_hotel.distance_to_median_m + ' m' : 'Rất gần (< 500m)'}`],
-    ['Điểm đánh giá đa tiêu chí (MCDA):', `${plan.selected_hotel.multi_criteria_score || 95} / 100 điểm`],
-    ['Tọa độ trung vị hình học lý tưởng:', `${plan.geometric_median.lat.toFixed(4)}, ${plan.geometric_median.lon.toFixed(4)}`],
-    ['Hiệu quả tối ưu so với Trọng tâm Centroid:', `Tiết kiệm thêm +${plan.geometric_median.centroid_comparison_gain_km} km`],
+    ['Khoảng cách tới vị trí trung tâm:', `${plan.selected_hotel.distance_to_median_m ? plan.selected_hotel.distance_to_median_m + ' m' : 'Rất gần (< 500m)'}`],
+    ['Điểm đánh giá chất lượng lưu trú:', `${plan.selected_hotel.multi_criteria_score || 95} / 100 điểm`],
+    ['Tọa độ vị trí trung tâm thuận tiện:', `${plan.geometric_median.lat.toFixed(4)}, ${plan.geometric_median.lon.toFixed(4)}`],
+    ['Tiết kiệm quãng đường di chuyển:', `~${plan.geometric_median.centroid_comparison_gain_km} km`],
     [],
     ['III. TÓM TẮT DI CHUYỂN THEO NGÀY'],
     ['Ngày', 'Số điểm ghé thăm', 'Quãng đường (km)', 'Thời gian di chuyển (phút)', 'Lộ trình tóm tắt']
@@ -88,7 +88,7 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
 
   const itineraryRows: (string | number)[][] = [
     ['LỊCH TRÌNH THAM QUAN CHI TIẾT THEO NGÀY'],
-    ['(Thứ tự các điểm được tối ưu hóa bằng Google OR-Tools TSP kết hợp OSRM Routing)'],
+    ['(Lộ trình được sắp xếp tối ưu quãng đường và thời gian di chuyển)'],
     [],
     itineraryHeaders
   ];
@@ -179,7 +179,7 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
     ['(Ước tính tiêu chuẩn cho 1 phòng khách sạn & 1 vé tham quan tiêu chuẩn)'],
     [],
     ['STT', 'Khoản mục chi phí', 'Chi tiết hạng mục', 'Số lượng', 'Đơn giá (VNĐ)', 'Thành tiền (VNĐ)', 'Ghi chú'],
-    [1, 'Phòng khách sạn', `${plan.selected_hotel.name} (${plan.selected_hotel.stars}⭐)`, `${hotelNights} đêm`, plan.selected_hotel.price_per_night, totalHotelPrice, 'Cơ sở lưu trú Weiszfeld tối ưu'],
+    [1, 'Phòng khách sạn', `${plan.selected_hotel.name} (${plan.selected_hotel.stars}⭐)`, `${hotelNights} đêm`, plan.selected_hotel.price_per_night, totalHotelPrice, 'Khách sạn đề xuất tối ưu di chuyển'],
     [2, 'Vé tham quan các điểm', 'Tổng tiền vé toàn bộ các điểm trong lịch trình', `${poiPriceMap.size} điểm`, '-', totalTicketPrice, 'Tổng tiền vé các điểm tham quan'],
     [3, 'Chi phí di chuyển ước tính', 'Taxi / Grab / Xăng xe ước lượng theo cự ly', `${plan.total_trip_distance_km} km`, 12000, estTransportCost, 'Ước tính ~12.000 VNĐ / km'],
     [],
@@ -215,5 +215,5 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
 
   // Kích hoạt lưu file Excel
   const safeDate = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}`;
-  XLSX.writeFile(wb, `Ke_hoach_du_lich_Ha_Noi_SDSS_${safeDate}.xlsx`);
+  XLSX.writeFile(wb, `Ke_hoach_du_lich_Ha_Noi_${safeDate}.xlsx`);
 };
