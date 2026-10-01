@@ -17,6 +17,154 @@ export interface ScheduleStep {
 }
 
 /**
+ * Thông tin Lịch biểu (Thứ trong tuần, Cuối tuần, Ngày/Tháng)
+ */
+export interface DayCalendarInfo {
+  dateObj: Date;
+  dayOfWeek: number;      // 0: Chủ Nhật, 1: Thứ Hai, ..., 6: Thứ Bảy (JS standard)
+  isoDayOfWeek: number;   // 0: Thứ Hai, 4: Thứ Sáu, 6: Chủ Nhật (Python standard)
+  dayName: string;        // "Thứ Hai", "Thứ Bảy", "Chủ Nhật"...
+  shortDayName: string;   // "T2", "T7", "CN"...
+  formattedDate: string;  // "03/10"
+  fullDateStr: string;    // "03/10/2026"
+  isWeekend: boolean;     // Thứ Bảy hoặc Chủ Nhật
+  isFriday: boolean;      // Thứ Sáu
+  label: string;          // "Thứ Bảy, 03/10"
+}
+
+export const getDayCalendarInfo = (dayNumber: number, baseDateStr?: string): DayCalendarInfo => {
+  let baseDate = new Date();
+  if (baseDateStr) {
+    const parts = baseDateStr.split('-').map(Number);
+    if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+      baseDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+  }
+
+  const dateObj = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + (dayNumber - 1));
+  const dayOfWeek = dateObj.getDay(); // 0: CN, 1: T2 ... 6: T7
+  const isoDayOfWeek = (dayOfWeek + 6) % 7; // 0: T2 ... 4: T6, 6: CN
+
+  const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const shortNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+  const dd = dateObj.getDate().toString().padStart(2, '0');
+  const mm = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const yyyy = dateObj.getFullYear();
+
+  return {
+    dateObj,
+    dayOfWeek,
+    isoDayOfWeek,
+    dayName: dayNames[dayOfWeek],
+    shortDayName: shortNames[dayOfWeek],
+    formattedDate: `${dd}/${mm}`,
+    fullDateStr: `${dd}/${mm}/${yyyy}`,
+    isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
+    isFriday: dayOfWeek === 5,
+    label: `${dayNames[dayOfWeek]}, ${dd}/${mm}`
+  };
+};
+
+/**
+ * Các lưu ý và cảnh báo đặc thù về ngày trong tuần / cuối tuần ở Hà Nội
+ */
+export interface DayContextNotice {
+  id: string;
+  type: 'walking_street' | 'lang_bac' | 'museum' | 'traffic' | 'night_market';
+  level: 'info' | 'warning' | 'success';
+  title: string;
+  message: string;
+  badge: string;
+}
+
+export const getDayContextNotices = (
+  dayItinerary: DayItinerary,
+  dayInfo: DayCalendarInfo
+): DayContextNotice[] => {
+  const notices: DayContextNotice[] = [];
+  const pois = dayItinerary.visit_sequence || [];
+
+  const hasHoanKiem = pois.some(p => p.name.includes('Hoàn Kiếm') || p.name.includes('Ngọc Sơn'));
+  const hasPhoCo = pois.some(p => p.name.includes('Phố Cổ') || p.name.includes('Đồng Xuân'));
+  const hasLangBac = pois.some(p => p.name.includes('Lăng') || p.name.includes('Ba Đình'));
+  const hasDanToc = pois.some(p => p.name.includes('Dân tộc'));
+
+  // 1. Phố đi bộ Hồ Gươm (Từ 19h T6 đến hết CN)
+  if ((dayInfo.isWeekend || dayInfo.isFriday) && (hasHoanKiem || hasPhoCo)) {
+    notices.push({
+      id: `notice-walking-${dayItinerary.day}`,
+      type: 'walking_street',
+      level: 'info',
+      badge: '🚶 Không gian đi bộ',
+      title: 'Phố đi bộ Hồ Gươm hoạt động',
+      message: 'Các tuyến đường quanh Hồ Gươm cấm xe cơ giới (sau 19:00 T6 đến hết CN). Phương tiện sẽ dừng ở bãi gửi xe vành đai để bạn tản bộ thư thái.'
+    });
+  }
+
+  // 2. Chợ đêm Phố Cổ (Tối T6, T7, CN)
+  if ((dayInfo.isWeekend || dayInfo.isFriday) && hasPhoCo) {
+    notices.push({
+      id: `notice-market-${dayItinerary.day}`,
+      type: 'night_market',
+      level: 'success',
+      badge: '🏮 Chợ đêm Phố Cổ',
+      title: 'Chợ đêm Hàng Đào - Đồng Xuân mở cửa',
+      message: 'Chỉ diễn ra vào các tối cuối tuần từ 18:30 - 23:00, rất nhộn nhịp ẩm thực phố đêm và quà lưu niệm.'
+    });
+  }
+
+  // 3. Lăng Bác (Thứ 2 & Thứ 6 đóng cửa viếng)
+  if (hasLangBac) {
+    if (dayInfo.dayOfWeek === 1 || dayInfo.dayOfWeek === 5) {
+      notices.push({
+        id: `notice-langbac-closed-${dayItinerary.day}`,
+        type: 'lang_bac',
+        level: 'warning',
+        badge: '⚠️ Đóng cửa định kỳ',
+        title: `Lăng Bác đóng cửa viếng vào ${dayInfo.dayName}`,
+        message: 'Lăng Bác đóng cửa vào các ngày Thứ 2 và Thứ 6. Bạn vẫn có thể ngắm cảnh bên ngoài Quảng trường Ba Đình hoặc chuyển sang viếng vào ngày khác.'
+      });
+    } else if (dayInfo.isWeekend) {
+      notices.push({
+        id: `notice-langbac-weekend-${dayItinerary.day}`,
+        type: 'lang_bac',
+        level: 'info',
+        badge: '✨ Lưu ý cuối tuần',
+        title: 'Cuối tuần đông khách viếng Lăng',
+        message: 'Lăng Bác mở cửa đón khách viếng buổi sáng cuối tuần nhưng lượng khách đông hơn, nên xuất phát sớm từ 07:30 - 08:00.'
+      });
+    }
+  }
+
+  // 4. Bảo tàng Dân tộc học (Thứ 2 đóng cửa)
+  if (hasDanToc && dayInfo.dayOfWeek === 1) {
+    notices.push({
+      id: `notice-museum-${dayItinerary.day}`,
+      type: 'museum',
+      level: 'warning',
+      badge: '⚠️ Đóng cửa Thứ Hai',
+      title: 'Bảo tàng Dân tộc học đóng cửa',
+      message: 'Bảo tàng đóng cửa định kỳ vào Thứ Hai hàng tuần.'
+    });
+  }
+
+  // 5. Giao thông cuối tuần vs ngày thường
+  if (dayInfo.isWeekend) {
+    notices.push({
+      id: `notice-traffic-weekend-${dayItinerary.day}`,
+      type: 'traffic',
+      level: 'info',
+      badge: '🌿 Nhịp sống cuối tuần',
+      title: 'Đường sá cuối tuần thông thoáng',
+      message: 'Buổi sáng không có cảnh ùn tắc đi làm của ngày thường. Buổi chiều tối các khu vui chơi, ẩm thực Phố Cổ và Hồ Tây sẽ rất đông vui.'
+    });
+  }
+
+  return notices;
+};
+
+/**
  * Từ điển Khung giờ vàng trải nghiệm đẹp nhất tại các địa danh Hà Nội
  */
 export const HANOI_GOLDEN_HOURS: Record<string, { slot: string; note: string; startMin: number; endMin: number }> = {
@@ -158,7 +306,8 @@ export const timeStringToMinutes = (timeStr: string): number => {
  */
 export const generateDayTimeline = (
   dayItinerary: DayItinerary,
-  departureTimeStr: string = '08:00'
+  departureTimeStr: string = '08:00',
+  dayInfo?: DayCalendarInfo
 ): ScheduleStep[] => {
   if (!dayItinerary || !dayItinerary.visit_sequence || dayItinerary.visit_sequence.length === 0) {
     return [];
@@ -251,9 +400,11 @@ export const generateDayTimeline = (
       }
     }
 
-    // Kiểm tra cảnh báo giờ đóng cửa
+    // Kiểm tra cảnh báo giờ đóng cửa & ngày đóng cửa định kỳ
     let warning = undefined;
-    if (poi.closed_time) {
+    if (dayInfo && poi.closed_days && poi.closed_days.includes(dayInfo.isoDayOfWeek)) {
+      warning = `⚠️ Điểm này đóng cửa định kỳ vào ${dayInfo.dayName}! Hãy đổi sang ngày khác hoặc ngắm bên ngoài.`;
+    } else if (poi.closed_time) {
       const closedMin = timeStringToMinutes(poi.closed_time);
       if (visitEnd > closedMin) {
         warning = `Lưu ý: Điểm này thường đóng cửa lúc ${poi.closed_time}`;

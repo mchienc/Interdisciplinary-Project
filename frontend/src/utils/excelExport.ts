@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { PlanResponse } from '../types';
-import { generateDayTimeline } from './scheduleHelper';
+import { generateDayTimeline, getDayCalendarInfo } from './scheduleHelper';
 
 /**
  * Tiện ích xuất kế hoạch du lịch thông minh SDSS sang file Excel (.xlsx) chuyên nghiệp
@@ -9,7 +9,11 @@ import { generateDayTimeline } from './scheduleHelper';
  * 2. Lich_Trinh_Chi_Tiet: Chi tiết từng điểm ghé thăm, thứ tự TSP, cự ly từng chặng (Legs), giá vé, giờ mở cửa, tips, link Google Maps
  * 3. Du_Toan_Ngan_Sach: Bảng dự toán chi phí phòng khách sạn, vé tham quan, di chuyển và chia theo đầu người
  */
-export const exportItineraryToExcel = (plan: PlanResponse) => {
+export const exportItineraryToExcel = (
+  plan: PlanResponse,
+  departureTime: string = '08:00',
+  startDateStr?: string
+) => {
   const wb = XLSX.utils.book_new();
 
   const totalDays = plan.daily_itineraries.length || plan.days;
@@ -52,8 +56,9 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
       plan.selected_hotel.name
     ].join(' ➔ ');
 
+    const dayInfo = getDayCalendarInfo(d.day, startDateStr);
     overviewRows.push([
-      `Ngày ${d.day}`,
+      `Ngày ${d.day} (${dayInfo.label})`,
       d.visit_sequence.length,
       d.total_distance_km,
       Math.round(d.total_duration_min),
@@ -96,15 +101,17 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
   ];
 
   plan.daily_itineraries.forEach(d => {
-    const timelineSteps = generateDayTimeline(d, '08:00');
+    const dayInfo = getDayCalendarInfo(d.day, startDateStr);
+    const dayLabel = `Ngày ${d.day} (${dayInfo.label})`;
+    const timelineSteps = generateDayTimeline(d, departureTime, dayInfo);
     const poiSteps = timelineSteps.filter(s => s.type === 'poi');
     const departStep = timelineSteps.find(s => s.type === 'hotel_depart');
     const returnStep = timelineSteps.find(s => s.type === 'hotel_return');
 
     // 1. Xuất phát từ khách sạn
     itineraryRows.push([
-      `Ngày ${d.day}`,
-      departStep?.startTime || '08:00',
+      dayLabel,
+      departStep?.startTime || departureTime,
       'Khởi hành',
       `🏨 ${plan.selected_hotel.name}`,
       'Khách sạn lưu trú',
@@ -122,7 +129,7 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
       const timeSlotText = step ? step.timeSlot : '09:00 – 10:30';
 
       itineraryRows.push([
-        `Ngày ${d.day}`,
+        dayLabel,
         timeSlotText,
         `Điểm ${idx + 1}`,
         p.name,
@@ -138,7 +145,7 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
 
     // 3. Kết thúc ngày trở về khách sạn
     itineraryRows.push([
-      `Ngày ${d.day}`,
+      dayLabel,
       returnStep?.startTime || '18:00',
       'Trở về',
       `🏨 ${plan.selected_hotel.name}`,

@@ -2,20 +2,24 @@ import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 import { X, Download, Sparkles, MapPin, Hotel, Clock, Share2, Compass } from 'lucide-react';
 import { PlanResponse } from '../../types';
-import { generateDayTimeline } from '../../utils/scheduleHelper';
+import { generateDayTimeline, getDayCalendarInfo } from '../../utils/scheduleHelper';
 
 interface StoryCardModalProps {
   isOpen: boolean;
   onClose: () => void;
   plan: PlanResponse | null;
   tripTitle?: string;
+  departureTime?: string;
+  startDate?: string;
 }
 
 export const StoryCardModal: React.FC<StoryCardModalProps> = ({
   isOpen,
   onClose,
   plan,
-  tripTitle = 'Kế hoạch khám phá Thủ đô'
+  tripTitle = 'Kế hoạch khám phá Thủ đô',
+  departureTime = '08:00',
+  startDate
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
@@ -45,8 +49,9 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
     }
   };
 
-  // Tính toán khung giờ cụ thể cho các điểm trong ngày
-  const timelineSteps = currentDayItin ? generateDayTimeline(currentDayItin, '08:00') : [];
+  // Tính toán thông tin ngày tháng và khung giờ cụ thể cho các điểm trong ngày
+  const dayInfo = getDayCalendarInfo(selectedDay, startDate);
+  const timelineSteps = currentDayItin ? generateDayTimeline(currentDayItin, departureTime, dayInfo) : [];
   const poiSteps = timelineSteps.filter(s => s.type === 'poi');
 
   return (
@@ -61,17 +66,20 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             </span>
             {plan.daily_itineraries.length > 1 && (
               <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md p-1 rounded-xl">
-                {plan.daily_itineraries.map(d => (
-                  <button
-                    key={d.day}
-                    onClick={() => setSelectedDay(d.day)}
-                    className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-                      selectedDay === d.day ? 'bg-white text-stone-900 font-bold' : 'text-stone-300 hover:text-white'
-                    }`}
-                  >
-                    Ngày {d.day}
-                  </button>
-                ))}
+                {plan.daily_itineraries.map(d => {
+                  const dInfo = getDayCalendarInfo(d.day, startDate);
+                  return (
+                    <button
+                      key={d.day}
+                      onClick={() => setSelectedDay(d.day)}
+                      className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                        selectedDay === d.day ? 'bg-white text-stone-900 font-bold' : 'text-stone-300 hover:text-white'
+                      }`}
+                    >
+                      Ngày {d.day} ({dInfo.shortDayName})
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -105,7 +113,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
                 </span>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#B85D3B]/10 text-[#B85D3B] font-bold">
-                NGÀY {selectedDay} / {plan.days}
+                NGÀY {selectedDay} • {dayInfo.shortDayName} ({dayInfo.formattedDate})
               </span>
             </div>
 

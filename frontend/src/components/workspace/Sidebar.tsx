@@ -31,7 +31,7 @@ import { exportItineraryToExcel } from '../../utils/excelExport';
 import { useContextAwareness } from '../../context/ContextAwareContext';
 import { BudgetEstimator } from './BudgetEstimator';
 import { generateItineraryNarrative } from '../../services/aiService';
-import { generateDayTimeline, ScheduleStep } from '../../utils/scheduleHelper';
+import { generateDayTimeline, ScheduleStep, getDayCalendarInfo, getDayContextNotices, DayCalendarInfo } from '../../utils/scheduleHelper';
 
 gsap.registerPlugin(useGSAP);
 
@@ -112,6 +112,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showHotelPicker, setShowHotelPicker] = useState(false);
   const [departureTime, setDepartureTime] = useState<string>('08:00');
+  const todayStr = useMemo(() => {
+    const d = new Date();
+    return d.toISOString().split('T')[0];
+  }, []);
+  const [startDate, setStartDate] = useState<string>(todayStr);
 
   // Context-Aware Traffic & Weather Engine
   const { traffic, weather } = useContextAwareness();
@@ -801,29 +806,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             </div>
 
-            {/* Departure Time & Day Tabs */}
+            {/* Departure Time, Start Date & Day Tabs */}
             <div className="space-y-3">
-              {/* Giờ khởi hành Selector */}
-              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-stone-100/90 border border-stone-200/80 text-xs">
-                <span className="font-semibold text-stone-700 flex items-center gap-1.5 text-[11px]">
-                  <Clock className="w-3.5 h-3.5 text-[#B85D3B]" />
-                  <span>Giờ xuất phát:</span>
-                </span>
-                <div className="flex items-center gap-1">
-                  {['07:30', '08:00', '08:30', '09:00'].map((time) => (
-                    <button
-                      key={time}
-                      type="button"
-                      onClick={() => setDepartureTime(time)}
-                      className={`px-2 py-1 rounded-lg text-[11px] font-semibold transition cursor-pointer ${
-                        departureTime === time
-                          ? 'bg-[#1C382B] text-white shadow-xs'
-                          : 'bg-white hover:bg-stone-200 text-stone-700 border border-stone-200'
-                      }`}
-                    >
-                      {time}
-                    </button>
-                  ))}
+              {/* Ngày khởi hành & Giờ xuất phát Selector */}
+              <div className="p-3 rounded-2xl bg-stone-100/90 border border-stone-200/80 space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-stone-700 flex items-center gap-1.5 text-[11px] shrink-0">
+                    <Calendar className="w-3.5 h-3.5 text-[#B85D3B]" />
+                    <span>Ngày khởi hành:</span>
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-stone-300 text-stone-800 shadow-2xs focus:outline-hidden focus:ring-1 focus:ring-[#1C382B] cursor-pointer"
+                    />
+                    {(() => {
+                      const baseInfo = getDayCalendarInfo(1, startDate);
+                      return (
+                        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
+                          baseInfo.isWeekend
+                            ? 'bg-amber-100 text-amber-800 border border-amber-300/80'
+                            : 'bg-stone-200/80 text-stone-700'
+                        }`}>
+                          {baseInfo.dayName}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 text-xs">
+                  <span className="font-semibold text-stone-700 flex items-center gap-1.5 text-[11px]">
+                    <Clock className="w-3.5 h-3.5 text-[#B85D3B]" />
+                    <span>Giờ xuất phát:</span>
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {['07:30', '08:00', '08:30', '09:00'].map((time) => (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => setDepartureTime(time)}
+                        className={`px-2 py-1 rounded-lg text-[11px] font-semibold transition cursor-pointer ${
+                          departureTime === time
+                            ? 'bg-[#1C382B] text-white shadow-xs'
+                            : 'bg-white hover:bg-stone-200 text-stone-700 border border-stone-200'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -839,22 +873,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 >
                   Tất cả các ngày
                 </button>
-                {plan.daily_itineraries.map((d, idx) => (
-                  <button
-                    key={d.day}
-                    onClick={() => setActiveDayTab(d.day)}
-                    style={{
-                      backgroundColor: activeDayTab === d.day ? DAY_COLORS[idx % DAY_COLORS.length] : undefined
-                    }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
-                      activeDayTab === d.day
-                        ? 'text-white shadow-xs'
-                        : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
-                    }`}
-                  >
-                    Ngày {d.day} ({d.visit_sequence.length} điểm)
-                  </button>
-                ))}
+                {plan.daily_itineraries.map((d, idx) => {
+                  const dayInfo = getDayCalendarInfo(d.day, startDate);
+                  return (
+                    <button
+                      key={d.day}
+                      onClick={() => setActiveDayTab(d.day)}
+                      style={{
+                        backgroundColor: activeDayTab === d.day ? DAY_COLORS[idx % DAY_COLORS.length] : undefined
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
+                        activeDayTab === d.day
+                          ? 'text-white shadow-xs'
+                          : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
+                      }`}
+                    >
+                      <span>Ngày {d.day} • {dayInfo.shortDayName} ({d.visit_sequence.length} điểm)</span>
+                      {dayInfo.isWeekend && (
+                        <span className={`text-[9px] px-1 py-0.2 rounded font-bold ${
+                          activeDayTab === d.day ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          Cuối tuần
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Day Timeline */}
@@ -862,7 +906,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {plan.daily_itineraries
                   .filter(d => activeDayTab === null || activeDayTab === d.day)
                   .map((dayItin) => {
-                    const timelineSteps = generateDayTimeline(dayItin, departureTime);
+                    const dayInfo = getDayCalendarInfo(dayItin.day, startDate);
+                    const timelineSteps = generateDayTimeline(dayItin, departureTime, dayInfo);
+                    const notices = getDayContextNotices(dayItin, dayInfo);
                     let poiCounter = 0;
 
                     return (
@@ -873,7 +919,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               style={{ backgroundColor: DAY_COLORS[(dayItin.day - 1) % DAY_COLORS.length] }} 
                               className="w-2.5 h-2.5 rounded-full inline-block"
                             />
-                            Lịch trình Ngày {dayItin.day}
+                            <span>Lịch trình Ngày {dayItin.day} • {dayInfo.label}</span>
+                            {dayInfo.isWeekend && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                Cuối tuần
+                              </span>
+                            )}
                           </span>
                           <div className="flex items-center gap-1.5 text-[11px] text-stone-500">
                             <span>{dayItin.total_distance_km} km • ~{Math.round(dayItin.total_duration_min)} phút</span>
@@ -884,6 +935,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             )}
                           </div>
                         </div>
+
+                        {/* Weekend / Special Day Context Notices */}
+                        {notices.length > 0 && (
+                          <div className="space-y-1.5">
+                            {notices.map((n) => (
+                              <div
+                                key={n.id}
+                                className={`p-2 rounded-xl text-xs flex items-start gap-2 border ${
+                                  n.level === 'warning'
+                                    ? 'bg-rose-50/90 border-rose-200 text-rose-800'
+                                    : n.level === 'success'
+                                    ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800'
+                                    : 'bg-amber-50/90 border-amber-200 text-amber-900'
+                                }`}
+                              >
+                                <span className="font-bold text-[10px] px-1.5 py-0.5 rounded-md shrink-0 bg-white/80 border border-current shadow-2xs">
+                                  {n.badge}
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                  <div className="font-bold text-[11px]">{n.title}</div>
+                                  <div className="text-[10px] text-stone-600 mt-0.5 leading-snug">{n.message}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
                         {/* Chronological Timeline Steps */}
                         <div className="space-y-2">
@@ -1049,7 +1126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
 
               <button
-                onClick={() => exportItineraryToExcel(plan)}
+                onClick={() => exportItineraryToExcel(plan, departureTime, startDate)}
                 className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
               >
                 <FileSpreadsheet className="w-4 h-4" />
