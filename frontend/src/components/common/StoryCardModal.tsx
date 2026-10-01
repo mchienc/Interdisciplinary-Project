@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 import { X, Download, Sparkles, MapPin, Hotel, Clock, Share2, Compass } from 'lucide-react';
 import { PlanResponse } from '../../types';
+import { generateDayTimeline } from '../../utils/scheduleHelper';
 
 interface StoryCardModalProps {
   isOpen: boolean;
@@ -44,8 +45,9 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
     }
   };
 
-  // Mock timestamps cho chặng dừng trong ngày
-  const timeSlots = ['08:00', '09:45', '14:00', '16:30', '19:00', '21:00'];
+  // Tính toán khung giờ cụ thể cho các điểm trong ngày
+  const timelineSteps = currentDayItin ? generateDayTimeline(currentDayItin, '08:00') : [];
+  const poiSteps = timelineSteps.filter(s => s.type === 'poi');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
@@ -142,28 +144,31 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             </div>
 
             <div className="space-y-2 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-stone-300/60">
-              {currentDayItin?.visit_sequence.slice(0, 4).map((poi, idx) => (
-                <div key={poi.id} className="relative flex items-center gap-3 pl-1">
-                  <div className="w-5 h-5 rounded-full bg-[#1C382B] text-white text-[10px] font-bold flex items-center justify-center shrink-0 ring-2 ring-[#F8F5EE] z-10">
-                    {idx + 1}
-                  </div>
-                  <div className="flex-1 p-2 rounded-xl bg-white/80 border border-stone-200/70 shadow-3xs flex items-center justify-between">
-                    <div className="min-w-0 pr-2">
-                      <div className="text-[11px] font-bold text-[#1C382B] truncate">
-                        {poi.name}
-                      </div>
-                      <div className="text-[9px] text-stone-500 flex items-center gap-1.5">
-                        <span>{timeSlots[idx % timeSlots.length]}</span>
-                        <span>•</span>
-                        <span>~{poi.estimated_duration_min}p</span>
-                      </div>
+              {currentDayItin?.visit_sequence.slice(0, 4).map((poi, idx) => {
+                const step = poiSteps.find(s => s.poi?.id === poi.id) || poiSteps[idx];
+                const timeSlotText = step ? step.timeSlot : `${poi.estimated_duration_min}p`;
+
+                return (
+                  <div key={poi.id} className="relative flex items-center gap-3 pl-1">
+                    <div className="w-5 h-5 rounded-full bg-[#1C382B] text-white text-[10px] font-bold flex items-center justify-center shrink-0 ring-2 ring-[#F8F5EE] z-10">
+                      {idx + 1}
                     </div>
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 shrink-0">
-                      {poi.category}
-                    </span>
+                    <div className="flex-1 p-2 rounded-xl bg-white/80 border border-stone-200/70 shadow-3xs flex items-center justify-between">
+                      <div className="min-w-0 pr-2">
+                        <div className="text-[11px] font-bold text-[#1C382B] truncate">
+                          {poi.name}
+                        </div>
+                        <div className="text-[9px] text-[#B85D3B] font-mono font-semibold flex items-center gap-1.5">
+                          <span>🕒 {timeSlotText}</span>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 shrink-0">
+                        {poi.category}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

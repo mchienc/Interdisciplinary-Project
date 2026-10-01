@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { PlanResponse } from '../types';
+import { generateDayTimeline } from './scheduleHelper';
 
 /**
  * Tiện ích xuất kế hoạch du lịch thông minh SDSS sang file Excel (.xlsx) chuyên nghiệp
@@ -75,6 +76,7 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
   // ==========================================
   const itineraryHeaders = [
     'Ngày',
+    'Khung giờ dự kiến',
     'Thứ tự',
     'Tên địa điểm / Chặng dừng',
     'Phân loại',
@@ -94,9 +96,15 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
   ];
 
   plan.daily_itineraries.forEach(d => {
+    const timelineSteps = generateDayTimeline(d, '08:00');
+    const poiSteps = timelineSteps.filter(s => s.type === 'poi');
+    const departStep = timelineSteps.find(s => s.type === 'hotel_depart');
+    const returnStep = timelineSteps.find(s => s.type === 'hotel_return');
+
     // 1. Xuất phát từ khách sạn
     itineraryRows.push([
       `Ngày ${d.day}`,
+      departStep?.startTime || '08:00',
       'Khởi hành',
       `🏨 ${plan.selected_hotel.name}`,
       'Khách sạn lưu trú',
@@ -110,8 +118,12 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
 
     // 2. Từng điểm ghé thăm trong ngày
     d.visit_sequence.forEach((p, idx) => {
+      const step = poiSteps.find(s => s.poi?.id === p.id) || poiSteps[idx];
+      const timeSlotText = step ? step.timeSlot : '09:00 – 10:30';
+
       itineraryRows.push([
         `Ngày ${d.day}`,
+        timeSlotText,
         `Điểm ${idx + 1}`,
         p.name,
         p.category,
@@ -127,6 +139,7 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
     // 3. Kết thúc ngày trở về khách sạn
     itineraryRows.push([
       `Ngày ${d.day}`,
+      returnStep?.startTime || '18:00',
       'Trở về',
       `🏨 ${plan.selected_hotel.name}`,
       'Khách sạn lưu trú',
@@ -142,6 +155,7 @@ export const exportItineraryToExcel = (plan: PlanResponse) => {
   const wsItinerary = XLSX.utils.aoa_to_sheet(itineraryRows);
   wsItinerary['!cols'] = [
     { wch: 12 },
+    { wch: 22 },
     { wch: 12 },
     { wch: 40 },
     { wch: 20 },

@@ -16,6 +16,7 @@ export interface POI {
   venue_type?: 'indoor' | 'outdoor' | 'semi-indoor';
   address?: string;
   is_custom?: boolean;
+  golden_hour?: string;
 }
 
 export type WeatherConditionType = 'FAVORABLE' | 'RAIN' | 'HEAT_PEAK';

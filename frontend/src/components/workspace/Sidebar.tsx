@@ -31,6 +31,7 @@ import { exportItineraryToExcel } from '../../utils/excelExport';
 import { useContextAwareness } from '../../context/ContextAwareContext';
 import { BudgetEstimator } from './BudgetEstimator';
 import { generateItineraryNarrative } from '../../services/aiService';
+import { generateDayTimeline, ScheduleStep } from '../../utils/scheduleHelper';
 
 gsap.registerPlugin(useGSAP);
 
@@ -110,6 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showHotelPicker, setShowHotelPicker] = useState(false);
+  const [departureTime, setDepartureTime] = useState<string>('08:00');
 
   // Context-Aware Traffic & Weather Engine
   const { traffic, weather } = useContextAwareness();
@@ -799,8 +801,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             </div>
 
-            {/* Day Tabs */}
+            {/* Departure Time & Day Tabs */}
             <div className="space-y-3">
+              {/* Giờ khởi hành Selector */}
+              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-stone-100/90 border border-stone-200/80 text-xs">
+                <span className="font-semibold text-stone-700 flex items-center gap-1.5 text-[11px]">
+                  <Clock className="w-3.5 h-3.5 text-[#B85D3B]" />
+                  <span>Giờ xuất phát:</span>
+                </span>
+                <div className="flex items-center gap-1">
+                  {['07:30', '08:00', '08:30', '09:00'].map((time) => (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => setDepartureTime(time)}
+                      className={`px-2 py-1 rounded-lg text-[11px] font-semibold transition cursor-pointer ${
+                        departureTime === time
+                          ? 'bg-[#1C382B] text-white shadow-xs'
+                          : 'bg-white hover:bg-stone-200 text-stone-700 border border-stone-200'
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Day Tabs */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                 <button
                   onClick={() => setActiveDayTab(null)}
@@ -834,90 +861,167 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="space-y-3">
                 {plan.daily_itineraries
                   .filter(d => activeDayTab === null || activeDayTab === d.day)
-                  .map((dayItin, dIdx) => (
-                    <div key={dayItin.day} className="p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-3">
-                      <div className="flex items-center justify-between pb-2 border-b border-stone-100">
-                        <span className="font-serif text-xs font-bold text-[#1C382B] flex items-center gap-1.5">
-                          <span 
-                            style={{ backgroundColor: DAY_COLORS[(dayItin.day - 1) % DAY_COLORS.length] }} 
-                            className="w-2.5 h-2.5 rounded-full inline-block"
-                          />
-                          Lịch trình Ngày {dayItin.day}
-                        </span>
-                        <div className="flex items-center gap-1.5 text-[11px] text-stone-500">
-                          <span>{dayItin.total_distance_km} km • ~{Math.round(dayItin.total_duration_min)} phút</span>
-                          {traffic && traffic.extraMinutes > 0 && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-rose-50 text-rose-700 font-semibold border border-rose-200">
-                              +{Math.round(traffic.extraMinutes / plan.daily_itineraries.length)}p kẹt xe
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                  .map((dayItin) => {
+                    const timelineSteps = generateDayTimeline(dayItin, departureTime);
+                    let poiCounter = 0;
 
-                      {/* Stops list */}
-                      <div className="space-y-2">
-                        {/* Start at hotel */}
-                        <div className="flex items-start gap-2 text-xs">
-                          <span className="w-5 h-5 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                            🏨
-                          </span>
-                          <div>
-                            <div className="font-medium text-stone-800">Khởi hành từ chỗ nghỉ</div>
-                            <div className="text-[11px] text-stone-500">{plan.selected_hotel.name}</div>
-                          </div>
-                        </div>
-
-                        {/* POIs */}
-                        {dayItin.visit_sequence.map((poi, pIdx) => (
-                          <div key={poi.id} className="flex items-start gap-2 text-xs pl-0.5">
+                    return (
+                      <div key={dayItin.day} className="p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-3">
+                        <div className="flex items-center justify-between pb-2 border-b border-stone-100">
+                          <span className="font-serif text-xs font-bold text-[#1C382B] flex items-center gap-1.5">
                             <span 
                               style={{ backgroundColor: DAY_COLORS[(dayItin.day - 1) % DAY_COLORS.length] }} 
-                              className="w-5 h-5 rounded-full text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5 shadow-xs"
-                            >
-                              {pIdx + 1}
-                            </span>
-                            <div className="flex-1">
-                              <div className="font-bold text-[#1C382B] flex items-center gap-1.5 flex-wrap">
-                                <span>{poi.name}</span>
-                                {poi.venue_type && (
-                                  <span className={`text-[9px] px-1.5 py-0.2 rounded font-medium border ${
-                                    poi.venue_type === 'indoor'
-                                      ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                      : poi.venue_type === 'semi-indoor'
-                                      ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                      : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                  }`}>
-                                    {poi.venue_type === 'indoor' ? '🏢 Trong nhà' : poi.venue_type === 'semi-indoor' ? '🏛️ Bán lộ thiên' : '🌳 Ngoài trời'}
-                                  </span>
-                                )}
-                                {poi.ideal_time && (
-                                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-medium">
-                                    {poi.ideal_time === 'morning' ? '🌅 Sáng' : poi.ideal_time === 'afternoon' ? '☀️ Chiều' : '🌙 Tối'}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-[10px] text-stone-500 flex items-center gap-2 mt-0.5">
-                                <span>~{poi.estimated_duration_min} phút</span>
-                                <span>•</span>
-                                <span>{poi.ticket_price === 0 ? 'Miễn phí' : `${poi.ticket_price.toLocaleString('vi-VN')} đ`}</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-
-                        {/* Return to hotel */}
-                        <div className="flex items-start gap-2 text-xs">
-                          <span className="w-5 h-5 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                            🏁
+                              className="w-2.5 h-2.5 rounded-full inline-block"
+                            />
+                            Lịch trình Ngày {dayItin.day}
                           </span>
-                          <div>
-                            <div className="font-medium text-stone-800">Nghỉ ngơi tại khách sạn</div>
-                            <div className="text-[11px] text-stone-500">Kết thúc ngày tham quan thuận tiện</div>
+                          <div className="flex items-center gap-1.5 text-[11px] text-stone-500">
+                            <span>{dayItin.total_distance_km} km • ~{Math.round(dayItin.total_duration_min)} phút</span>
+                            {traffic && traffic.extraMinutes > 0 && (
+                              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-rose-50 text-rose-700 font-semibold border border-rose-200">
+                                +{Math.round(traffic.extraMinutes / plan.daily_itineraries.length)}p kẹt xe
+                              </span>
+                            )}
                           </div>
                         </div>
+
+                        {/* Chronological Timeline Steps */}
+                        <div className="space-y-2">
+                          {timelineSteps.map((step) => {
+                            if (step.type === 'hotel_depart') {
+                              return (
+                                <div key={step.id} className="flex items-start gap-2.5 text-xs">
+                                  <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center text-xs shrink-0 mt-0.5 border border-stone-200 shadow-2xs">
+                                    🏨
+                                  </span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-bold text-stone-800">{step.title}</span>
+                                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700">
+                                        {step.startTime}
+                                      </span>
+                                    </div>
+                                    <div className="text-[11px] text-stone-500 truncate">{step.subtitle}</div>
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            if (step.type === 'travel') {
+                              return (
+                                <div key={step.id} className="flex items-center gap-2 pl-2.5 py-0.5 text-[10px] text-stone-400">
+                                  <div className="w-0.5 h-3.5 bg-stone-200 ml-1.5" />
+                                  <span>🚗 {step.durationMin} phút di chuyển ({step.distanceKm} km)</span>
+                                </div>
+                              );
+                            }
+
+                            if (step.type === 'lunch') {
+                              return (
+                                <div key={step.id} className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/80 text-xs space-y-1 my-1">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-bold text-amber-950 flex items-center gap-1.5 text-xs">
+                                      <span>🍜</span> {step.title}
+                                    </span>
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-200/80 text-amber-900">
+                                      {step.timeSlot}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-amber-900/80 leading-relaxed">
+                                    {step.subtitle}
+                                  </p>
+                                </div>
+                              );
+                            }
+
+                            if (step.type === 'poi' && step.poi) {
+                              poiCounter++;
+                              const pNum = poiCounter;
+                              const poi = step.poi;
+
+                              return (
+                                <div key={step.id} className="flex items-start gap-2.5 text-xs pl-0.5">
+                                  <span 
+                                    style={{ backgroundColor: DAY_COLORS[(dayItin.day - 1) % DAY_COLORS.length] }} 
+                                    className="w-6 h-6 rounded-full text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-xs"
+                                  >
+                                    {pNum}
+                                  </span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-1 flex-wrap">
+                                      <span className="font-bold text-[#1C382B] text-xs">{poi.name}</span>
+                                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#B85D3B]/10 text-[#B85D3B] border border-[#B85D3B]/20">
+                                        {step.timeSlot}
+                                      </span>
+                                    </div>
+
+                                    {/* Badges row: Venue Type, Golden Hour, Price */}
+                                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                                      {poi.venue_type && (
+                                        <span className={`text-[9px] px-1.5 py-0.2 rounded font-medium border ${
+                                          poi.venue_type === 'indoor'
+                                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                            : poi.venue_type === 'semi-indoor'
+                                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                        }`}>
+                                          {poi.venue_type === 'indoor' ? '🏢 Trong nhà' : poi.venue_type === 'semi-indoor' ? '🏛️ Bán lộ thiên' : '🌳 Ngoài trời'}
+                                        </span>
+                                      )}
+
+                                      {/* Khung giờ vàng */}
+                                      {step.goldenHour && (
+                                        <span className={`text-[9px] px-2 py-0.2 rounded-md font-medium border flex items-center gap-1 ${
+                                          step.isGoldenHourMatch
+                                            ? 'bg-amber-100 text-amber-900 border-amber-300 font-semibold ring-1 ring-amber-400/40'
+                                            : 'bg-stone-100 text-stone-600 border-stone-200'
+                                        }`} title="Khung giờ trải nghiệm lý tưởng nhất">
+                                          <span>✨</span>
+                                          <span>Giờ vàng: {step.goldenHour}</span>
+                                          {step.isGoldenHourMatch && <span className="text-amber-700 font-bold ml-0.5">★ Đúng giờ</span>}
+                                        </span>
+                                      )}
+
+                                      <span className="text-[10px] text-stone-500 font-medium">
+                                        • {poi.ticket_price === 0 ? 'Miễn phí' : `${poi.ticket_price.toLocaleString('vi-VN')} đ`}
+                                      </span>
+                                    </div>
+
+                                    {step.warning && (
+                                      <div className="mt-1 text-[10px] text-rose-600 font-medium">
+                                        ⚠️ {step.warning}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            if (step.type === 'hotel_return') {
+                              return (
+                                <div key={step.id} className="flex items-start gap-2.5 text-xs">
+                                  <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center text-xs shrink-0 mt-0.5 border border-stone-200 shadow-2xs">
+                                    🏁
+                                  </span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-bold text-stone-800">{step.title}</span>
+                                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700">
+                                        {step.startTime}
+                                      </span>
+                                    </div>
+                                    <div className="text-[11px] text-stone-500">{step.subtitle}</div>
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            return null;
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             </div>
 
