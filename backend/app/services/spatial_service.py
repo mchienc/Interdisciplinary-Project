@@ -2,6 +2,7 @@ import numpy as np
 from typing import List, Dict, Any, Tuple
 from pyproj import Transformer
 from sklearn.cluster import KMeans
+from scipy.optimize import linear_sum_assignment
 
 # Transformer chuyển đổi giữa WGS84 (kinh độ, vĩ độ) và UTM Zone 49N (hệ tọa độ mét chuẩn cho Việt Nam)
 to_metric = Transformer.from_crs("EPSG:4326", "EPSG:32649", always_xy=True)
@@ -101,12 +102,18 @@ def cluster_pois_by_days(
     k_days: int
 ) -> List[List[Dict[str, Any]]]:
     """
-    Phân cụm không gian N điểm tham quan thành K cụm ngày du lịch bằng thuật toán K-Means.
+    Phân cụm không gian N điểm tham quan thành K cụm ngày du lịch bằng thuật toán 
+    K-Means có ràng buộc dung lượng (Balanced / Capacity-Constrained K-Means).
     
     Nguyên lý:
       - Các điểm du lịch gần nhau về mặt không gian địa lý sẽ được gom vào cùng một ngày,
         giúp hạn chế việc du khách phải di chuyển con thoi (zigzag) qua lại giữa các khu vực.
-      - Chuyển đổi tọa độ sang hệ UTM để khoảng cách tính toán chuẩn xác theo mét.
+      - Chuyển đổi tọa độ sang hệ UTM Zone 49N để khoảng cách tính toán chuẩn xác theo mét.
+      - Khắc phục nhược điểm của K-Means truyền thống (thường tạo ra các cụm lệch số lượng lớn,
+        ví dụ: 1 điểm đơn độc ở Tây Hồ còn 5 điểm dồn vào cụm trung tâm):
+        Sử dụng thuật toán Hungarian (Linear Sum Assignment) với N vị trí (slots) được phân bổ đều
+        theo dung lượng floor(N/K) và ceil(N/K) cho từng ngày.
+        Đảm bảo số điểm mỗi ngày luôn đồng đều (chênh lệch tối đa 1 điểm giữa các ngày).
     """
     N = len(pois)
     if k_days <= 1 or N <= k_days:
@@ -118,23 +125,66 @@ def cluster_pois_by_days(
             clusters.append([])
         return clusters
 
-    # Chuyển tọa độ sang metric phẳng
+    # Chuyển tọa độ sang metric phẳng (UTM Zone 49N)
     metric_coords = np.array([
         to_metric.transform(p["lon"], p["lat"]) for p in pois
     ])
 
+    # 1. Khởi tạo trọng tâm cụm ban đầu bằng K-Means
     kmeans = KMeans(n_clusters=k_days, random_state=42, n_init=10)
-    labels = kmeans.fit_predict(metric_coords)
+    kmeans.fit(metric_coords)
+    centers = kmeans.cluster_centers_.copy()
 
-    # Gom nhóm các điểm theo label
+    # 2. Xác định dung lượng cân bằng cho từng ngày
+    # Mỗi ngày nhận floor(N/k) hoặc ceil(N/k) điểm, tổng dung lượng đúng bằng N
+    base = N // k_days
+    rem = N % k_days
+
+    # Ưu tiên thêm 1 slot cho các cụm có mật độ điểm tự nhiên cao hơn trong K-Means ban đầu
+    initial_counts = np.bincount(kmeans.labels_, minlength=k_days)
+    order_by_density = np.argsort(-initial_counts)
+
+    capacities = [base] * k_days
+    for i in range(rem):
+        capacities[order_by_density[i]] += 1
+
+    slot_cluster_ids = []
+    for c, cap in enumerate(capacities):
+        slot_cluster_ids.extend([c] * cap)
+    slot_cluster_ids = np.array(slot_cluster_ids)
+
+    # 3. Lặp tinh chỉnh (Iterative Centroid Refinement) kết hợp Bipartite Matching
+    # Tối ưu hóa việc gán điểm vào các slot ngày để tổng khoảng cách Euclide di chuyển là cực tiểu
+    labels = kmeans.labels_
+    for _ in range(10):
+        expanded_centers = centers[slot_cluster_ids]
+        cost_matrix = np.linalg.norm(metric_coords[:, None, :] - expanded_centers[None, :, :], axis=2)
+        row_ind, col_ind = linear_sum_assignment(cost_matrix)
+        new_labels = slot_cluster_ids[col_ind]
+
+        # Cập nhật lại trọng tâm cụm
+        new_centers = np.zeros_like(centers)
+        for c in range(k_days):
+            pts_in_c = metric_coords[new_labels == c]
+            if len(pts_in_c) > 0:
+                new_centers[c] = np.mean(pts_in_c, axis=0)
+            else:
+                new_centers[c] = centers[c]
+        if np.allclose(centers, new_centers, atol=1.0):
+            labels = new_labels
+            centers = new_centers
+            break
+        centers = new_centers
+        labels = new_labels
+
+    # Gom nhóm các điểm theo label ngày
     grouped: Dict[int, List[Dict[str, Any]]] = {i: [] for i in range(k_days)}
     for idx, label in enumerate(labels):
         grouped[int(label)].append(pois[idx])
 
-    # Sắp xếp các cụm theo khoảng cách từ Tây sang Đông hoặc theo thứ tự địa lý hợp lý
+    # Sắp xếp các cụm theo khoảng cách từ Tây sang Đông (trục X)
     # để lịch trình giữa các ngày có tính tuần tự, mạch lạc
-    cluster_centers = kmeans.cluster_centers_
-    order = np.argsort(cluster_centers[:, 0]) # Sắp xếp theo trục X (kinh độ)
+    order = np.argsort(centers[:, 0])
 
     sorted_clusters = [grouped[int(o)] for o in order if len(grouped[int(o)]) > 0]
     return sorted_clusters
