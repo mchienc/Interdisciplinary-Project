@@ -53,6 +53,24 @@ def get_admin_stats(
         popular_pois=popular_pois
     )
 
+@router.get("/users")
+def get_admin_users(
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Lấy danh sách tài khoản người dùng đã đăng ký trong hệ thống"""
+    users = db.query(User).order_by(User.id.asc()).all()
+    return [
+        {
+            "id": u.id,
+            "email": u.email,
+            "full_name": u.full_name,
+            "role": u.role,
+            "created_at": u.created_at.isoformat() if u.created_at else None
+        }
+        for u in users
+    ]
+
 @router.delete("/pois/{poi_id}")
 def delete_poi(
     poi_id: int,

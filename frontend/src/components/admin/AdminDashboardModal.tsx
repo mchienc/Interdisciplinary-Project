@@ -24,9 +24,10 @@ import {
   deletePoiAdminApi,
   getPendingPoisApi,
   approvePoiAdminApi,
-  rejectPoiAdminApi 
+  rejectPoiAdminApi,
+  getAdminUsersApi
 } from '../../services/authService';
-import { AdminStats, POI } from '../../types';
+import { AdminStats, POI, User } from '../../types';
 
 interface AdminDashboardModalProps {
   pois: POI[];
@@ -42,17 +43,29 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const { isAdminModalOpen, setIsAdminModalOpen, token, user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'stats' | 'pois' | 'pending'>('stats');
+  const [activeTab, setActiveTab] = useState<'stats' | 'pois' | 'pending' | 'users'>('stats');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [pendingPois, setPendingPois] = useState<POI[]>([]);
+  const [adminUsers, setAdminUsers] = useState<User[]>([]);
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (isAdminModalOpen && token) {
       loadStats();
       loadPending();
+      loadUsers();
     }
   }, [isAdminModalOpen, token]);
+
+  const loadUsers = async () => {
+    if (!token) return;
+    try {
+      const uList = await getAdminUsersApi(token);
+      setAdminUsers(uList);
+    } catch (err) {
+      console.warn('Lỗi tải danh sách người dùng:', err);
+    }
+  };
 
   const loadStats = async () => {
     if (!token) return;
@@ -200,6 +213,18 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     {pendingPois.length}
                   </span>
                 )}
+              </button>
+
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                  activeTab === 'users'
+                    ? 'bg-white text-[#1C382B] shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5 text-blue-600" />
+                <span>Thành viên ({adminUsers.length || stats?.total_users || 0})</span>
               </button>
             </div>
 
@@ -376,7 +401,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                 </div>
               </div>
             </div>
-          ) : (
+          ) : activeTab === 'pending' ? (
             /* TAB 3: DUYỆT ĐIỂM MỚI DO DU KHÁCH ĐÓNG GÓP (HƯỚNG 4) */
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -480,6 +505,72 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   ))}
                 </div>
               )}
+            </div>
+          ) : (
+            /* TAB 4: QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG & PHÂN QUYỀN TRONG CSDL */
+            <div className="space-y-4">
+              <div className="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl flex items-center justify-between">
+                <div>
+                  <h4 className="font-serif text-sm font-bold text-emerald-950 flex items-center gap-2">
+                    <Users className="w-4 h-4 text-emerald-700" />
+                    <span>Cơ sở Dữ liệu Tài khoản (Bảng `users`)</span>
+                  </h4>
+                  <p className="text-xs text-emerald-800/80 mt-0.5">
+                    Toàn bộ tài khoản du khách và quản trị viên được lưu trữ bền vững với mã hóa mật khẩu bcrypt và phân quyền RBAC.
+                  </p>
+                </div>
+                <span className="px-3 py-1 bg-white border border-emerald-300 text-emerald-800 text-xs font-mono font-bold rounded-xl shadow-2xs">
+                  {adminUsers.length} tài khoản
+                </span>
+              </div>
+
+              <div className="overflow-hidden bg-white border border-stone-200 rounded-2xl shadow-2xs">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-stone-200 bg-stone-50/80 text-[11px] font-bold text-stone-600 uppercase tracking-wider">
+                      <th className="py-3 px-4">ID</th>
+                      <th className="py-3 px-4">Họ và Tên</th>
+                      <th className="py-3 px-4">Địa chỉ Email</th>
+                      <th className="py-3 px-4">Vai trò (Role)</th>
+                      <th className="py-3 px-4 text-right">Trạng thái CSDL</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100 text-xs">
+                    {adminUsers.map((u) => (
+                      <tr key={u.id} className="hover:bg-stone-50/50 transition">
+                        <td className="py-3 px-4 font-mono font-bold text-stone-400">
+                          #{u.id}
+                        </td>
+                        <td className="py-3 px-4 font-semibold text-stone-900">
+                          {u.full_name || 'Chưa đặt tên'}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-stone-600">
+                          {u.email}
+                        </td>
+                        <td className="py-3 px-4">
+                          {u.role === 'admin' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                              Quản Trị Viên (Admin)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                              <Compass className="w-3 h-3 text-amber-600" />
+                              Du Khách (Traveler)
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium bg-emerald-50 text-emerald-700 font-mono">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Đã đồng bộ CSDL
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

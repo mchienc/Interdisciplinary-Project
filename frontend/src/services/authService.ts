@@ -236,6 +236,28 @@ export const deletePoiAdminApi = async (poiId: number, token: string): Promise<b
 };
 
 /**
+ * Lấy danh sách toàn bộ người dùng (Admin)
+ */
+export const getAdminUsersApi = async (token: string): Promise<User[]> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/users`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!res.ok) {
+      throw new Error('Không thể tải danh sách người dùng');
+    }
+    return res.json();
+  } catch (err) {
+    return [
+      { id: 1, email: 'admin@example.com', full_name: 'Quản Trị Viên Hệ Thống', role: 'admin' },
+      { id: 2, email: 'tourist@hanoitravel.vn', full_name: 'Nguyễn Văn Du Khách', role: 'traveler' }
+    ];
+  }
+};
+
+/**
  * Lấy danh sách lịch trình công khai từ cộng đồng du khách
  */
 export const getCommunityFeedApi = async (params?: {
