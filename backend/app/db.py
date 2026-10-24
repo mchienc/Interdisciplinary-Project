@@ -116,6 +116,19 @@ def init_db():
                 )
                 db.add(admin_user)
 
+            admin_example = db.query(User).filter(User.email == "admin@example.com").first()
+            if not admin_example:
+                admin_example = User(
+                    email="admin@example.com",
+                    hashed_password=hash_password("admin123"),
+                    full_name="Quản Trị Viên Hệ Thống",
+                    role="admin"
+                )
+                db.add(admin_example)
+            elif admin_example.role != "admin":
+                admin_example.role = "admin"
+                admin_example.hashed_password = hash_password("admin123")
+
             tourist_user = db.query(User).filter(User.email == "tourist@hanoitravel.vn").first()
             if not tourist_user:
                 tourist_user = User(
