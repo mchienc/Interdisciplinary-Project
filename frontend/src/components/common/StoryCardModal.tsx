@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { X, Download, Sparkles, MapPin, Hotel, Clock, Share2, Compass } from 'lucide-react';
+import { X, Download, MapPin, Hotel, Clock, Share2, Compass } from 'lucide-react';
 import { PlanResponse } from '../../types';
 import { generateDayTimeline, getDayCalendarInfo } from '../../utils/scheduleHelper';
 
@@ -129,7 +129,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             {/* Hotel Mini Badge */}
             <div className="p-3 rounded-2xl bg-[#FDFBF7] border border-stone-300/80 shadow-2xs flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-[#B85D3B]/10 text-[#B85D3B] flex items-center justify-center font-bold shrink-0">
-                🏨
+                <Hotel className="w-4 h-4 text-[#B85D3B]" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[9px] font-mono uppercase tracking-wider text-[#B85D3B] font-bold">
@@ -139,7 +139,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
                   {hotel.name}
                 </div>
                 <div className="text-[10px] text-stone-500">
-                  {hotel.stars}★ • {hotel.rating}⭐ • {hotel.address?.split(',')[0]}
+                  {hotel.stars} sao • {hotel.rating}/5.0 • {hotel.address?.split(',')[0]}
                 </div>
               </div>
             </div>
@@ -166,8 +166,9 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
                         <div className="text-[11px] font-bold text-[#1C382B] truncate">
                           {poi.name}
                         </div>
-                        <div className="text-[9px] text-[#B85D3B] font-mono font-semibold flex items-center gap-1.5">
-                          <span>🕒 {timeSlotText}</span>
+                        <div className="text-[9px] text-[#B85D3B] font-mono font-semibold flex items-center gap-1">
+                          <Clock className="w-2.5 h-2.5 text-[#B85D3B]" />
+                          <span>{timeSlotText}</span>
                         </div>
                       </div>
                       <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 shrink-0">

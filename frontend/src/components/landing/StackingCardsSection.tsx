@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import { ArrowRight, Clock, MapPin, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowRight, Clock, MapPin, CheckCircle2, Compass } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -36,7 +36,7 @@ const ITINERARIES: ItineraryCardData[] = [
     ],
     stops: ['Hồ Hoàn Kiếm', 'Cà phê Trứng Giảng', 'Ô Quan Chưởng', 'Chợ Đồng Xuân'],
     image: '/36-pho_phuong.jpg',
-    badge: '🏮 Sắc màu Phố Cổ & Phố Hàng Mã',
+    badge: 'Sắc màu Phố Cổ & Phố Hàng Mã',
     badgeSub: '36 Phố Phường & Ẩm thực nức tiếng',
     poiIds: [1, 4, 3]
   },
@@ -54,7 +54,7 @@ const ITINERARIES: ItineraryCardData[] = [
     ],
     stops: ['Chùa Trấn Quốc', 'Phủ Tây Hồ', 'Đường Thanh Niên', 'Bánh tôm Hồ Tây'],
     image: '/chua-tran-quoc.jpg',
-    badge: '⛵ Hoàng hôn bên Chùa Trấn Quốc',
+    badge: 'Hoàng hôn bên Chùa Trấn Quốc',
     badgeSub: 'Cổ tự nghìn năm trên đảo cá Hồ Tây',
     poiIds: [5, 6, 4]
   },
@@ -72,7 +72,7 @@ const ITINERARIES: ItineraryCardData[] = [
     ],
     stops: ['Lăng Bác', 'Chùa Một Cột', 'Hoàng Thành Thăng Long', 'Văn Miếu'],
     image: '/hoang-thanh.jpg',
-    badge: '🏛️ Di sản Hoàng Thành Thăng Long',
+    badge: 'Di sản Hoàng Thành Thăng Long',
     badgeSub: 'Quần thể di sản ngàn năm văn hiến',
     poiIds: [2, 6, 7, 3]
   }
@@ -160,7 +160,7 @@ export const StackingCardsSection: React.FC<StackingCardsSectionProps> = ({
       {/* Section Header */}
       <div className="max-w-4xl mx-auto text-center space-y-4 mb-12 lg:mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#B85D3B]/10 text-[#B85D3B] text-xs font-semibold uppercase tracking-wider font-mono">
-          <Sparkles className="w-3.5 h-3.5" />
+          <Compass className="w-3.5 h-3.5" />
           <span>GỢI Ý HÀNH TRÌNH THEO GU</span>
         </div>
         <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1C382B] font-medium leading-tight">

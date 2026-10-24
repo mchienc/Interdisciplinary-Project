@@ -5,6 +5,7 @@
   "description": "Hanoi SDSS Workspace Root",
   "scripts": {
     "dev": "npm --prefix frontend run dev",
+    "backend": "python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload",
     "build": "npm --prefix frontend run build",
     "preview": "npm --prefix frontend run preview"
   }

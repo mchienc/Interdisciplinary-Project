@@ -28,15 +28,14 @@ interface PoiDetailModalProps {
   onFlyToPoi?: (lat: number, lon: number) => void;
 }
 
-const CATEGORY_META: Record<string, { label: string; icon: string; badge: string }> = {
-  heritage: { label: 'Di tích / Lịch sử', icon: '🏛️', badge: 'bg-amber-100 text-amber-900 border-amber-300' },
-  beach: { label: 'Cảnh quan sông / hồ', icon: '🏖️', badge: 'bg-sky-100 text-sky-900 border-sky-300' },
-  nature: { label: 'Thiên nhiên & Sinh thái', icon: '⛰️', badge: 'bg-emerald-100 text-emerald-900 border-emerald-300' },
-  bridge: { label: 'Cầu & Biểu tượng', icon: '🌉', badge: 'bg-indigo-100 text-indigo-900 border-indigo-300' },
-  museum: { label: 'Bảo tàng & Văn hóa', icon: '🎨', badge: 'bg-purple-100 text-purple-900 border-purple-300' },
-  entertainment: { label: 'Giải trí & Làng nghề', icon: '🎡', badge: 'bg-pink-100 text-pink-900 border-pink-300' },
-  culinary: { label: 'Ẩm thực & Chợ đêm', icon: '🍜', badge: 'bg-orange-100 text-orange-900 border-orange-300' },
-  shopping: { label: 'Mua sắm & TTTM', icon: '🛍️', badge: 'bg-rose-100 text-rose-900 border-rose-300' }
+const CATEGORY_META: Record<string, { label: string; badge: string }> = {
+  heritage: { label: 'Di tích / Lịch sử', badge: 'bg-amber-100 text-amber-900 border-amber-300' },
+  nature: { label: 'Thiên nhiên & Hồ nước', badge: 'bg-emerald-100 text-emerald-900 border-emerald-300' },
+  bridge: { label: 'Cầu di sản & Danh thắng', badge: 'bg-teal-100 text-teal-900 border-teal-300' },
+  museum: { label: 'Bảo tàng & Văn hóa', badge: 'bg-stone-100 text-[#1C382B] border-stone-300' },
+  entertainment: { label: 'Giải trí & Làng nghề', badge: 'bg-amber-100 text-amber-900 border-amber-300' },
+  culinary: { label: 'Ẩm thực phố cổ', badge: 'bg-[#B85D3B]/10 text-[#B85D3B] border-[#B85D3B]/30' },
+  shopping: { label: 'Mua sắm & TTTM', badge: 'bg-stone-100 text-stone-900 border-stone-300' }
 };
 
 export const PoiDetailModal: React.FC<PoiDetailModalProps> = ({
@@ -68,12 +67,11 @@ export const PoiDetailModal: React.FC<PoiDetailModalProps> = ({
 
   const catMeta = CATEGORY_META[poi.category] || { 
     label: poi.category, 
-    icon: '📍', 
     badge: 'bg-stone-100 text-stone-800 border-stone-300' 
   };
 
   const handleShare = () => {
-    const text = `Khám phá địa điểm: ${poi.name}\n📍 Tọa độ: ${poi.lat}, ${poi.lon}\n${poi.description || ''}`;
+    const text = `Khám phá địa điểm: ${poi.name}\nTọa độ: ${poi.lat}, ${poi.lon}\n${poi.description || ''}`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -90,10 +88,10 @@ export const PoiDetailModal: React.FC<PoiDetailModalProps> = ({
   const displayImage = imgError || !poi.image_url ? defaultImage : poi.image_url;
 
   const venueLabel = poi.venue_type === 'indoor'
-    ? '🏢 Trong nhà'
+    ? 'Trong nhà'
     : poi.venue_type === 'semi-indoor'
-    ? '🏛️ Bán lộ thiên'
-    : '🌳 Ngoài trời';
+    ? 'Bán lộ thiên'
+    : 'Ngoài trời';
 
   return (
     <div 
@@ -122,7 +120,6 @@ export const PoiDetailModal: React.FC<PoiDetailModalProps> = ({
           <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between z-10">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className={`text-xs px-3 py-1 rounded-full border backdrop-blur-md font-semibold flex items-center gap-1.5 shadow-md ${catMeta.badge}`}>
-                <span>{catMeta.icon}</span>
                 <span>{catMeta.label}</span>
               </span>
               <span className="text-xs px-2.5 py-1 rounded-full border backdrop-blur-md font-semibold bg-white/90 text-stone-800 border-white/40 shadow-xs">

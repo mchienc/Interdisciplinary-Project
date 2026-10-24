@@ -39,12 +39,12 @@ export const ContextStatusPill: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const scenarios: { id: SimulationScenario; label: string; icon: string; desc: string }[] = [
-    { id: 'LIVE', label: 'Thời tiết thực tế', icon: '⚡', desc: 'Đang lấy dữ liệu trực tiếp lúc này' },
-    { id: 'RAIN_STORM', label: 'Nếu trời mưa', icon: '🌧️', desc: 'Gợi ý ưu tiên các điểm trong nhà' },
-    { id: 'HEAT_WAVE', label: 'Nếu trời nắng gắt', icon: '☀️', desc: 'Tránh đi bộ ngoài trời vào giữa trưa' },
-    { id: 'PEAK_EVENING', label: 'Giờ tan tầm (17:45)', icon: '🚦', desc: 'Tính thêm thời gian kẹt xe (+25 phút)' },
-    { id: 'AUTUMN_PERFECT', label: 'Trời thu mát mẻ', icon: '🍂', desc: 'Thời tiết 25°C, đường thông thoáng' },
+  const scenarios: { id: SimulationScenario; label: string; desc: string }[] = [
+    { id: 'LIVE', label: 'Thời tiết thực tế', desc: 'Đang lấy dữ liệu trực tiếp lúc này' },
+    { id: 'RAIN_STORM', label: 'Nếu trời mưa', desc: 'Gợi ý ưu tiên các điểm trong nhà' },
+    { id: 'HEAT_WAVE', label: 'Nếu trời nắng gắt', desc: 'Tránh đi bộ ngoài trời vào giữa trưa' },
+    { id: 'PEAK_EVENING', label: 'Giờ tan tầm (17:45)', desc: 'Tính thêm thời gian kẹt xe (+25 phút)' },
+    { id: 'AUTUMN_PERFECT', label: 'Trời thu mát mẻ', desc: 'Thời tiết 25°C, đường thông thoáng' },
   ];
 
   const weatherBadgeText = weather.condition === 'RAIN' 
@@ -65,7 +65,11 @@ export const ContextStatusPill: React.FC = () => {
       >
         {/* Weather Segment */}
         <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1C382B]">
-          <span className="text-sm">{weather.conditionIcon}</span>
+          {weather.condition === 'RAIN' ? (
+            <CloudRain className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          ) : (
+            <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+          )}
           <span>{weather.temperature.toFixed(0)}°C</span>
           <span className="hidden md:inline font-normal text-stone-500">• {weather.conditionLabel}</span>
         </div>
@@ -130,8 +134,14 @@ export const ContextStatusPill: React.FC = () => {
           <div className="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-2xs space-y-2.5">
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{weather.conditionIcon}</span>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center shrink-0">
+                    {weather.condition === 'RAIN' ? (
+                      <CloudRain className="w-6 h-6 text-blue-600" />
+                    ) : (
+                      <Sun className="w-6 h-6 text-amber-500" />
+                    )}
+                  </div>
                   <div>
                     <div className="text-xl font-serif font-bold text-[#1C382B]">
                       {weather.temperature.toFixed(1)}°C
@@ -195,7 +205,7 @@ export const ContextStatusPill: React.FC = () => {
             </div>
 
             <div className="p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs">
-              <div className="grid grid-cols-6 gap-1.5 items-end h-22 pt-2">
+              <div className="grid grid-cols-6 gap-1.5 items-end h-[88px] pt-2">
                 {forecast.map((item, idx) => {
                   const barHeight = Math.max(10, Math.round((item.rainProb / 100) * 50));
                   const barColor = item.rainProb >= 60 
@@ -276,13 +286,10 @@ export const ContextStatusPill: React.FC = () => {
                       : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">{sc.icon}</span>
-                    <div>
-                      <div className="font-bold">{sc.label}</div>
-                      <div className={`text-[10px] ${scenario === sc.id ? 'text-stone-300' : 'text-stone-500'}`}>
-                        {sc.desc}
-                      </div>
+                  <div>
+                    <div className="font-bold">{sc.label}</div>
+                    <div className={`text-[10px] ${scenario === sc.id ? 'text-stone-300' : 'text-stone-500'}`}>
+                      {sc.desc}
                     </div>
                   </div>
                   {scenario === sc.id && (

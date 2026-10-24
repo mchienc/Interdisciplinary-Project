@@ -1,10 +1,11 @@
+import os
 import math
 import httpx
 from typing import List, Dict, Any, Tuple, Optional
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
-OSRM_BASE_URL = "http://router.project-osrm.org"
+OSRM_BASE_URL = os.getenv("OSRM_BASE_URL", "http://router.project-osrm.org").rstrip("/")
 EARTH_RADIUS_M = 6371000.0 # Bán kính trái đất (mét)
 
 MODE_SPEEDS_KMH = {
@@ -111,7 +112,7 @@ async def get_route_geometry_geojson(
     if len(ordered_coords) < 2:
         return {
             "type": "Feature",
-            "properties": {},
+            "properties": {"is_fallback": True, "source": f"Single Point ({mode})"},
             "geometry": {
                 "type": "LineString",
                 "coordinates": [[c[1], c[0]] for c in ordered_coords]
@@ -141,7 +142,8 @@ async def get_route_geometry_geojson(
                         "properties": {
                             "distance_m": route_dist,
                             "duration_s": route_dur,
-                            "source": f"OSRM Routing Engine ({mode})"
+                            "source": f"OSRM Routing Engine ({mode})",
+                            "is_fallback": False
                         },
                         "geometry": route.get("geometry")
                     }
@@ -152,7 +154,8 @@ async def get_route_geometry_geojson(
     return {
         "type": "Feature",
         "properties": {
-            "source": f"Haversine Direct Interpolation ({mode})"
+            "source": f"Haversine Direct Interpolation ({mode})",
+            "is_fallback": True
         },
         "geometry": {
             "type": "LineString",
@@ -168,12 +171,13 @@ def solve_tsp_ortools(
     """
     Giải bài toán Người du lịch (Travelling Salesperson Problem - TSP) bằng Google OR-Tools.
     Tích hợp tối ưu hướng di chuyển theo nhịp sinh học (Sáng -> Chiều -> Tối).
+    Đảm bảo tính chất vòng tròn khép kín (Closed-loop Round Trip): Xuất phát và kết thúc tại khách sạn (depot).
     """
     num_nodes = len(distance_or_duration_matrix)
     if num_nodes <= 1:
-        return [0]
+        return [depot_index, depot_index]
     if num_nodes == 2:
-        return [0, 1]
+        return [0, 1, 0]
 
     # Khởi tạo Routing Index Manager: N nút, 1 xe, xuất phát và kết thúc tại depot
     manager = pywrapcp.RoutingIndexManager(num_nodes, 1, depot_index)
@@ -201,19 +205,21 @@ def solve_tsp_ortools(
     solution = routing.SolveWithParameters(search_parameters)
 
     if not solution:
-        return list(range(num_nodes))
+        return list(range(num_nodes)) + [depot_index]
 
     ordered_route = []
     index = routing.Start(0)
     while not routing.IsEnd(index):
         ordered_route.append(manager.IndexToNode(index))
         index = solution.Value(routing.NextVar(index))
+    # Bổ sung nút kết thúc depot để khép kín lộ trình
+    ordered_route.append(manager.IndexToNode(index))
 
     # Tối ưu hóa hướng di chuyển theo Nhịp sinh học Hà Nội:
     # Nếu đảo chiều lộ trình vòng kín mà giúp điểm sáng nằm ở đầu và điểm tối ở cuối, chọn chiều tối ưu!
     if ideal_times and len(ordered_route) > 3:
-        # Route: [0, p1, p2, ..., pk]
-        stops_forward = ordered_route[1:]
+        # Route dạng [depot, p1, p2, ..., pk, depot]
+        stops_forward = ordered_route[1:-1]
         stops_reverse = list(reversed(stops_forward))
 
         def score_orientation(stops: List[int]) -> int:
@@ -221,7 +227,6 @@ def solve_tsp_ortools(
             for pos, node_idx in enumerate(stops):
                 if node_idx < len(ideal_times):
                     pref = ideal_times[node_idx]
-                    # Đầu ngày ưu tiên morning
                     if pos == 0 and pref == "morning":
                         score += 3
                     elif pos == len(stops) - 1 and pref == "evening":
@@ -233,6 +238,6 @@ def solve_tsp_ortools(
             return score
 
         if score_orientation(stops_reverse) > score_orientation(stops_forward):
-            ordered_route = [0] + stops_reverse
+            ordered_route = [depot_index] + stops_reverse + [depot_index]
 
     return ordered_route

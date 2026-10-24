@@ -45,7 +45,7 @@ def compute_geometric_median_weiszfeld(
         
     Ưu thế học thuật so với Trọng tâm số học (Arithmetic Centroid):
       - Trọng tâm số học (L2 norm bình phương) cực kỳ nhạy cảm với các điểm ngoại lai (Outliers)
-        như Bà Nà Hills hay đỉnh Bán đảo Sơn Trà, làm lệch vị trí khách sạn ra xa khu vực tập trung.
+        như Chùa Hương (Mỹ Đức) hay Vườn quốc gia Ba Vì, làm lệch vị trí khách sạn ra xa khu vực tập trung.
       - Geometric Median (L1 norm) là ước lượng trung tâm kháng ngoại lai (Robust Spatial Central Tendency),
         đảm bảo tổng quãng đường di chuyển của du khách trong suốt chuyến đi là ngắn nhất.
     """

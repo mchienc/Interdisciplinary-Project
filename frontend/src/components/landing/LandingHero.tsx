@@ -6,7 +6,7 @@ import Lenis from 'lenis';
 import { 
   Play, 
   ChevronDown,
-  Sparkles
+  Compass
 } from 'lucide-react';
 import { Navigation } from './Navigation';
 import { SpatialLandmarkCard } from './SpatialLandmarkCard';
@@ -198,7 +198,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
                   {showPresetsMenu && (
                     <div className="absolute left-0 bottom-full mb-3 w-80 bg-[#F8F5EE] border border-stone-300 rounded-2xl p-3 shadow-2xl z-40 space-y-1.5 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-2 py-1 text-[11px] font-sans uppercase tracking-wider text-stone-500 font-semibold flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-[#B85D3B]" />
+                        <Compass className="w-3.5 h-3.5 text-[#B85D3B]" />
                         <span>Chọn kịch bản gợi ý:</span>
                       </div>
                       {USER_PRESETS.map((p) => (

@@ -75,7 +75,7 @@ class PlanRequest(BaseModel):
 class GeometricMedianResult(BaseModel):
     lat: float
     lon: float
-    method: str = "Weiszfeld L1 Norm Geometric Median (Kháng ngoại lai)"
+    method: str = "Tọa độ trung tâm thuận tiện nhất"
     iterations: int
     mean_distance_to_pois_km: float
     centroid_comparison_gain_km: float = Field(..., description="Quãng đường tiết kiệm được so với Trọng tâm số học Centroid đơn thuần")
@@ -106,4 +106,5 @@ class PlanResponse(BaseModel):
     total_trip_distance_km: float
     total_trip_duration_min: float
     transport_mode: str = "driving"
+    routing_source: str = "OSRM"
     message: str = "Tối ưu hóa lịch trình và đề xuất lưu trú thành công."

@@ -15,18 +15,35 @@ import { POI, PlanResponse, PlanRequest, WeightsConfig } from './types';
 import { exportItineraryToExcel } from './utils/excelExport';
 import { FALLBACK_POIS } from './constants/mockData';
 import { fetchPoisApi, optimizeItineraryApi } from './services/api';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthModal } from './components/auth/AuthModal';
+import { MyTripsModal } from './components/trips/MyTripsModal';
+import { CommunityFeedModal } from './components/community/CommunityFeedModal';
+import { AdminDashboardModal } from './components/admin/AdminDashboardModal';
+import { getTripByIdApi } from './services/authService';
+import { SavedTrip } from './types';
 import { 
   Compass, 
-  Sparkles, 
+  Info, 
   Maximize, 
   Minimize, 
   Share2, 
   FileSpreadsheet, 
   Edit3, 
-  ArrowLeft 
+  ArrowLeft,
+  User as UserIcon,
+  Shield,
+  LogOut,
+  ChevronDown,
+  Plus,
+  Camera,
+  Bookmark,
+  Users
 } from 'lucide-react';
 
 const WebGisApp: React.FC = () => {
+  const { user, isAuthenticated, isAdmin, logout, setIsAuthModalOpen, setIsMyTripsOpen, setIsAdminModalOpen, savedTripsCount } = useAuth();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false);
   const [pois, setPois] = useState<POI[]>([]);
   const [selectedPoiIds, setSelectedPoiIds] = useState<number[]>([]);
   const [days, setDays] = useState<number>(2);
@@ -41,6 +58,7 @@ const WebGisApp: React.FC = () => {
   });
   const [selectedHotelId, setSelectedHotelId] = useState<number | null>(null);
   const [hoveredHotelId, setHoveredHotelId] = useState<number | null>(null);
+  const [hoveredPoiId, setHoveredPoiId] = useState<number | null>(null);
   const [plan, setPlan] = useState<PlanResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeDayTab, setActiveDayTab] = useState<number | null>(null);
@@ -50,6 +68,9 @@ const WebGisApp: React.FC = () => {
   // Context-Aware Engine Hooks
   const { setBasePlan, effectivePlan, traffic, weather } = useContextAwareness();
   const activePlan = effectivePlan || plan;
+
+  // Modal Lịch trình Cộng đồng
+  const [isCommunityModalOpen, setIsCommunityModalOpen] = useState<boolean>(false);
 
   // Modal Dẫn đường Google Maps & Xuất Story
   const [isQrModalOpen, setIsQrModalOpen] = useState<boolean>(false);
@@ -78,14 +99,20 @@ const WebGisApp: React.FC = () => {
   const [selectedPoiForDetail, setSelectedPoiForDetail] = useState<POI | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
-  // 1. Tải danh sách POIs ban đầu
+  // 1. Tải danh sách POIs ban đầu & Tự động kết nối lại khi Backend khởi động
   useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
     const fetchPois = async () => {
       try {
         const data = await fetchPoisApi();
         setPois(data);
-        setSelectedPoiIds(data.slice(0, 6).map((p: POI) => p.id));
+        setSelectedPoiIds(prev => (prev.length > 0 ? prev : data.slice(0, 6).map((p: POI) => p.id)));
         setApiStatus('online');
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
         return;
       } catch {
         setApiStatus('offline');
@@ -93,10 +120,50 @@ const WebGisApp: React.FC = () => {
 
       // Fallback cục bộ nếu backend chưa kết nối
       setPois(FALLBACK_POIS);
-      setSelectedPoiIds(FALLBACK_POIS.slice(0, 6).map(p => p.id));
+      setSelectedPoiIds(prev => (prev.length > 0 ? prev : FALLBACK_POIS.slice(0, 6).map(p => p.id)));
     };
 
     fetchPois();
+
+    // Tự động kiểm tra kết nối định kỳ để chuyển ngay sang Online khi bật backend
+    intervalId = setInterval(() => {
+      fetchPois();
+    }, 5000);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, []);
+
+  // Nạp chuyến đi từ danh sách đã lưu lên bản đồ
+  const handleLoadSavedTrip = (savedTrip: SavedTrip) => {
+    if (savedTrip.plan_data) {
+      setPlan(savedTrip.plan_data);
+      setDays(savedTrip.days);
+      setItineraryTitle(savedTrip.title);
+      if (savedTrip.selected_poi_ids && savedTrip.selected_poi_ids.length > 0) {
+        setSelectedPoiIds(savedTrip.selected_poi_ids);
+      }
+      if (savedTrip.plan_data.selected_hotel) {
+        setSelectedHotelId(savedTrip.plan_data.selected_hotel.id);
+      }
+      setNotification(`Đã tải thành công chuyến đi "${savedTrip.title}" lên bản đồ!`);
+      setTimeout(() => setNotification(null), 3500);
+    }
+  };
+
+  // Kiểm tra tham số ?trip_id= trên URL để nạp link chia sẻ
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tripId = params.get('trip_id');
+    if (tripId) {
+      getTripByIdApi(tripId).then(savedTrip => {
+        handleLoadSavedTrip(savedTrip);
+        setIsWorkspaceActive(true);
+      }).catch(err => {
+        console.warn('Không thể mở liên kết chuyến đi:', err);
+      });
+    }
   }, []);
 
   // 2. Thiết lập trạng thái DOM ban đầu bằng GSAP Context
@@ -115,7 +182,7 @@ const WebGisApp: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  // 3. Kịch bản Điện ảnh: Chuyển từ Landing Page vào Không gian Làm việc WebGIS
+  // 3. Kịch bản: Chuyển trực tiếp từ Landing Page vào Không gian Làm việc WebGIS
   const handleLaunchWorkspace = (presetPoiIds?: number[]) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
@@ -130,6 +197,7 @@ const WebGisApp: React.FC = () => {
         onComplete: () => {
           setIsWorkspaceActive(true);
           setIsTransitioning(false);
+          mapViewRef.current?.getMap()?.resize();
           // Tự động kích hoạt tính toán lộ trình ngay khi vừa chuyển màn hình nếu đã có presets
           if (presetPoiIds && presetPoiIds.length > 0) {
             handleRunOptimization(undefined, presetPoiIds);
@@ -139,16 +207,16 @@ const WebGisApp: React.FC = () => {
 
       // Bước 1: Trượt fade-up nhẹ toàn bộ nội dung Hero lên trên
       tl.to(landingHeroRef.current, {
-        y: -40,
+        y: -30,
         opacity: 0,
-        duration: 0.45,
+        duration: 0.3,
         ease: 'power2.in'
       });
 
-      // Bước 2: Fade-out lớp backdrop blur để lộ bản đồ sắc nét
+      // Bước 2: Fade-out lớp backdrop để lộ bản đồ trực tiếp
       tl.to(landingBackdropRef.current, {
         opacity: 0,
-        duration: 0.6,
+        duration: 0.35,
         ease: 'power2.out',
         onComplete: () => {
           if (landingBackdropRef.current) {
@@ -157,23 +225,23 @@ const WebGisApp: React.FC = () => {
         }
       }, "-=0.15");
 
-      // Bước 3: Đồng thời gọi map.flyTo() lướt từ zoom 10.5 xuống zoom 13.8 tại [105.8523, 21.0287], pitch 30 độ
+      // Căn chỉnh trực tiếp góc nhìn bản đồ làm việc (không zoom lượn từ trên cao xuống)
       mapViewRef.current?.flyDownToWorkspace();
 
-      // Bước 4: Đón đầu điểm rơi của camera, đưa thanh Sidebar và Header trượt vào màn hình
+      // Bước 3: Đưa thanh Sidebar và Header trượt vào ngay cùng lúc bản đồ xuất hiện
       tl.to(headerRef.current, {
         y: '0%',
         opacity: 1,
-        duration: 0.65,
+        duration: 0.4,
         ease: 'power3.out'
-      }, "+=0.6");
+      }, "-=0.2");
 
       tl.to(sidebarWrapperRef.current, {
         x: '0%',
         opacity: 1,
-        duration: 0.7,
+        duration: 0.45,
         ease: 'power3.out'
-      }, "-=0.45");
+      }, "-=0.3");
 
     }, appContainerRef);
   };
@@ -195,38 +263,38 @@ const WebGisApp: React.FC = () => {
       tl.to(headerRef.current, {
         y: '-100%',
         opacity: 0,
-        duration: 0.45,
+        duration: 0.3,
         ease: 'power3.in'
       });
 
       tl.to(sidebarWrapperRef.current, {
         x: '-100%',
         opacity: 0,
-        duration: 0.5,
+        duration: 0.35,
         ease: 'power3.in'
-      }, "-=0.3");
+      }, "-=0.2");
 
-      // Camera bay ngược lên tầng bình lưu nhìn toàn cảnh Hà Nội
+      // Đặt lại góc nhìn bản đồ
       mapViewRef.current?.flyBackToLanding();
 
-      // Hiện lại lớp kính mờ nghệ thuật và trả về vị trí ban đầu
+      // Hiện lại lớp phủ Landing Page
       tl.to(landingBackdropRef.current, {
         opacity: 1,
-        duration: 0.6,
+        duration: 0.35,
         ease: 'power2.out',
         onStart: () => {
           if (landingBackdropRef.current) {
             landingBackdropRef.current.style.pointerEvents = 'auto';
           }
         }
-      }, "+=0.2");
+      }, "-=0.15");
 
       tl.to(landingHeroRef.current, {
         y: 0,
         opacity: 1,
-        duration: 0.6,
+        duration: 0.4,
         ease: 'power3.out'
-      }, "-=0.3");
+      }, "-=0.25");
 
     }, appContainerRef);
   };
@@ -271,6 +339,40 @@ const WebGisApp: React.FC = () => {
       setApiStatus('offline');
       setNotification('Không tìm thấy lộ trình phù hợp với bộ lọc hoặc máy chủ đang ngoại tuyến. Vui lòng thử lại!');
       setTimeout(() => setNotification(null), 4000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Áp dụng kế hoạch sinh ra từ AI Prompt-to-Itinerary
+  const handleApplyAiPlan = async (poiIds: number[], newDays: number, title: string) => {
+    setSelectedPoiIds(poiIds);
+    setDays(newDays);
+    setItineraryTitle(title);
+    setNotification(`AI đã lập thành công kế hoạch: "${title}"`);
+    setTimeout(() => setNotification(null), 4000);
+
+    const payload: PlanRequest = {
+      poi_ids: poiIds,
+      days: newDays,
+      transport_mode: transportMode,
+      max_budget: maxBudget,
+      min_stars: minStars,
+      radius_meters: radiusMeters,
+      weights: weights,
+      traffic_multiplier: traffic?.multiplier || 1.0,
+      weather_condition: weather?.condition || 'FAVORABLE'
+    };
+
+    setLoading(true);
+    try {
+      const data = await optimizeItineraryApi(payload);
+      setPlan(data);
+      setBasePlan(data);
+      setSelectedHotelId(data.selected_hotel.id);
+      setApiStatus('online');
+    } catch {
+      setApiStatus('offline');
     } finally {
       setLoading(false);
     }
@@ -385,6 +487,8 @@ const WebGisApp: React.FC = () => {
           onSelectHotel={handleSelectHotel}
           hoveredHotelId={hoveredHotelId}
           onHoverHotel={setHoveredHotelId}
+          hoveredPoiId={hoveredPoiId}
+          onHoverPoi={setHoveredPoiId}
           activeDayTab={activeDayTab}
           isWorkspaceActive={isWorkspaceActive}
           isPickingLocation={isPickingLocation}
@@ -451,12 +555,22 @@ const WebGisApp: React.FC = () => {
           {/* Badge Trạng thái Máy chủ API */}
           <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100/90 border border-stone-200 text-[11px] font-medium text-stone-600">
             <span className={`w-2 h-2 rounded-full ${apiStatus === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-            <span>{apiStatus === 'online' ? 'SDSS Engine Sẵn sàng' : 'Dữ liệu Nội bộ (Offline)'}</span>
+            <span>{apiStatus === 'online' ? 'Hệ thống trực tuyến' : 'Chế độ ngoại tuyến'}</span>
           </div>
         </div>
 
         {/* PHẢI: Actions Bar & Công cụ Xuất dữ liệu */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Nút Khám phá Lịch trình Cộng đồng */}
+          <button
+            onClick={() => setIsCommunityModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-full bg-amber-50 hover:bg-[#1C382B] hover:text-[#F8F5EE] border border-amber-200/90 text-[#1C382B] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs group"
+            title="Khám phá các lịch trình do cộng đồng du khách chia sẻ"
+          >
+            <Users className="w-3.5 h-3.5 text-amber-700 group-hover:text-amber-300 transition" />
+            <span className="font-bold">Cộng đồng</span>
+          </button>
+
           {/* Real-time Context Status Pill (Weather & Traffic) */}
           <ContextStatusPill />
 
@@ -465,7 +579,7 @@ const WebGisApp: React.FC = () => {
             onClick={() => setIsAddModalOpen(true)}
             className="hidden sm:flex px-3.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-[#1C382B] text-xs font-semibold items-center gap-1.5 transition cursor-pointer shadow-2xs"
           >
-            <span>✨</span>
+            <Plus className="w-3.5 h-3.5 text-[#1C382B]" />
             <span>Thêm điểm đến</span>
           </button>
 
@@ -509,9 +623,86 @@ const WebGisApp: React.FC = () => {
             className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-[#B85D3B]/10 hover:text-[#B85D3B] border border-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
             title="Xuất thẻ ảnh hành trình tỉ lệ 9:16 chia sẻ Instagram/Story"
           >
-            <span>📸</span>
+            <Camera className="w-3.5 h-3.5 text-stone-600" />
             <span className="hidden sm:inline">Xuất ảnh Story</span>
           </button>
+
+          {/* Nút Người Dùng / Đăng Nhập & Phân Quyền RBAC */}
+          {!isAuthenticated ? (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-full bg-[#1C382B] hover:bg-[#B85D3B] text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              title="Đăng nhập hoặc đăng ký tài khoản"
+            >
+              <UserIcon className="w-3.5 h-3.5 text-amber-300" />
+              <span>Đăng nhập</span>
+            </button>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-800 text-xs font-semibold flex items-center gap-2 transition cursor-pointer shadow-2xs"
+                title="Tài khoản cá nhân"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#1C382B] text-white text-[10px] flex items-center justify-center font-bold">
+                  {user?.full_name ? user.full_name[0].toUpperCase() : 'U'}
+                </div>
+                <span className="hidden md:inline max-w-[110px] truncate">{user?.full_name}</span>
+                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                  isAdmin ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                }`}>
+                  {isAdmin ? 'Admin' : 'Du khách'}
+                </span>
+                <ChevronDown className="w-3 h-3 text-stone-400" />
+              </button>
+
+              {isUserMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/90 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-2 border-b border-stone-100">
+                    <div className="font-bold text-xs text-stone-900 truncate">{user?.full_name}</div>
+                    <div className="text-[10px] text-stone-400 truncate">{user?.email}</div>
+                  </div>
+
+                  <div className="py-1">
+                    <button
+                      onClick={() => { setIsMyTripsOpen(true); setIsUserMenuOpen(false); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs text-stone-700 hover:bg-stone-100 flex items-center justify-between transition cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Bookmark className="w-3.5 h-3.5 text-stone-600" />
+                        <span>Hành trình của tôi</span>
+                      </span>
+                      {savedTripsCount > 0 && (
+                        <span className="px-1.5 py-0.2 rounded-full bg-[#B85D3B] text-white text-[9px] font-bold">
+                          {savedTripsCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {isAdmin && (
+                      <button
+                        onClick={() => { setIsAdminModalOpen(true); setIsUserMenuOpen(false); }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-xs text-amber-800 hover:bg-amber-50 flex items-center gap-2 transition cursor-pointer font-semibold"
+                      >
+                        <Shield className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Bảng quản trị Admin</span>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="pt-1 border-t border-stone-100">
+                    <button
+                      onClick={() => { logout(); setIsUserMenuOpen(false); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Đăng xuất</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Nút Toàn màn hình */}
           <button
@@ -549,23 +740,29 @@ const WebGisApp: React.FC = () => {
           weights={weights}
           onChangeWeights={setWeights}
           onRunOptimization={handleRunOptimization}
+          onApplyAiPlan={handleApplyAiPlan}
           plan={activePlan}
           loading={loading}
           selectedHotelId={selectedHotelId}
           onSelectHotel={handleSelectHotel}
           hoveredHotelId={hoveredHotelId}
           onHoverHotel={setHoveredHotelId}
+          hoveredPoiId={hoveredPoiId}
+          onHoverPoi={setHoveredPoiId}
           activeDayTab={activeDayTab}
           setActiveDayTab={setActiveDayTab}
           onOpenAddPoiModal={() => setIsAddModalOpen(true)}
           onOpenPoiDetail={(poi: POI) => setSelectedPoiForDetail(poi)}
+          onOpenQrModal={() => setIsQrModalOpen(true)}
+          onOpenStoryModal={() => setIsStoryModalOpen(true)}
+          itineraryTitle={itineraryTitle}
         />
       </div>
 
       {/* 5. FLOATING NOTIFICATION TOAST (z-50) */}
       {notification && (
         <div className="absolute top-18 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-[#1C382B] text-white text-xs font-semibold rounded-2xl shadow-xl border border-[#B85D3B]/40 flex items-center gap-2.5 animate-in fade-in slide-in-from-top-4 duration-200">
-          <Sparkles className="w-4 h-4 text-[#B85D3B]" />
+          <Info className="w-4 h-4 text-amber-300" />
           <span>{notification}</span>
         </div>
       )}
@@ -615,15 +812,34 @@ const WebGisApp: React.FC = () => {
         context={storytellerContext} 
       />
 
+      {/* 11. MODAL XÁC THỰC (Auth Modal, z-50) */}
+      <AuthModal />
+
+      {/* 12. MODAL HÀNH TRÌNH CỦA TÔI (My Trips Modal, z-50) */}
+      <MyTripsModal onLoadTrip={handleLoadSavedTrip} />
+
+      {/* 13. MODAL LỊCH TRÌNH CỘNG ĐỒNG (Community Feed Modal, z-50) */}
+      <CommunityFeedModal 
+        isOpen={isCommunityModalOpen} 
+        onClose={() => setIsCommunityModalOpen(false)} 
+        onLoadTrip={handleLoadSavedTrip} 
+        allPois={pois} 
+      />
+
+      {/* 14. MODAL BẢNG QUẢN TRỊ ADMIN (Admin Panel, z-50) */}
+      <AdminDashboardModal pois={pois} onPoiDeleted={(id) => setPois(prev => prev.filter(p => p.id !== id))} />
+
     </div>
   );
 };
 
 export const App: React.FC = () => {
   return (
-    <ContextAwareProvider>
-      <WebGisApp />
-    </ContextAwareProvider>
+    <AuthProvider>
+      <ContextAwareProvider>
+        <WebGisApp />
+      </ContextAwareProvider>
+    </AuthProvider>
   );
 };
 export default App;

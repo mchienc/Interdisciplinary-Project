@@ -4,7 +4,6 @@ import { useGSAP } from '@gsap/react';
 import { 
   X, 
   MapPin, 
-  Sparkles, 
   Clock, 
   DollarSign, 
   Tag, 
@@ -27,20 +26,20 @@ interface AddPoiModalProps {
 }
 
 const CATEGORIES = [
-  { id: 'heritage', label: 'Di tích / Lịch sử', icon: '🏛️' },
-  { id: 'beach', label: 'Cảnh quan sông / hồ', icon: '🏖️' },
-  { id: 'nature', label: 'Thiên nhiên & Sinh thái', icon: '⛰️' },
-  { id: 'bridge', label: 'Cầu & Biểu tượng', icon: '🌉' },
-  { id: 'museum', label: 'Bảo tàng & Văn hóa', icon: '🎨' },
-  { id: 'entertainment', label: 'Khu vui chơi / Giải trí', icon: '🎡' },
-  { id: 'culinary', label: 'Ẩm thực & Chợ đêm', icon: '🍜' },
-  { id: 'shopping', label: 'Mua sắm & TTTM', icon: '🛍️' }
+  { id: 'heritage', label: 'Di tích / Lịch sử' },
+  { id: 'beach', label: 'Cảnh quan sông / hồ' },
+  { id: 'nature', label: 'Thiên nhiên & Sinh thái' },
+  { id: 'bridge', label: 'Cầu & Biểu tượng' },
+  { id: 'museum', label: 'Bảo tàng & Văn hóa' },
+  { id: 'entertainment', label: 'Khu vui chơi / Giải trí' },
+  { id: 'culinary', label: 'Ẩm thực & Chợ đêm' },
+  { id: 'shopping', label: 'Mua sắm & TTTM' }
 ];
 
 const VENUE_TYPES = [
-  { id: 'outdoor', label: '🌳 Ngoài trời' },
-  { id: 'semi-indoor', label: '🏛️ Bán lộ thiên' },
-  { id: 'indoor', label: '🏢 Trong nhà' }
+  { id: 'outdoor', label: 'Ngoài trời' },
+  { id: 'semi-indoor', label: 'Bán lộ thiên' },
+  { id: 'indoor', label: 'Trong nhà' }
 ];
 
 export const AddPoiModal: React.FC<AddPoiModalProps> = ({
@@ -164,18 +163,13 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
       >
         {/* Modal Header */}
         <div className="px-6 py-4.5 bg-[#FAF7F0] border-b border-stone-200/80 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#B85D3B]/10 text-[#B85D3B] flex items-center justify-center shadow-xs">
-              <Sparkles className="w-5 h-5 text-[#B85D3B]" />
-            </div>
-            <div>
-              <h2 className="font-serif text-base sm:text-lg font-bold text-[#1C382B]">
-                Đóng Góp Điểm Du Lịch Mới
-              </h2>
-              <p className="text-[11px] text-stone-500 font-sans">
-                Thêm điểm đến vào bản đồ du lịch Hà Nội
-              </p>
-            </div>
+          <div>
+            <h2 className="font-serif text-lg font-bold text-[#1C382B]">
+              Đóng Góp Điểm Du Lịch Mới
+            </h2>
+            <p className="text-[11px] text-stone-500 font-sans mt-0.5">
+              Thêm điểm đến vào bản đồ du lịch Hà Nội
+            </p>
           </div>
           <button
             type="button"
@@ -216,7 +210,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
               >
                 {CATEGORIES.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.icon} {c.label}
+                    {c.label}
                   </option>
                 ))}
               </select>
@@ -225,7 +219,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
             <div className="space-y-1.5">
               <label className="font-semibold text-xs text-[#1C382B] flex items-center gap-1">
                 <Building className="w-3.5 h-3.5 text-stone-400" />
-                <span>Loại không gian</span>
+                <span>Môi trường tham quan</span>
               </label>
               <select
                 value={venueType}

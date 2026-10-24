@@ -7,7 +7,7 @@ import {
   Calendar, 
   Navigation, 
   Compass, 
-  Sparkles, 
+  Loader2, 
   Clock, 
   Star, 
   PlusCircle, 
@@ -22,16 +22,27 @@ import {
   Check,
   Building2,
   DollarSign,
-  Feather
+  Feather,
+  Bookmark,
+  Utensils,
+  AlertCircle,
+  Camera,
+  Coffee,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { POI, Accommodation, PlanResponse, WeightsConfig } from '../../types';
 import { DAY_COLORS } from '../../constants/map';
 import { CATEGORY_META } from '../../constants/categories';
 import { exportItineraryToExcel } from '../../utils/excelExport';
 import { useContextAwareness } from '../../context/ContextAwareContext';
+import { useAuth } from '../../context/AuthContext';
+import { saveTripApi } from '../../services/authService';
 import { BudgetEstimator } from './BudgetEstimator';
-import { generateItineraryNarrative } from '../../services/aiService';
+import { AiTripPlannerCard } from './AiTripPlannerCard';
+import { generateItineraryNarrative, generatePromptToItineraryApi, PromptToItineraryResult } from '../../services/aiService';
 import { generateDayTimeline, ScheduleStep, getDayCalendarInfo, getDayContextNotices, DayCalendarInfo } from '../../utils/scheduleHelper';
+import { ItinerarySkeleton } from '../common/ItinerarySkeleton';
 
 gsap.registerPlugin(useGSAP);
 
@@ -61,12 +72,16 @@ interface SidebarProps {
   onSelectHotel: (hotelId: number) => void;
   hoveredHotelId?: number | null;
   onHoverHotel?: (id: number | null) => void;
+  hoveredPoiId?: number | null;
+  onHoverPoi?: (id: number | null) => void;
   activeDayTab: number | null;
   setActiveDayTab: (day: number | null) => void;
   weights?: WeightsConfig;
   onChangeWeights?: (w: WeightsConfig) => void;
   onOpenQrModal?: () => void;
   onOpenStoryModal?: () => void;
+  itineraryTitle?: string;
+  onApplyAiPlan?: (poiIds: number[], days: number, title: string) => void;
 }
 
 // CATEGORY_META imported from constants/categories
@@ -98,13 +113,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   selectedHotelId,
   onSelectHotel,
   onHoverHotel,
+  hoveredPoiId,
+  onHoverPoi,
   activeDayTab,
   setActiveDayTab,
   weights,
   onChangeWeights,
   onOpenQrModal,
-  onOpenStoryModal
+  onOpenStoryModal,
+  itineraryTitle,
+  onApplyAiPlan
 }) => {
+  // Quản lý xác thực và lưu chuyến đi
+  const { token, isAuthenticated, setIsAuthModalOpen, refreshMyTripsCount, setIsMyTripsOpen } = useAuth();
+  const [isSavingTrip, setIsSavingTrip] = useState<boolean>(false);
+  const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
+
+
+
   // State quản lý tab hiển thị: 'setup' (Cài đặt & chọn điểm) vs 'itinerary' (Lộ trình chi tiết)
   const [sidebarTab, setSidebarTab] = useState<'setup' | 'itinerary'>('setup');
   const [searchQuery, setSearchQuery] = useState('');
@@ -227,6 +253,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onTogglePoi(poiId);
   };
 
+  // Lưu chuyến đi vào tài khoản cá nhân
+  const handleSaveTrip = async () => {
+    if (!plan) return;
+    if (!isAuthenticated || !token) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setIsSavingTrip(true);
+    try {
+      await saveTripApi({
+        title: itineraryTitle || `Hành trình ${plan.days} Ngày Thủ Đô`,
+        days: plan.days,
+        selected_poi_ids: selectedPoiIds,
+        plan_data: plan,
+        is_public: true
+      }, token);
+      setSaveSuccess(true);
+      await refreshMyTripsCount();
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.message || 'Không thể lưu chuyến đi');
+    } finally {
+      setIsSavingTrip(false);
+    }
+  };
+
   return (
     <aside className="w-full h-full bg-[#FDFCF7] border-r border-stone-200/90 text-[#1F2421] flex flex-col justify-between shadow-xl overflow-hidden select-none">
       
@@ -263,10 +315,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#B85D3B]/10 text-[#B85D3B] text-[10px] font-mono uppercase font-semibold">
-                <span>HANOI TRAVEL ASSISTANT</span>
+                <span>CẨM NANG THỦ ĐÔ</span>
               </div>
               <h2 className="font-serif text-lg text-[#1C382B] font-bold mt-1">
-                Lập Kế Hoạch Thong Dong
+                Sắp Xếp Chuyến Đi Thảnh Thơi
               </h2>
             </div>
             <button
@@ -284,12 +336,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           SIDEBAR SCROLLABLE CONTENT BODY
           ======================================================== */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-6">
-        
-        {/* ========================================================
-            TAB 1: SETUP MODE (3 Bước Thảnh Thơi)
-            ======================================================== */}
-        {sidebarTab === 'setup' && (
+        {loading ? (
+          <ItinerarySkeleton />
+        ) : (
           <>
+            {/* ========================================================
+                TAB 1: SETUP MODE (3 Bước Thảnh Thơi)
+                ======================================================== */}
+            {sidebarTab === 'setup' && (
+              <>
+                {/* ----------------------------------------------------
+                    TRỢ LÝ AI: TỰ ĐỘNG TẠO LỊCH TRÌNH THÔNG MINH
+                    ---------------------------------------------------- */}
+                <AiTripPlannerCard
+                  currentDays={days}
+                  allPois={pois}
+                  onApplyPlan={(poiIds, newDays, title) => {
+                    if (onApplyAiPlan) {
+                      onApplyAiPlan(poiIds, newDays, title);
+                    }
+                  }}
+                  onViewItineraryTab={() => setSidebarTab('itinerary')}
+                />
+
             {/* ----------------------------------------------------
                 BƯỚC 1: THỜI GIAN & PHONG CÁCH
                 ---------------------------------------------------- */}
@@ -311,28 +380,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <button
                       key={d}
                       onClick={() => onChangeDays(d)}
-                      className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                      className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center ${
                         days === d
                           ? 'bg-[#1C382B] text-white shadow-xs'
                           : 'bg-white hover:bg-stone-100 text-stone-700 border border-stone-200'
                       }`}
                     >
-                      <Calendar className="w-3 h-3 opacity-70" />
                       <span>{d} Ngày</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Module 5: Phương tiện di chuyển: 🚶 Đi bộ | 🛵 Xe máy | 🚗 Ô tô */}
+              {/* Module 5: Phương tiện di chuyển */}
               {onChangeTransportMode && (
                 <div className="space-y-1.5">
                   <label className="text-xs text-stone-500 font-medium">Phương tiện di chuyển chính:</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { id: 'walking', label: 'Đi bộ', icon: '🚶', speed: '5 km/h' },
-                      { id: 'bike', label: 'Xe máy', icon: '🛵', speed: '28 km/h' },
-                      { id: 'driving', label: 'Ô tô', icon: '🚗', speed: '35 km/h' }
+                      { id: 'walking', label: 'Đi bộ', speed: '5 km/h' },
+                      { id: 'bike', label: 'Xe máy', speed: '28 km/h' },
+                      { id: 'driving', label: 'Ô tô', speed: '35 km/h' }
                     ].map(m => (
                       <button
                         key={m.id}
@@ -344,10 +412,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             : 'bg-white hover:bg-stone-100 text-stone-700 border border-stone-200'
                         }`}
                       >
-                        <div className="flex items-center gap-1">
-                          <span>{m.icon}</span>
-                          <span>{m.label}</span>
-                        </div>
+                        <span>{m.label}</span>
                         <span className={`text-[9px] ${transportMode === m.id ? 'text-stone-300' : 'text-stone-400'}`}>
                           {m.speed}
                         </span>
@@ -368,9 +433,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#B85D3B] transition"
                   >
                     <option value="">Tất cả hạng sao</option>
-                    <option value="3">Từ 3 sao trở lên ⭐⭐⭐</option>
-                    <option value="4">Từ 4 sao cao cấp ⭐⭐⭐⭐</option>
-                    <option value="5">Khách sạn 5 sao sang trọng ⭐⭐⭐⭐⭐</option>
+                    <option value="3">Từ 3 sao trở lên</option>
+                    <option value="4">Từ 4 sao cao cấp</option>
+                    <option value="5">Khách sạn 5 sao sang trọng</option>
                   </select>
                 </div>
 
@@ -509,8 +574,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Module 3: Cảnh báo Giờ mở cửa & Ngày đóng cửa thông minh */}
               {smartWarnings.length > 0 && (
                 <div className="p-3 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-xs text-amber-900 space-y-1 animate-in fade-in duration-200">
-                  <div className="font-semibold text-[11px] uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
-                    <span>💡</span> Gợi ý lịch trình &amp; giờ mở cửa
+                  <div className="font-semibold text-[11px] uppercase tracking-wider text-amber-800">
+                    Gợi ý lịch trình &amp; giờ mở cửa
                   </div>
                   {smartWarnings.map((warning, idx) => (
                     <div key={idx} className="text-[11px] leading-relaxed text-amber-900/90">
@@ -548,13 +613,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition cursor-pointer flex items-center gap-1 ${
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition cursor-pointer ${
                       selectedCategory === cat
                         ? 'bg-[#1C382B] text-white font-semibold'
                         : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-100'
                     }`}
                   >
-                    <span>{meta.icon}</span>
                     <span>{meta.label}</span>
                   </button>
                 ))}
@@ -570,10 +634,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <div
                       key={poi.id}
                       onClick={(e) => handleCardClick(poi.id, e)}
+                      onMouseEnter={() => onHoverPoi?.(poi.id)}
+                      onMouseLeave={() => onHoverPoi?.(null)}
                       className={`p-2.5 rounded-2xl border transition-all duration-200 flex items-center gap-3 cursor-pointer ${
-                        isSelected
-                          ? 'bg-[#FDFBF7] border-[#B85D3B]/70 shadow-xs'
-                          : 'bg-white border-stone-200/90 hover:border-stone-300 hover:shadow-2xs'
+                        hoveredPoiId === poi.id
+                          ? 'ring-2 ring-[#B85D3B] bg-amber-50/80 border-[#B85D3B]'
+                          : isSelected
+                            ? 'bg-[#FDFBF7] border-[#B85D3B]/70 shadow-xs'
+                            : 'bg-white border-stone-200/90 hover:border-stone-300 hover:shadow-2xs'
                       }`}
                     >
                       {/* Thumbnail Image (56x56) */}
@@ -586,8 +654,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             loading="lazy"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-lg">
-                            {meta.icon}
+                          <div className="w-full h-full flex items-center justify-center">
+                            <MapPin className="w-5 h-5 text-stone-400" />
                           </div>
                         )}
                       </div>
@@ -621,7 +689,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               ? 'bg-amber-50 text-amber-700 border-amber-200'
                               : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                           }`}>
-                            {poi.venue_type === 'indoor' ? '🏢 Trong nhà' : poi.venue_type === 'semi-indoor' ? '🏛️ Bán lộ thiên' : '🌳 Ngoài trời'}
+                            {poi.venue_type === 'indoor' ? 'Trong nhà' : poi.venue_type === 'semi-indoor' ? 'Bán lộ thiên' : 'Ngoài trời'}
                           </span>
                           <span className="text-[10px] text-stone-500 flex items-center gap-1">
                             <Clock className="w-2.5 h-2.5 text-[#B85D3B]" />
@@ -634,7 +702,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           {/* Module 3: Khung giờ vàng lý tưởng */}
                           {poi.ideal_time && (
                             <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100/80 text-amber-800 border border-amber-200/70 font-medium">
-                              {poi.ideal_time === 'morning' ? '🌅 Sáng' : poi.ideal_time === 'afternoon' ? '☀️ Chiều' : '🌙 Tối'}
+                              {poi.ideal_time === 'morning' ? 'Sáng' : poi.ideal_time === 'afternoon' ? 'Chiều' : 'Tối'}
                             </span>
                           )}
 
@@ -690,6 +758,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
 
+            {/* Chức năng: Lưu vào Chuyến đi của tôi (RBAC & My Trips) */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSaveTrip}
+                disabled={isSavingTrip}
+                className={`flex-1 py-2.5 px-3.5 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer shadow-xs ${
+                  saveSuccess
+                    ? 'bg-emerald-600 text-white shadow-emerald-200'
+                    : 'bg-[#1C382B] hover:bg-[#B85D3B] text-white shadow-stone-300'
+                }`}
+              >
+                {saveSuccess ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-200" />
+                    <span>Đã lưu vào Chuyến đi!</span>
+                  </>
+                ) : isSavingTrip ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Đang lưu hành trình...</span>
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="w-4 h-4 text-amber-300" />
+                    <span>Lưu vào Chuyến đi của tôi</span>
+                  </>
+                )}
+              </button>
+
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={() => setIsMyTripsOpen(true)}
+                  className="px-3.5 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold border border-stone-200 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                  title="Mở danh sách các chuyến đi đã lưu"
+                >
+                  <Bookmark className="w-3.5 h-3.5 text-stone-600" />
+                  <span className="hidden sm:inline">Đã lưu</span>
+                </button>
+              )}
+            </div>
+
             {/* Chức năng 1: Tự động dệt truyện hành trình (Narrative Journey Guide) */}
             <div className="p-4 rounded-2xl bg-[#FAF7F0] border border-[#B85D3B]/30 shadow-xs space-y-2.5">
               <div className="flex items-center justify-between">
@@ -715,7 +826,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               {isNarrativeLoading ? (
                 <div className="py-3 flex items-center gap-2 text-stone-500 text-xs italic">
-                  <Sparkles className="w-4 h-4 text-[#B85D3B] animate-spin" />
+                  <Loader2 className="w-4 h-4 text-[#B85D3B] animate-spin" />
                   <span>Đang lắng nghe phong vị Thủ đô để dệt câu chuyện...</span>
                 </div>
               ) : narrative ? (
@@ -740,7 +851,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <Hotel className="w-3.5 h-3.5" />
                   Điểm lưu trú lý tưởng nhất
                 </span>
-                <span className="text-xs text-amber-500 font-bold">★ {plan.selected_hotel.rating}</span>
+                <span className="text-xs text-amber-700 font-bold flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-amber-500 text-amber-500 inline" />
+                  {plan.selected_hotel.rating}
+                </span>
               </div>
 
               <div>
@@ -794,11 +908,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <div className="pr-2">
                         <div className="font-semibold">{hotel.name}</div>
                         <div className={`text-[11px] ${selectedHotelId === hotel.id ? 'text-stone-300' : 'text-stone-500'}`}>
-                          {hotel.stars}★ • {(hotel.price_per_night / 1000).toLocaleString()}k đ
+                          {hotel.stars} sao • {(hotel.price_per_night / 1000).toLocaleString()}k đ
                         </div>
                       </div>
                       <span className="text-[11px] font-bold">
-                        {selectedHotelId === hotel.id ? '✓ Đang chọn' : 'Chọn'}
+                        {selectedHotelId === hotel.id ? 'Đang chọn' : 'Chọn'}
                       </span>
                     </div>
                   ))}
@@ -969,7 +1083,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               return (
                                 <div key={step.id} className="flex items-start gap-2.5 text-xs">
                                   <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center text-xs shrink-0 mt-0.5 border border-stone-200 shadow-2xs">
-                                    🏨
+                                    <Hotel className="w-3 h-3 text-stone-600" />
                                   </span>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between">
@@ -988,23 +1102,169 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               return (
                                 <div key={step.id} className="flex items-center gap-2 pl-2.5 py-0.5 text-[10px] text-stone-400">
                                   <div className="w-0.5 h-3.5 bg-stone-200 ml-1.5" />
-                                  <span>🚗 {step.durationMin} phút di chuyển ({step.distanceKm} km)</span>
+                                  <span>{step.durationMin} phút di chuyển ({step.distanceKm} km)</span>
                                 </div>
                               );
                             }
 
+                            // 1. Bữa trưa ẩm thực đặc sản
                             if (step.type === 'lunch') {
                               return (
-                                <div key={step.id} className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/80 text-xs space-y-1 my-1">
+                                <div key={step.id} className="p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50/70 border border-amber-200/90 text-xs space-y-2 my-1 shadow-2xs">
                                   <div className="flex items-center justify-between">
-                                    <span className="font-bold text-amber-950 flex items-center gap-1.5 text-xs">
-                                      <span>🍜</span> {step.title}
-                                    </span>
-                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-200/80 text-amber-900">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded-lg bg-amber-600 text-white flex items-center justify-center shrink-0">
+                                        <Utensils className="w-3.5 h-3.5" />
+                                      </div>
+                                      <div>
+                                        <span className="font-bold text-amber-950 text-xs block leading-tight">
+                                          {step.title}
+                                        </span>
+                                        <span className="text-[10px] text-amber-800/80 font-medium">
+                                          {step.meal ? step.meal.address : 'Ẩm thực phố Hà Nội'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 shrink-0">
                                       {step.timeSlot}
                                     </span>
                                   </div>
-                                  <p className="text-[11px] text-amber-900/80 leading-relaxed">
+
+                                  <div className="text-[11px] text-stone-700 bg-white/80 p-2 rounded-xl border border-amber-200/60 space-y-1">
+                                    <div className="font-semibold text-amber-900 flex items-center gap-1">
+                                      <span>Món khuyên gọi:</span>
+                                      <span className="text-stone-800">{step.meal ? step.meal.recommendedDish : step.subtitle}</span>
+                                    </div>
+                                    {step.meal?.priceRange && (
+                                      <div className="text-[10.5px] text-stone-500">
+                                        Giá tham khảo: <b>{step.meal.priceRange}</b>
+                                      </div>
+                                    )}
+                                    {step.meal?.tip && (
+                                      <div className="text-[10px] text-amber-800/90 italic pt-0.5 border-t border-amber-100">
+                                        💡 {step.meal.tip}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            // 2. Nghỉ trưa & Cà phê thư giãn
+                            if (step.type === 'noon_rest') {
+                              return (
+                                <div key={step.id} className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/80 text-xs flex items-center justify-between gap-2 my-1">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="w-5 h-5 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                                      <Coffee className="w-3 h-3" />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <span className="font-bold text-stone-800 text-xs block truncate">{step.title}</span>
+                                      <span className="text-[10.5px] text-stone-500 block truncate">{step.subtitle}</span>
+                                    </div>
+                                  </div>
+                                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-stone-200/70 text-stone-700 shrink-0">
+                                    {step.timeSlot}
+                                  </span>
+                                </div>
+                              );
+                            }
+
+                            // 3. Hoạt động bổ trợ buổi chiều
+                            if (step.type === 'afternoon_activity') {
+                              return (
+                                <div key={step.id} className="p-3 rounded-2xl bg-gradient-to-r from-emerald-50/90 to-teal-50/60 border border-emerald-200/90 text-xs space-y-1.5 my-1 shadow-2xs">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded-lg bg-emerald-700 text-white flex items-center justify-center shrink-0">
+                                        <Sun className="w-3.5 h-3.5" />
+                                      </div>
+                                      <div>
+                                        <span className="font-bold text-emerald-950 text-xs block leading-tight">
+                                          {step.title}
+                                        </span>
+                                        <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100/80 px-1.5 py-0.2 rounded-md">
+                                          Gợi ý buổi chiều • {step.activity ? step.activity.ticketPrice : 'Tự do'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-200 text-emerald-950 shrink-0">
+                                      {step.timeSlot}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-stone-700 leading-relaxed bg-white/80 p-2 rounded-xl border border-emerald-100">
+                                    {step.subtitle}
+                                  </p>
+                                </div>
+                              );
+                            }
+
+                            // 4. Bữa tối ẩm thực đặc sản
+                            if (step.type === 'dinner') {
+                              return (
+                                <div key={step.id} className="p-3 rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50/80 border border-orange-200 text-xs space-y-2 my-1 shadow-2xs">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded-lg bg-[#B85D3B] text-white flex items-center justify-center shrink-0">
+                                        <Utensils className="w-3.5 h-3.5" />
+                                      </div>
+                                      <div>
+                                        <span className="font-bold text-stone-900 text-xs block leading-tight">
+                                          {step.title}
+                                        </span>
+                                        <span className="text-[10px] text-[#B85D3B] font-semibold">
+                                          {step.meal ? step.meal.address : 'Bữa tối phong vị Thủ Đô'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-orange-200 text-orange-950 shrink-0">
+                                      {step.timeSlot}
+                                    </span>
+                                  </div>
+
+                                  <div className="text-[11px] text-stone-700 bg-white/80 p-2 rounded-xl border border-orange-200/60 space-y-1">
+                                    <div className="font-semibold text-stone-900 flex items-center gap-1">
+                                      <span className="text-[#B85D3B]">Đặc sản khuyên dùng:</span>
+                                      <span>{step.meal ? step.meal.recommendedDish : step.subtitle}</span>
+                                    </div>
+                                    {step.meal?.priceRange && (
+                                      <div className="text-[10.5px] text-stone-500">
+                                        Chi phí: <b>{step.meal.priceRange}</b>
+                                      </div>
+                                    )}
+                                    {step.meal?.tip && (
+                                      <div className="text-[10px] text-stone-600 italic pt-0.5 border-t border-orange-100">
+                                        💡 {step.meal.tip}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            // 5. Trải nghiệm phố đêm Thủ Đô
+                            if (step.type === 'evening_activity') {
+                              return (
+                                <div key={step.id} className="p-3 rounded-2xl bg-gradient-to-r from-slate-900 to-stone-900 text-white text-xs space-y-2 my-1 shadow-sm">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded-lg bg-amber-400 text-stone-900 flex items-center justify-center shrink-0">
+                                        <Moon className="w-3.5 h-3.5" />
+                                      </div>
+                                      <div>
+                                        <span className="font-bold text-amber-200 text-xs block leading-tight">
+                                          {step.title}
+                                        </span>
+                                        <span className="text-[10px] text-stone-300">
+                                          {step.activity ? step.activity.address : 'Phố đêm Hà Nội'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white/20 text-white shrink-0">
+                                      {step.timeSlot}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-stone-200 leading-relaxed bg-white/10 p-2 rounded-xl">
                                     {step.subtitle}
                                   </p>
                                 </div>
@@ -1017,7 +1277,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               const poi = step.poi;
 
                               return (
-                                <div key={step.id} className="flex items-start gap-2.5 text-xs pl-0.5">
+                                <div 
+                                  key={step.id} 
+                                  onMouseEnter={() => onHoverPoi?.(poi.id)}
+                                  onMouseLeave={() => onHoverPoi?.(null)}
+                                  className={`flex items-start gap-2.5 text-xs pl-1.5 pr-2 py-1.5 rounded-xl transition-all cursor-pointer ${
+                                    hoveredPoiId === poi.id ? 'bg-amber-100/80 ring-1 ring-[#B85D3B]' : 'hover:bg-stone-50'
+                                  }`}
+                                >
                                   <span 
                                     style={{ backgroundColor: DAY_COLORS[(dayItin.day - 1) % DAY_COLORS.length] }} 
                                     className="w-6 h-6 rounded-full text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-xs"
@@ -1042,7 +1309,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                             ? 'bg-amber-50 text-amber-700 border-amber-200'
                                             : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                                         }`}>
-                                          {poi.venue_type === 'indoor' ? '🏢 Trong nhà' : poi.venue_type === 'semi-indoor' ? '🏛️ Bán lộ thiên' : '🌳 Ngoài trời'}
+                                          {poi.venue_type === 'indoor' ? 'Trong nhà' : poi.venue_type === 'semi-indoor' ? 'Bán lộ thiên' : 'Ngoài trời'}
                                         </span>
                                       )}
 
@@ -1053,9 +1320,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                             ? 'bg-amber-100 text-amber-900 border-amber-300 font-semibold ring-1 ring-amber-400/40'
                                             : 'bg-stone-100 text-stone-600 border-stone-200'
                                         }`} title="Khung giờ trải nghiệm lý tưởng nhất">
-                                          <span>✨</span>
                                           <span>Giờ vàng: {step.goldenHour}</span>
-                                          {step.isGoldenHourMatch && <span className="text-amber-700 font-bold ml-0.5">★ Đúng giờ</span>}
+                                          {step.isGoldenHourMatch && <span className="text-amber-700 font-bold ml-0.5">• Đúng giờ</span>}
                                         </span>
                                       )}
 
@@ -1065,8 +1331,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     </div>
 
                                     {step.warning && (
-                                      <div className="mt-1 text-[10px] text-rose-600 font-medium">
-                                        ⚠️ {step.warning}
+                                      <div className="mt-1 text-[10px] text-rose-600 font-medium flex items-center gap-1">
+                                        <AlertCircle className="w-3 h-3 shrink-0" />
+                                        <span>{step.warning}</span>
                                       </div>
                                     )}
                                   </div>
@@ -1078,7 +1345,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               return (
                                 <div key={step.id} className="flex items-start gap-2.5 text-xs">
                                   <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center text-xs shrink-0 mt-0.5 border border-stone-200 shadow-2xs">
-                                    🏁
+                                    <MapPin className="w-3 h-3 text-stone-600" />
                                   </span>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between">
@@ -1118,9 +1385,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   type="button"
                   onClick={onOpenStoryModal}
-                  className="py-2.5 px-3 rounded-2xl bg-gradient-to-tr from-[#B85D3B] to-[#D97706] hover:opacity-95 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xs cursor-pointer"
+                  className="py-2.5 px-3 rounded-2xl bg-[#B85D3B] hover:bg-[#9E4C2E] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xs cursor-pointer"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Camera className="w-3.5 h-3.5" />
                   <span>Xuất Story 9:16</span>
                 </button>
               </div>
@@ -1142,6 +1409,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </button>
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
 
@@ -1173,24 +1442,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {loading ? (
             <>
               <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              <span>Đang sắp xếp lộ trình tối ưu...</span>
+              <span>Đang dệt lộ trình thảnh thơi...</span>
             </>
           ) : selectedPoiIds.length < 2 ? (
-            <>
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>✨ Chọn nhanh 6 điểm &amp; Tạo lộ trình</span>
-            </>
+            <span>Gợi ý 6 điểm thân quen &amp; Lên đường</span>
           ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              <span>✨ Tạo lộ trình &amp; Tìm chỗ ở tối ưu</span>
-            </>
+            <span>Khởi tạo hành trình &amp; Tìm nơi nghỉ tiện nhất</span>
           )}
         </button>
 
         {selectedPoiIds.length < 2 && (
           <div className="text-[11px] text-center text-stone-500 mt-1.5 font-medium">
-            💡 Nhấp nút trên để hệ thống tự chọn 6 điểm tiêu biểu Hà Nội
+            Nhấp nút trên để hệ thống tự chọn 6 điểm thân quen tại Hà Nội
           </div>
         )}
       </div>

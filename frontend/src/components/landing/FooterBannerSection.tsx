@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { ArrowRight, Sparkles, Heart } from 'lucide-react';
+import React from 'react';
+import { ArrowRight, Compass, Heart } from 'lucide-react';
 
 interface FooterBannerSectionProps {
   onLaunch: () => void;
@@ -16,7 +16,7 @@ export const FooterBannerSection: React.FC<FooterBannerSectionProps> = ({ onLaun
 
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-emerald-200 text-xs font-mono font-medium backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-[#B85D3B]" />
+            <Compass className="w-3.5 h-3.5 text-[#B85D3B]" />
             <span>KHỞI ĐẦU CHUYẾN ĐI THẢNH THƠI</span>
           </div>
 

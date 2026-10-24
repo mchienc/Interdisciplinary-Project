@@ -1,23 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Sparkles, 
+  Loader2, 
   Send, 
   X, 
-  Key, 
-  Bot, 
   Compass, 
   MessageSquare, 
   Check, 
   RotateCcw,
   BookOpen,
-  Feather
+  Feather,
+  MapPin
 } from 'lucide-react';
 import { 
   askStoryteller, 
   ChatMessage, 
-  StorytellerContext, 
-  getStoredApiKey, 
-  setStoredApiKey 
+  StorytellerContext 
 } from '../../services/aiService';
 
 interface StorytellerChatProps {
@@ -26,10 +23,10 @@ interface StorytellerChatProps {
 }
 
 const DEFAULT_SUGGESTIONS = [
-  '👶 Đi Hỏa Lò cùng trẻ nhỏ cần lưu ý gì?',
-  '☕ Quán cà phê yên tĩnh gần Văn Miếu?',
-  '🍜 Quanh lộ trình này ăn gì ngon nhất?',
-  '🌅 Hoàng hôn Hồ Tây ngắm lúc mấy giờ?'
+  'Đi Hỏa Lò cùng trẻ nhỏ cần lưu ý gì?',
+  'Quán cà phê yên tĩnh gần Văn Miếu?',
+  'Quanh lộ trình này ăn gì ngon nhất?',
+  'Hoàng hôn Hồ Tây ngắm lúc mấy giờ?'
 ];
 
 export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => {
@@ -37,19 +34,12 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
   const [inputMessage, setInputMessage] = useState<string>('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showKeyConfig, setShowKeyConfig] = useState<boolean>(false);
-  const [apiKeyInput, setApiKeyInput] = useState<string>('');
-  const [hasCustomKey, setHasCustomKey] = useState<boolean>(false);
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Khởi tạo tin nhắn chào mừng và kiểm tra API Key
+  // Khởi tạo tin nhắn chào mừng
   useEffect(() => {
-    const existingKey = getStoredApiKey();
-    setHasCustomKey(!!existingKey);
-    setApiKeyInput(existingKey);
-
     const initialWelcome: ChatMessage = {
       id: 'welcome-msg',
       sender: 'assistant',
@@ -66,13 +56,6 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen, isLoading]);
-
-  // Lưu API Key
-  const handleSaveApiKey = () => {
-    setStoredApiKey(apiKeyInput);
-    setHasCustomKey(!!apiKeyInput.trim());
-    setShowKeyConfig(false);
-  };
 
   // Xóa lịch sử trò chuyện
   const handleClearHistory = () => {
@@ -103,8 +86,15 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
 
+    const chatHistory = messages
+      .filter(m => m.id !== 'welcome-msg' && !m.id.startsWith('reset-'))
+      .map(m => ({
+        role: (m.sender === 'user' ? 'user' : 'model') as 'user' | 'model',
+        text: m.text
+      }));
+
     try {
-      const answer = await askStoryteller(query, context);
+      const answer = await askStoryteller(query, context, chatHistory);
 
       const aiMsg: ChatMessage = {
         id: `assistant-${Date.now()}`,
@@ -175,7 +165,7 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
                 </h3>
                 <div className="text-[10px] text-stone-500 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Am hiểu văn hóa &amp; ẩm thực Thủ đô</span>
+                  <span>Trợ lý Văn hóa &amp; Lộ trình Thủ đô</span>
                 </div>
               </div>
             </div>
@@ -183,20 +173,9 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setShowKeyConfig(!showKeyConfig)}
-                title={hasCustomKey ? 'API Key đang hoạt động' : 'Cấu hình Gemini API Key cá nhân'}
-                className={`p-1.5 rounded-xl transition ${
-                  hasCustomKey ? 'text-emerald-700 bg-emerald-50' : 'text-stone-400 hover:text-[#B85D3B]'
-                }`}
-              >
-                <Key className="w-4 h-4" />
-              </button>
-
-              <button
-                type="button"
                 onClick={handleClearHistory}
                 title="Làm mới cuộc trò chuyện"
-                className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 transition"
+                className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -205,47 +184,18 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
                 type="button"
                 onClick={() => setIsOpen(false)}
                 title="Đóng chatbox"
-                className="p-1.5 rounded-xl text-stone-400 hover:text-stone-800 transition"
+                className="p-1.5 rounded-xl text-stone-400 hover:text-stone-800 hover:bg-stone-100 transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* B. Bảng cấu hình API Key (nếu người dùng bấm vào icon chìa khóa) */}
-          {showKeyConfig && (
-            <div className="p-3 bg-stone-100/90 border-b border-stone-200 text-xs space-y-2 animate-in fade-in duration-150">
-              <div className="flex items-center justify-between text-stone-700 font-semibold text-[11px]">
-                <span>Cấu hình Google Gemini API Key</span>
-                <span className="text-[10px] text-stone-500">(Tùy chọn)</span>
-              </div>
-              <input
-                type="password"
-                placeholder="Dán AIzaSy... (Để trống để dùng AI Cục bộ)"
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
-                className="w-full px-2.5 py-1.5 text-xs bg-white border border-stone-300 rounded-lg focus:outline-none focus:border-[#B85D3B]"
-              />
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-stone-500">
-                  {hasCustomKey ? '✓ Đang dùng Gemini AI' : 'Đang dùng dữ liệu sẵn có'}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleSaveApiKey}
-                  className="px-2.5 py-1 rounded-md bg-[#1C382B] text-white text-[11px] font-semibold hover:bg-[#B85D3B] transition"
-                >
-                  Lưu
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* C. Dải Tóm Tắt Ngữ Cảnh Hành Trình */}
           <div className="px-3.5 py-1.5 bg-[#F2EDE2]/60 border-b border-stone-200/60 text-[10px] text-stone-600 flex items-center justify-between truncate">
-            <span className="truncate flex items-center gap-1">
-              <span>📍</span>
-              <b>{context.pois?.length || 0} điểm đến</b>: {context.pois?.slice(0, 2).map(p => p.name).join(', ')}...
+            <span className="truncate flex items-center gap-1.5">
+              <MapPin className="w-3 h-3 text-[#B85D3B] shrink-0" />
+              <span><b>{context.pois?.length || 0} điểm đến</b>: {context.pois?.slice(0, 2).map(p => p.name).join(', ')}...</span>
             </span>
             <span className="shrink-0 text-stone-500">
               {context.weather ? `${context.weather.temperature}°C` : 'Hà Nội'}
@@ -298,7 +248,7 @@ export const StorytellerChat: React.FC<StorytellerChatProps> = ({ context }) => 
 
             {isLoading && (
               <div className="flex items-center gap-2 text-stone-500 text-xs italic bg-[#F2EDE2]/80 px-3 py-2 rounded-2xl rounded-tl-xs border border-stone-200/80 w-fit">
-                <Sparkles className="w-3.5 h-3.5 text-[#B85D3B] animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 text-[#B85D3B] animate-spin" />
                 <span>Đang soạn câu trả lời...</span>
               </div>
             )}

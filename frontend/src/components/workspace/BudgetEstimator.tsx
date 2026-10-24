@@ -8,7 +8,6 @@ import {
   Ticket, 
   Navigation, 
   Hotel,
-  Sparkles,
   Info
 } from 'lucide-react';
 import { PlanResponse, POI } from '../../types';

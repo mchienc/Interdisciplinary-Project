@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, CloudRain, Sun, AlertTriangle, ArrowRight, Check, X } from 'lucide-react';
+import { Info, CloudRain, Sun, AlertTriangle, ArrowRight, Check, X } from 'lucide-react';
 import { useContextAwareness } from '../../context/ContextAwareContext';
 
 export const SmartContextBanner: React.FC = () => {
@@ -32,7 +32,7 @@ export const SmartContextBanner: React.FC = () => {
             </div>
             <div>
               <div className="inline-flex items-center gap-1.5 px-2 py-0.2 rounded-full bg-[#B85D3B]/15 text-[#B85D3B] text-[10px] font-sans font-bold tracking-wide">
-                <Sparkles className="w-3 h-3 text-[#B85D3B]" />
+                <Info className="w-3 h-3 text-[#B85D3B]" />
                 <span>Lưu ý cho chuyến đi</span>
               </div>
               <h4 className="font-serif text-sm font-bold text-[#1C382B] mt-0.5">

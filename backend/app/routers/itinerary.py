@@ -306,9 +306,9 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
         route_geojson["properties"]["color"] = (
             "#B85D3B" if day_idx == 1 else
             "#0F766E" if day_idx == 2 else
-            "#2563EB" if day_idx == 3 else
+            "#2A6F68" if day_idx == 3 else
             "#D97706" if day_idx == 4 else
-            "#7C3AED"
+            "#7A431D"
         )
 
         day_dist_km = round(day_dist_m / 1000.0, 2)
@@ -327,6 +327,11 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
             route_geojson=route_geojson
         ))
 
+    has_fallback = any(
+        d.route_geojson.get("properties", {}).get("is_fallback") is True
+        for d in daily_itineraries
+    )
+
     return PlanResponse(
         success=True,
         days=len(daily_itineraries),
@@ -337,5 +342,7 @@ async def plan_itinerary(request: PlanRequest, db: Session = Depends(get_db)):
         daily_itineraries=daily_itineraries,
         total_trip_distance_km=round(total_trip_dist_km, 2),
         total_trip_duration_min=round(total_trip_dur_min, 1),
-        transport_mode=transport_mode
+        transport_mode=transport_mode,
+        routing_source="HAVERSINE_FALLBACK" if has_fallback else "OSRM",
+        message="Tối ưu hóa lịch trình và đề xuất lưu trú thành công."
     )

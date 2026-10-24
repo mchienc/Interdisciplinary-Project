@@ -127,6 +127,7 @@ export interface PlanResponse {
   total_trip_distance_km: number;
   total_trip_duration_min: number;
   transport_mode?: string;
+  routing_source?: string;
   message?: string;
 }
 
@@ -147,4 +148,42 @@ export interface PlanRequest {
   transport_mode?: string;
   traffic_multiplier?: number;
   weather_condition?: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  full_name: string;
+  role: 'traveler' | 'admin';
+  created_at?: string;
+}
+
+export interface SavedTrip {
+  id: string;
+  user_id: number;
+  author_name?: string;
+  title: string;
+  days: number;
+  selected_poi_ids: number[];
+  plan_data: PlanResponse;
+  is_public: boolean;
+  likes_count?: number;
+  clones_count?: number;
+  tags?: string;
+  summary?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface AdminStats {
+  total_pois: number;
+  total_trips: number;
+  total_users: number;
+  category_breakdown: Record<string, number>;
+  popular_pois: Array<{
+    id: number;
+    name: string;
+    category?: string;
+    ticket_price?: number;
+  }>;
 }

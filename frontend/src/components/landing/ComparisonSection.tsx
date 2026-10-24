@@ -1,12 +1,12 @@
-﻿import React from 'react';
-import { XCircle, CheckCircle2, Sparkles } from 'lucide-react';
+import React from 'react';
+import { XCircle, CheckCircle2, Compass } from 'lucide-react';
 
 export const ComparisonSection: React.FC = () => {
   return (
     <section id="thau-hieu" className="w-full py-12 lg:py-20 border-t border-stone-300/60">
       <div className="max-w-4xl mx-auto text-center space-y-4 mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B85D3B]/10 text-[#B85D3B] text-xs font-semibold uppercase tracking-wider font-mono">
-          <Sparkles className="w-3.5 h-3.5" />
+          <Compass className="w-3.5 h-3.5" />
           <span>THẤU HIỂU DU KHÁCH</span>
         </div>
         <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1C382B] font-medium leading-tight">

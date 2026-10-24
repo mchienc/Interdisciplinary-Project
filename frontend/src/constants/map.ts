@@ -15,16 +15,16 @@ export const MAP_DEFAULT_ZOOM = {
 export const DAY_COLORS = [
   '#B85D3B', // Terracotta gốm Bát Tràng (Ngày 1)
   '#0F766E', // Xanh mòng két di sản (Ngày 2)
-  '#2563EB', // Xanh lam sông Hồng (Ngày 3)
-  '#D97706', // Hổ phách rêu phong (Ngày 4)
-  '#7C3AED'  // Tím hoa bằng lăng (Ngày 5)
+  '#2A6F68', // Xanh ngọc lục bảo sông Hồng (Ngày 3)
+  '#D97706', // Hổ phách tường vôi phố cũ (Ngày 4)
+  '#7A431D'  // Nâu gụ cổ kính chùa Một Cột (Ngày 5)
 ];
 
 // Cấu hình các phong cách bản đồ nền (Hoàn toàn miễn phí, không watermark, không đòi hỏi API Key)
 export const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileUrl: string; tiles?: string[]; desc: string; attribution: string }> = {
   voyager: {
     label: 'Du Lịch Thảnh Thơi',
-    icon: '🗺️',
+    icon: '',
     tileUrl: 'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
     tiles: [
       'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
@@ -35,7 +35,7 @@ export const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileU
   },
   light: {
     label: 'Tối Giản Tinh Tế',
-    icon: '🏛️',
+    icon: '',
     tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     tiles: [
       'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
@@ -45,7 +45,7 @@ export const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileU
   },
   osm: {
     label: 'OpenStreetMap Chuẩn',
-    icon: '🧭',
+    icon: '',
     tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     tiles: [
       'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -55,7 +55,7 @@ export const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileU
   },
   topo: {
     label: 'Địa Hình Tự Nhiên',
-    icon: '⛰️',
+    icon: '',
     tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
     tiles: [
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
@@ -65,7 +65,7 @@ export const BASEMAP_STYLES: Record<string, { label: string; icon: string; tileU
   },
   satellite: {
     label: 'Ảnh Vệ Tinh Trực Quan',
-    icon: '🛰️',
+    icon: '',
     tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     tiles: [
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { X, ExternalLink, Copy, Check, Navigation, Smartphone, Sparkles, MapPin } from 'lucide-react';
+import { X, ExternalLink, Copy, Check, Navigation, Smartphone, MapPin } from 'lucide-react';
 import { PlanResponse, POI } from '../../types';
 
 interface GoogleMapsQrModalProps {
@@ -67,18 +67,13 @@ export const GoogleMapsQrModal: React.FC<GoogleMapsQrModalProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-stone-200/80">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#B85D3B]/10 text-[#B85D3B] flex items-center justify-center font-bold">
-              <Smartphone className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-serif text-lg font-bold text-[#1C382B]">
-                Đồng Bộ Sang Google Maps
-              </h3>
-              <p className="text-[11px] text-stone-500 font-sans">
-                Quét bằng camera điện thoại để dẫn đường tức thì
-              </p>
-            </div>
+          <div>
+            <h3 className="font-serif text-lg font-bold text-[#1C382B]">
+              Đồng Bộ Sang Google Maps
+            </h3>
+            <p className="text-[11px] text-stone-500 font-sans mt-0.5">
+              Quét bằng camera điện thoại để dẫn đường tức thì
+            </p>
           </div>
           <button
             onClick={onClose}

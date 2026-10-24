@@ -104,7 +104,7 @@ def query_candidate_accommodations(
         except Exception:
             candidates = []
 
-    # Fallback tính toán nội bộ khi CSDL offline
+    # Fallback tính toán nội bộ khi CSDL offline hoặc không có kết quả trong bán kính
     if not candidates:
         for acc in MOCK_ACCOMMODATIONS:
             if max_budget and acc["price_per_night"] > max_budget:
@@ -116,6 +116,17 @@ def query_candidate_accommodations(
             item["distance_to_median_m"] = round(dist, 1)
             candidates.append(item)
             
+        candidates.sort(key=lambda x: x["distance_to_median_m"])
+
+    # Cơ chế Adaptive Spatial & Budget Relaxation:
+    # Nếu bộ lọc quá khắt khe hoặc các điểm ở ngoại thành xa xôi, tự động nới lỏng để không bao giờ làm sập hệ thống (Crash 404)
+    if not candidates:
+        for acc in MOCK_ACCOMMODATIONS:
+            dist = haversine_distance_m((median_lat, median_lon), (acc["lat"], acc["lon"]))
+            item = dict(acc)
+            item["distance_to_median_m"] = round(dist, 1)
+            item["filter_relaxed"] = True
+            candidates.append(item)
         candidates.sort(key=lambda x: x["distance_to_median_m"])
 
     return candidates

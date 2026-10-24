@@ -9,14 +9,19 @@ import {
   Info, 
   MapPin, 
   Navigation,
-  Sparkles,
+  Loader2,
   ChevronDown,
   Clock,
-  Ticket
+  Ticket,
+  Footprints,
+  Play,
+  Square,
+  Hotel,
+  Check
 } from 'lucide-react';
 import { POI, Accommodation, PlanResponse } from '../../types';
 import { DAY_COLORS, BASEMAP_STYLES, HANOI_LNG_LAT, MAP_DEFAULT_ZOOM } from '../../constants/map';
-import { CATEGORY_ICONS, CATEGORY_NAMES } from '../../constants/categories';
+import { CATEGORY_NAMES } from '../../constants/categories';
 import { useContextAwareness } from '../../context/ContextAwareContext';
 import { buildTrafficColoredSegments } from '../../services/trafficService';
 import { useCustomMapEvents } from '../../hooks/useCustomMapEvents';
@@ -35,6 +40,8 @@ interface MapViewProps {
   onSelectHotel: (hotelId: number) => void;
   hoveredHotelId?: number | null;
   onHoverHotel?: (id: number | null) => void;
+  hoveredPoiId?: number | null;
+  onHoverPoi?: (id: number | null) => void;
   activeDayTab: number | null;
   isWorkspaceActive?: boolean;
   isPickingLocation?: boolean;
@@ -88,6 +95,8 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
   onSelectHotel,
   hoveredHotelId,
   onHoverHotel,
+  hoveredPoiId,
+  onHoverPoi,
   activeDayTab,
   isWorkspaceActive = false,
   isPickingLocation = false,
@@ -101,6 +110,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const hotelMarkerElementsRef = useRef<Map<number, HTMLDivElement>>(new Map());
+  const poiMarkerElementsRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const routeTweensRef = useRef<gsap.core.Tween[]>([]);
 
   // Feature 3: Custom User POI via Map Context Menu
@@ -129,41 +139,36 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
   const [cinematicStop, setCinematicStop] = useState<{
     name: string;
     stage: string;
-    icon: string;
+    type?: 'hotel' | 'poi';
     desc?: string;
   } | null>(null);
   const cinematicTimeoutRef = useRef<number | null>(null);
   const [showIsochrone, setShowIsochrone] = useState<boolean>(false);
 
-  // Expose camera fly methods ra bên ngoài component cho Landing Hero Orchestrator
+  // Expose camera methods ra bên ngoài component cho Landing Hero Orchestrator
   useImperativeHandle(ref, () => ({
     flyDownToWorkspace: (onArrival?: () => void) => {
       const map = mapRef.current;
       if (!map) return;
-      map.flyTo({
+      // Trực tiếp hiển thị góc nhìn bản đồ làm việc, không zoom lượn từ trên cao xuống
+      map.jumpTo({
         center: [105.8523, 21.0287], // Hồ Hoàn Kiếm
         zoom: 13.6,
-        pitch: 30,
-        bearing: -12,
-        duration: 2200,
-        essential: true,
-        curve: 1.42,
-        speed: 0.8
+        pitch: 0,
+        bearing: 0
       });
       if (onArrival) {
-        map.once('moveend', onArrival);
+        onArrival();
       }
     },
     flyBackToLanding: () => {
       const map = mapRef.current;
       if (!map) return;
-      map.flyTo({
+      map.jumpTo({
         center: [105.8523, 21.0287],
-        zoom: 10.5,
+        zoom: 13.6,
         pitch: 0,
-        bearing: 0,
-        duration: 1800,
-        essential: true
+        bearing: 0
       });
     },
     getMap: () => mapRef.current
@@ -197,8 +202,8 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           }
         ]
       },
-      center: [105.8523, 21.0287], // Tọa độ trung tâm Hà Nội
-      zoom: 10.5, // Zoom bao quát toàn cảnh thành phố cho Landing Page
+      center: [105.8523, 21.0287], // Tọa độ trung tâm Hà Nội (Khu vực Hoàn Kiếm / Phố Cổ)
+      zoom: 13.6, // Sẵn sàng ở độ phóng to làm việc chi tiết, không cần zoom từ trên trời xuống
       pitch: 0
     });
 
@@ -438,6 +443,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
     }
 
     // A. Vẽ các Marker POI (Điểm du lịch dạng giọt nước tinh tế)
+    poiMarkerElementsRef.current.clear();
     pois.forEach((poi) => {
       const isSelected = selectedPoiIds.includes(poi.id);
       const dayInfo = poiDayMap.get(poi.id);
@@ -445,32 +451,36 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       const el = document.createElement('div');
       el.className = 'cursor-pointer transition-transform duration-200 hover:scale-125 z-10';
 
+      el.addEventListener('mouseenter', () => onHoverPoi?.(poi.id));
+      el.addEventListener('mouseleave', () => onHoverPoi?.(null));
+      poiMarkerElementsRef.current.set(poi.id, el);
+
       let bgColor = '#78716c';
-      let badgeText = CATEGORY_ICONS[poi.category] || '📍';
+      let badgeContent = '<span class="w-2 h-2 rounded-full bg-white/90 inline-block"></span>';
 
       if (dayInfo) {
         bgColor = DAY_COLORS[(dayInfo.day - 1) % DAY_COLORS.length];
-        badgeText = `${dayInfo.seq}`;
+        badgeContent = `<span>${dayInfo.seq}</span>`;
       } else if (isSelected) {
         bgColor = '#1C382B'; // Forest green
-        badgeText = '✓';
+        badgeContent = '<span>✓</span>';
       }
 
       el.innerHTML = `
         <div class="group relative flex flex-col items-center">
-          <div style="background-color: ${bgColor};" class="w-8 h-8 rounded-full rounded-br-none -rotate-45 text-white font-bold text-xs flex items-center justify-center border-2 border-white shadow-md shadow-stone-900/20 transition-transform duration-200 group-hover:scale-115">
-            <span class="rotate-45 select-none">${badgeText}</span>
+          <div style="background-color: ${bgColor};" class="w-7 h-7 rounded-full rounded-br-none -rotate-45 text-white font-bold text-xs flex items-center justify-center border-2 border-white shadow-md shadow-stone-900/20 transition-transform duration-200 group-hover:scale-115">
+            <span class="rotate-45 select-none flex items-center justify-center">${badgeContent}</span>
           </div>
-          ${poi.is_custom ? '<div class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-stone-900 text-[8px] flex items-center justify-center font-bold shadow-xs border border-white">★</div>' : ''}
+          ${poi.is_custom ? '<div class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-400 text-stone-900 text-[8px] flex items-center justify-center font-bold shadow-xs border border-white">•</div>' : ''}
           ${dayInfo ? `<div class="mt-0.5 px-1.5 py-0.2 rounded-full bg-white/95 border border-stone-200 text-[9px] font-bold text-stone-800 shadow-xs whitespace-nowrap">Chặng #${dayInfo.seq}</div>` : ''}
         </div>
       `;
 
       const venueLabel = poi.venue_type === 'indoor'
-        ? '🏢 Trong nhà'
+        ? 'Trong nhà'
         : poi.venue_type === 'semi-indoor'
-        ? '🏛️ Bán lộ thiên'
-        : '🌳 Ngoài trời';
+        ? 'Bán lộ thiên'
+        : 'Ngoài trời';
 
       const venueBadgeClass = poi.venue_type === 'indoor'
         ? 'bg-blue-100 text-blue-800 border-blue-200'
@@ -494,8 +504,8 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
               ${venueLabel}
             </span>
             ${poi.is_custom ? `
-              <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold border bg-purple-100 text-purple-800 border-purple-200">
-                ✨ Điểm tùy chọn
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold border bg-amber-100 text-amber-900 border-amber-300">
+                Góc nhỏ thân thương
               </span>
             ` : ''}
             ${!poi.image_url ? `
@@ -507,12 +517,12 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           <div class="font-serif text-sm font-bold text-[#1C382B] leading-snug">${poi.name}</div>
           <p class="text-xs text-stone-600 leading-relaxed line-clamp-2">${poi.description || ''}</p>
           <div class="text-[11px] text-stone-500 pt-1.5 border-t border-stone-200 flex items-center justify-between">
-            <span>🎟️ Giá vé:</span>
+            <span>Giá vé:</span>
             <b class="text-[#B85D3B] font-medium">${poi.ticket_price === 0 ? 'Miễn phí' : poi.ticket_price.toLocaleString('vi-VN') + ' đ'}</b>
           </div>
           ${dayInfo ? `
             <div class="bg-stone-100 p-2 rounded-xl border border-stone-200 text-[11px] font-medium text-[#1C382B] flex items-center gap-1.5">
-              <span>✨</span> Lộ trình Ngày ${dayInfo.day} • Chặng ghé thăm #${dayInfo.seq}
+              <span>Lộ trình Ngày ${dayInfo.day} • Chặng ghé thăm #${dayInfo.seq}</span>
             </div>` : ''}
           <button id="poi-detail-btn-${poi.id}" class="w-full mt-1.5 py-2 px-3 bg-[#1C382B] hover:bg-[#B85D3B] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer">
             <span>Xem chi tiết & gợi ý</span>
@@ -537,7 +547,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       markersRef.current.push(marker);
     });
 
-    // B. Vẽ Marker Trung vị Hình học (Tâm Không Gian Lý Tưởng) 🎯
+    // B. Vẽ Marker Trung vị Hình học (Tâm Không Gian Lý Tưởng)
     if (plan && plan.geometric_median) {
       const med = plan.geometric_median;
       const el = document.createElement('div');
@@ -546,14 +556,13 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         <div class="radar-ring-1"></div>
         <div class="radar-ring-2"></div>
         <div class="w-7 h-7 rounded-full bg-[#1C382B] text-white flex items-center justify-center border-2 border-white shadow-lg text-xs font-bold z-10 transition-transform hover:scale-125">
-          🎯
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
         </div>
       `;
 
       const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`
         <div class="space-y-2 max-w-sm p-1 text-stone-800">
           <div class="flex items-center gap-1.5 text-[#B85D3B] font-bold text-xs uppercase tracking-wider">
-            <span>🎯</span>
             Vị Trí Trung Tâm Thuận Tiện
           </div>
           <div class="font-serif text-sm font-bold text-[#1C382B]">Điểm Lưu Trú Thuận Tiện Nhất</div>
@@ -561,9 +570,9 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             Vị trí trung tâm giúp tổng quãng đường di chuyển tới các điểm tham quan là ngắn nhất.
           </div>
           <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 text-[11px] space-y-1 text-stone-700">
-            <div>📍 Vĩ độ: <b class="font-mono text-stone-900">${med.lat.toFixed(4)}</b>, Kinh độ: <b class="font-mono text-stone-900">${med.lon.toFixed(4)}</b></div>
-            <div>📏 Khoảng cách trung bình tới các điểm: <b class="text-[#1C382B]">${med.mean_distance_to_pois_km} km</b></div>
-            <div class="text-[#0F766E] font-semibold">⚡ Tiết kiệm quãng đường: ~${med.centroid_comparison_gain_km} km</div>
+            <div>Vĩ độ: <b class="font-mono text-stone-900">${med.lat.toFixed(4)}</b>, Kinh độ: <b class="font-mono text-stone-900">${med.lon.toFixed(4)}</b></div>
+            <div>Khoảng cách trung bình tới các điểm: <b class="text-[#1C382B]">${med.mean_distance_to_pois_km} km</b></div>
+            <div class="text-[#0F766E] font-semibold">Tiết kiệm quãng đường: ~${med.centroid_comparison_gain_km} km</div>
           </div>
         </div>
       `);
@@ -576,7 +585,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       markersRef.current.push(marker);
     }
 
-    // C. Vẽ Marker Khách sạn Đề xuất (Accommodations) 🏨
+    // C. Vẽ Marker Khách sạn Đề xuất (Accommodations)
     hotelMarkerElementsRef.current.clear();
     if (plan && plan.recommended_accommodations) {
       plan.recommended_accommodations.forEach((hotel, idx) => {
@@ -601,14 +610,14 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
                 ? 'bg-[#B85D3B] text-white shadow-md ring-2 ring-white' 
                 : 'bg-white text-stone-700 border border-stone-200 shadow-xs'
             } mb-1 whitespace-nowrap z-10">
-              ${isChosen ? '★ ĐIỂM NGHỈ TỐI ƯU' : `#${rankStr}`}
+              ${isChosen ? 'ĐIỂM NGHỈ TỐI ƯU' : `#${rankStr}`}
             </div>
             <div class="w-8 h-8 rounded-2xl ${
               isChosen 
                 ? 'bg-gradient-to-tr from-[#B85D3B] to-[#D97706] text-white ring-2 ring-white shadow-xl' 
                 : 'bg-white border border-stone-200 text-[#B85D3B] shadow-md'
             } flex items-center justify-center text-sm z-10">
-              🏨
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 22v-6.57"/><path d="M12 11h.01"/><path d="M12 7h.01"/><path d="M14 15.43V22"/><path d="M15 11h.01"/><path d="M15 7h.01"/><path d="M16 16h.01"/><path d="M2 22h20"/><path d="M20 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M9 11h.01"/><path d="M9 15h.01"/><path d="M9 7h.01"/></svg>
             </div>
           </div>
         `;
@@ -619,16 +628,16 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           <div class="space-y-2.5 min-w-[240px] p-1 text-stone-800">
             <div class="flex items-center justify-between">
               <span class="text-[10px] bg-[#B85D3B]/10 text-[#B85D3B] font-semibold px-2 py-0.5 rounded-full uppercase">
-                Gợi ý #${idx + 1} &bull; ${hotel.stars}★
+                Gợi ý #${idx + 1} &bull; ${hotel.stars} sao
               </span>
-              <span class="text-xs text-amber-500 font-bold">★ ${hotel.rating}</span>
+              <span class="text-xs text-amber-600 font-bold">${hotel.rating}/5.0</span>
             </div>
             <div class="font-serif text-sm font-bold text-[#1C382B]">${hotel.name}</div>
-            <div class="text-[11px] text-stone-500">📍 ${hotel.address || 'Hà Nội'}</div>
+            <div class="text-[11px] text-stone-500">${hotel.address || 'Hà Nội'}</div>
             <div class="text-xs text-[#B85D3B] font-bold">
-              💰 ${(hotel.price_per_night / 1000).toLocaleString()}k đ / đêm
+              ${(hotel.price_per_night / 1000).toLocaleString()}k đ / đêm
             </div>
-            ${hotel.distance_to_median_m ? `<div class="text-[11px] text-stone-600">📏 Cách tâm lý tưởng: <b class="text-[#0F766E] font-medium">${hotel.distance_to_median_m.toLocaleString()} m</b></div>` : ''}
+            ${hotel.distance_to_median_m ? `<div class="text-[11px] text-stone-600">Cách tâm: <b class="text-[#0F766E] font-medium">${hotel.distance_to_median_m.toLocaleString()} m</b></div>` : ''}
             
             <button 
               id="select-hotel-btn-${hotel.id}" 
@@ -638,7 +647,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
                   : 'bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200'
               }"
             >
-              ${isChosen ? '✓ Đang chọn làm điểm lưu trú' : '👉 Chọn khách sạn này & tính lại'}
+              ${isChosen ? 'Đang chọn làm điểm lưu trú' : 'Chọn khách sạn này & tính lại'}
             </button>
           </div>
         `);
@@ -668,7 +677,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
     if (pickedCoords) {
       const el = document.createElement('div');
       el.className = 'w-9 h-9 rounded-full bg-[#B85D3B] text-white flex items-center justify-center border-2 border-white shadow-2xl text-base font-bold animate-bounce z-40 ring-4 ring-[#B85D3B]/30';
-      el.innerHTML = '📍';
+      el.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
 
       const marker = new maplibregl.Marker({ element: el })
         .setLngLat([pickedCoords.lon, pickedCoords.lat])
@@ -688,6 +697,20 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       }
     });
   }, [hoveredHotelId]);
+
+  // 5b. Đồng bộ hiệu ứng hover điểm tham quan (POI) từ Sidebar
+  useEffect(() => {
+    poiMarkerElementsRef.current.forEach((el, id) => {
+      const pin = el.querySelector('.w-7');
+      if (id === hoveredPoiId) {
+        el.classList.add('scale-125', 'z-40');
+        pin?.classList.add('ring-4', 'ring-[#B85D3B]/50', 'shadow-xl');
+      } else {
+        el.classList.remove('scale-125', 'z-40');
+        pin?.classList.remove('ring-4', 'ring-[#B85D3B]/50', 'shadow-xl');
+      }
+    });
+  }, [hoveredPoiId]);
 
   // 6. Xử lý sự kiện click chọn tọa độ trên bản đồ
   useEffect(() => {
@@ -822,7 +845,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       lat: number;
       name: string;
       stage: string;
-      icon: string;
+      type?: 'hotel' | 'poi';
       desc?: string;
     }> = [];
 
@@ -837,7 +860,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         lat: plan.selected_hotel.lat,
         name: plan.selected_hotel.name,
         stage: `Ngày ${d.day} • Khởi hành`,
-        icon: '🏨',
+        type: 'hotel' as const,
         desc: 'Điểm lưu trú tối ưu thuận tiện di chuyển'
       });
 
@@ -848,7 +871,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
           lat: p.lat,
           name: p.name,
           stage: `Ngày ${d.day} • Chặng #${pIdx + 1}`,
-          icon: CATEGORY_ICONS[p.category] || '📍',
+          type: 'poi' as const,
           desc: p.description
         });
       });
@@ -859,7 +882,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         lat: plan.selected_hotel.lat,
         name: plan.selected_hotel.name,
         stage: `Ngày ${d.day} • Nghỉ ngơi`,
-        icon: '🏁',
+        type: 'hotel' as const,
         desc: 'Khép kín hành trình thư thái'
       });
     });
@@ -960,12 +983,16 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       {/* FLOATING HUD: CINEMATIC 3D ROUTE FLY-THROUGH */}
       {isCinematicPlaying && cinematicStop && (
         <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 bg-stone-900/90 backdrop-blur-md text-white px-5 py-3 rounded-2xl border border-stone-700 shadow-2xl flex items-center gap-3 animate-in fade-in zoom-in-95 duration-200 max-w-md">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#B85D3B] to-[#D97706] flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
-            {cinematicStop.icon}
+          <div className="w-9 h-9 rounded-xl bg-[#B85D3B] flex items-center justify-center font-bold text-white shrink-0 shadow-xs">
+            {cinematicStop.type === 'poi' ? (
+              <MapPin className="w-4 h-4 text-white" />
+            ) : (
+              <Hotel className="w-4 h-4 text-white" />
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[10px] text-amber-300 uppercase tracking-wider font-bold">
-              🎬 {cinematicStop.stage}
+              {cinematicStop.stage}
             </div>
             <div className="font-serif text-sm font-bold text-white truncate">
               {cinematicStop.name}
@@ -984,7 +1011,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       )}
 
       {/* FLOATING TOOLBAR: BASEMAP SWITCHER & CONTROLS */}
-      <div className={`absolute top-20 left-4 md:left-[460px] z-30 flex flex-wrap items-center gap-2 transition-all duration-700 ease-out ${
+      <div className={`absolute top-20 left-4 sm:left-[480px] lg:left-[504px] z-30 flex flex-wrap items-center gap-2 transition-all duration-700 ease-out ${
         isWorkspaceActive ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-4'
       }`}>
         {/* Basemap Switcher Dropdown */}
@@ -993,28 +1020,28 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             onClick={() => setIsBasemapDropdownOpen(!isBasemapDropdownOpen)}
             className="bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-2xl text-xs font-semibold text-[#1C382B] flex items-center gap-2 hover:bg-white border border-stone-200/90 shadow-sm transition cursor-pointer"
           >
-            <span>{BASEMAP_STYLES[currentBasemap]?.icon}</span>
+            <Layers className="w-3.5 h-3.5 text-[#B85D3B]" />
             <span>{BASEMAP_STYLES[currentBasemap]?.label}</span>
             <ChevronDown className="w-3.5 h-3.5 text-stone-500" />
           </button>
 
           {isBasemapDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1.5 w-60 bg-white/95 backdrop-blur-md rounded-2xl p-1.5 shadow-xl border border-stone-200/90 space-y-1 z-40 animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute top-full left-0 mt-1.5 w-64 bg-white/95 backdrop-blur-md rounded-2xl p-1.5 shadow-xl border border-stone-200/90 space-y-1 z-40 animate-in fade-in zoom-in-95 duration-150">
               {Object.entries(BASEMAP_STYLES).map(([key, style]: [string, any]) => (
                 <button
                   key={key}
                   onClick={() => switchBasemap(key)}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center gap-2.5 transition cursor-pointer ${
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition cursor-pointer ${
                     currentBasemap === key
                       ? 'bg-[#1C382B] text-white font-semibold shadow-xs'
                       : 'text-stone-700 hover:bg-stone-100'
                   }`}
                 >
-                  <span className="text-base">{style.icon}</span>
                   <div>
                     <div className="leading-tight">{style.label}</div>
                     <div className="text-[10px] opacity-75">{style.desc}</div>
                   </div>
+                  {currentBasemap === key && <Check className="w-3.5 h-3.5 shrink-0" />}
                 </button>
               ))}
             </div>
@@ -1062,7 +1089,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
                   : 'hover:bg-stone-100 text-stone-700'
               }`}
             >
-              <span>🚶</span>
+              <Footprints className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Đi bộ 15p</span>
             </button>
           )}
@@ -1078,7 +1105,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
                   : 'bg-[#1C382B] hover:bg-[#B85D3B] text-white shadow-xs'
               }`}
             >
-              <span>{isCinematicPlaying ? '⏹' : '🎬'}</span>
+              {isCinematicPlaying ? <Square className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
               <span className="hidden sm:inline">{isCinematicPlaying ? 'Dừng bay' : 'Xem trước 3D'}</span>
             </button>
           )}
@@ -1104,9 +1131,9 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
         </div>
       </div>
 
-      {/* FLOATING BOTTOM-RIGHT: INTERACTIVE LEGEND WIDGET */}
+      {/* FLOATING LEGEND WIDGET (Đặt góc trái dưới ngoài sidebar, không đè Chatbot ở góc phải và không dính header) */}
       {isWorkspaceActive && showLegend && (
-        <div className="absolute bottom-6 right-4 z-30 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-stone-200/90 text-xs max-w-xs space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200 text-stone-800">
+        <div className="absolute bottom-6 left-4 sm:left-[480px] lg:left-[504px] z-30 bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-xl border border-stone-200/90 text-xs max-w-xs space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200 text-stone-800 max-h-[calc(100vh-140px)] overflow-y-auto">
           <div className="flex items-center justify-between pb-1.5 border-b border-stone-200">
             <span className="font-serif font-bold text-xs text-[#1C382B] flex items-center gap-1.5">
               <Compass className="w-3.5 h-3.5 text-[#B85D3B]" />
@@ -1122,22 +1149,22 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
 
           <div className="space-y-2 text-[11px]">
             <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded-lg bg-gradient-to-tr from-[#B85D3B] to-[#D97706] flex items-center justify-center text-[10px] text-white shadow-xs">
-                🏨
+              <span className="w-5 h-5 rounded-lg bg-[#B85D3B] flex items-center justify-center text-white shadow-xs">
+                <Hotel className="w-3 h-3 text-white" />
               </span>
               <span className="font-medium text-stone-700">Điểm lưu trú lý tưởng nhất</span>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded-full bg-[#1C382B] flex items-center justify-center text-[10px] text-white">
-                🎯
+              <span className="w-5 h-5 rounded-full bg-[#1C382B] flex items-center justify-center text-white">
+                <Target className="w-3 h-3 text-white" />
               </span>
               <span className="text-stone-600">Vị trí trung tâm thuận tiện nhất</span>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded-full rounded-br-none -rotate-45 bg-[#78716c] flex items-center justify-center text-[9px] text-white">
-                <span className="rotate-45">📍</span>
+              <span className="w-5 h-5 rounded-full bg-[#78716c] flex items-center justify-center text-white">
+                <MapPin className="w-3 h-3 text-white" />
               </span>
               <span className="text-stone-600">Điểm tham quan du lịch</span>
             </div>
@@ -1159,7 +1186,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             {showTrafficLayer && (
               <div className="pt-2 border-t border-stone-200/80 space-y-1">
                 <div className="font-semibold text-stone-700 flex items-center gap-1.5 text-[11px]">
-                  <span>🚦</span> Tình trạng đường sá:
+                  <span>Tình trạng đường sá:</span>
                 </div>
                 <div className="grid grid-cols-3 gap-1 pt-0.5">
                   <div className="flex items-center gap-1 text-[10px] text-stone-600">
@@ -1182,7 +1209,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
       {isWorkspaceActive && !showLegend && (
         <button
           onClick={() => setShowLegend(true)}
-          className="absolute bottom-6 right-4 z-30 bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-2xl text-[11px] font-semibold text-stone-700 hover:text-[#1C382B] border border-stone-200/80 shadow-md flex items-center gap-1.5 cursor-pointer"
+          className="absolute bottom-6 left-4 sm:left-[480px] lg:left-[504px] z-30 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl text-[11px] font-semibold text-stone-700 hover:text-[#1C382B] border border-stone-200/80 shadow-md flex items-center gap-1.5 cursor-pointer transition hover:bg-white"
         >
           <Info className="w-3.5 h-3.5 text-[#B85D3B]" />
           <span>Chú Giải</span>
@@ -1217,11 +1244,11 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
             <div className="text-[11px] text-stone-700 font-medium line-clamp-2">
               {contextMenu.isGeocoding ? (
                 <span className="flex items-center gap-1.5 text-stone-400 italic">
-                  <Sparkles className="w-3 h-3 text-[#B85D3B] animate-spin" />
+                  <Loader2 className="w-3 h-3 text-[#B85D3B] animate-spin" />
                   Đang tra cứu tên đường phố...
                 </span>
               ) : (
-                `📍 ${contextMenu.address}`
+                contextMenu.address
               )}
             </div>
             <div className="text-[10px] text-stone-400 font-mono">
@@ -1258,9 +1285,9 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(({
               </label>
               <div className="grid grid-cols-3 gap-1">
                 {[
-                  { id: 'custom', label: '📍 Điểm hẹn' },
-                  { id: 'food', label: '🍜 Ăn uống' },
-                  { id: 'hotel', label: '🏨 Chỗ nghỉ' }
+                  { id: 'custom', label: 'Điểm hẹn' },
+                  { id: 'food', label: 'Ăn uống' },
+                  { id: 'hotel', label: 'Chỗ nghỉ' }
                 ].map(c => (
                   <button
                     key={c.id}
