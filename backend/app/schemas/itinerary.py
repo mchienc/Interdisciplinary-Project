@@ -17,6 +17,8 @@ class POIRead(BaseModel):
     closed_days: Optional[List[int]] = []
     closed_time: Optional[str] = None
     venue_type: Optional[str] = "outdoor"
+    status: Optional[str] = "approved"
+    submitted_by: Optional[str] = "Ban Quản Trị"
 
 class POICreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=255, description="Tên địa điểm du lịch")
@@ -33,6 +35,7 @@ class POICreate(BaseModel):
     closed_days: Optional[List[int]] = Field(default=[], description="Các ngày đóng cửa định kỳ (0: Thứ 2, 4: Thứ 6...)")
     closed_time: Optional[str] = Field(default="17:00", description="Giờ đóng cửa")
     venue_type: Optional[str] = Field(default="outdoor", description="Loại không gian: indoor, outdoor, semi-indoor")
+    submitted_by: Optional[str] = Field(default="Du khách đóng góp", description="Họ tên người đề xuất")
 
 class ScoreBreakdown(BaseModel):
     distance_score: float = Field(..., description="Điểm cự ly chuẩn hóa (gần hơn = điểm cao hơn)")

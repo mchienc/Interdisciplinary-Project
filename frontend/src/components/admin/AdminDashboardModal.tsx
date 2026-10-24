@@ -1,24 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { X, Shield, BarChart3, MapPin, Users, Calendar, Trash2, Search, Compass, AlertCircle } from 'lucide-react';
+import { 
+  X, 
+  Shield, 
+  BarChart3, 
+  MapPin, 
+  Users, 
+  Calendar, 
+  Trash2, 
+  Search, 
+  Compass, 
+  AlertCircle,
+  ShieldCheck,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Building,
+  Tag,
+  DollarSign
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { getAdminStatsApi, deletePoiAdminApi } from '../../services/authService';
+import { 
+  getAdminStatsApi, 
+  deletePoiAdminApi,
+  getPendingPoisApi,
+  approvePoiAdminApi,
+  rejectPoiAdminApi 
+} from '../../services/authService';
 import { AdminStats, POI } from '../../types';
 
 interface AdminDashboardModalProps {
   pois: POI[];
   onPoiDeleted?: (poiId: number) => void;
+  onPoiApproved?: (poi: POI) => void;
 }
 
-export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, onPoiDeleted }) => {
+export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ 
+  pois, 
+  onPoiDeleted,
+  onPoiApproved 
+}) => {
   const { isAdminModalOpen, setIsAdminModalOpen, token, user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'stats' | 'pois'>('stats');
+  const [activeTab, setActiveTab] = useState<'stats' | 'pois' | 'pending'>('stats');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [pendingPois, setPendingPois] = useState<POI[]>([]);
+  const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (isAdminModalOpen && token) {
       loadStats();
+      loadPending();
     }
   }, [isAdminModalOpen, token]);
 
@@ -35,6 +67,16 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
     }
   };
 
+  const loadPending = async () => {
+    if (!token) return;
+    try {
+      const list = await getPendingPoisApi(token);
+      setPendingPois(list);
+    } catch (err) {
+      console.error('Lỗi khi tải danh sách chờ duyệt:', err);
+    }
+  };
+
   if (!isAdminModalOpen) return null;
 
   const filteredPois = pois.filter(p =>
@@ -43,13 +85,43 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
   );
 
   const handleDeletePoi = async (poiId: number) => {
-    if (!token || !window.confirm(`Bạn có chắc chắn muốn xóa POI #${poiId} khỏi hệ thống không?`)) return;
+    if (!token || !window.confirm(`Bạn có chắc chắn muốn xóa điểm du lịch #${poiId} khỏi hệ thống không?`)) return;
     try {
       await deletePoiAdminApi(poiId, token);
       if (onPoiDeleted) onPoiDeleted(poiId);
       loadStats();
     } catch (err: any) {
       alert(err.message || 'Không thể xóa điểm này.');
+    }
+  };
+
+  const handleApprovePoi = async (poi: POI) => {
+    if (!token) return;
+    setActionLoadingId(poi.id);
+    try {
+      await approvePoiAdminApi(poi.id, token);
+      setPendingPois(prev => prev.filter(p => p.id !== poi.id));
+      if (onPoiApproved) {
+        onPoiApproved({ ...poi, status: 'approved' });
+      }
+      loadStats();
+    } catch (err: any) {
+      alert(err.message || 'Không thể duyệt điểm này');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleRejectPoi = async (poiId: number) => {
+    if (!token || !window.confirm(`Bạn có chắc muốn từ chối đề xuất điểm du lịch #${poiId}?`)) return;
+    setActionLoadingId(poiId);
+    try {
+      await rejectPoiAdminApi(poiId, token);
+      setPendingPois(prev => prev.filter(p => p.id !== poiId));
+    } catch (err: any) {
+      alert(err.message || 'Không thể từ chối điểm này');
+    } finally {
+      setActionLoadingId(null);
     }
   };
 
@@ -98,8 +170,9 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
                 }`}
               >
                 <BarChart3 className="w-3.5 h-3.5 text-[#B85D3B]" />
-                <span>Thống kê DSS</span>
+                <span>Thống kê</span>
               </button>
+
               <button
                 onClick={() => setActiveTab('pois')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
@@ -109,7 +182,24 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
                 }`}
               >
                 <MapPin className="w-3.5 h-3.5 text-[#B85D3B]" />
-                <span>Quản lý POI ({pois.length})</span>
+                <span>Điểm trên bản đồ ({pois.length})</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('pending')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer relative ${
+                  activeTab === 'pending'
+                    ? 'bg-white text-[#1C382B] shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                <span>Duyệt điểm mới</span>
+                {pendingPois.length > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full bg-[#B85D3B] text-white text-[9px] font-bold">
+                    {pendingPois.length}
+                  </span>
+                )}
               </button>
             </div>
 
@@ -130,51 +220,41 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
               <p className="text-xs">Đang nạp dữ liệu thống kê quản trị...</p>
             </div>
           ) : activeTab === 'stats' ? (
+            /* TAB 1: THỐNG KÊ TỔNG THỂ */
             <div className="space-y-6">
-              {/* 4 Stat Metric Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+              {/* 3 Metrics Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-1">
                   <div className="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
                     <MapPin className="w-3.5 h-3.5 text-[#B85D3B]" />
-                    Tổng số POI
+                    Tổng Điểm Tham Quan
                   </div>
                   <div className="font-serif text-2xl font-bold text-[#1C382B]">
                     {stats?.total_pois || pois.length}
                   </div>
-                  <div className="text-[10px] text-stone-400">Điểm di tích &amp; thắng cảnh</div>
+                  <div className="text-[10px] text-stone-400">Đã kiểm duyệt & lưu trữ</div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-1">
                   <div className="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                    Chuyến đi đã tạo
+                    Tổng Chuyến Đi Đã Lưu
                   </div>
-                  <div className="font-serif text-2xl font-bold text-emerald-800">
+                  <div className="font-serif text-2xl font-bold text-emerald-900">
                     {stats?.total_trips || 0}
                   </div>
-                  <div className="text-[10px] text-stone-400">Được tối ưu hóa &amp; lưu trữ</div>
+                  <div className="text-[10px] text-stone-400">Từ cộng đồng du khách</div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-1">
                   <div className="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
                     <Users className="w-3.5 h-3.5 text-blue-600" />
-                    Tài khoản du khách
+                    Du Khách Đã Đăng Ký
                   </div>
                   <div className="font-serif text-2xl font-bold text-blue-900">
-                    {stats?.total_users || 0}
+                    {stats?.total_users || 1}
                   </div>
-                  <div className="text-[10px] text-stone-400">Đã đăng ký tài khoản</div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-1">
-                  <div className="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
-                    <Compass className="w-3.5 h-3.5 text-amber-600" />
-                    Cơ chế gợi ý
-                  </div>
-                  <div className="font-serif text-base font-bold text-amber-900 mt-1">
-                    Tối ưu vị trí & Lộ trình
-                  </div>
-                  <div className="text-[10px] text-stone-400">Xử lý tức thì</div>
+                  <div className="text-[10px] text-stone-400">Thành viên hệ thống</div>
                 </div>
               </div>
 
@@ -226,8 +306,8 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
                 </div>
               </div>
             </div>
-          ) : (
-            /* Tab POI Table Management */
+          ) : activeTab === 'pois' ? (
+            /* TAB 2: QUẢN LÝ POI TRÊN BẢN ĐỒ */
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="relative flex-1 max-w-sm">
@@ -253,6 +333,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Tên Điểm Đến</th>
                         <th className="py-2.5 px-3">Danh Mục</th>
+                        <th className="py-2.5 px-3">Không Gian</th>
                         <th className="py-2.5 px-3">Giá Vé</th>
                         <th className="py-2.5 px-3">Tọa Độ (Lat, Lon)</th>
                         <th className="py-2.5 px-3 text-right">Thao Tác</th>
@@ -266,6 +347,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
                           <td className="py-2.5 px-3">
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getCategoryColor(poi.category)}`}>
                               {poi.category}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <span className="text-[10px] text-stone-600">
+                              {poi.venue_type === 'indoor' ? 'Trong nhà' : poi.venue_type === 'semi-indoor' ? 'Bán lộ thiên' : 'Ngoài trời'}
                             </span>
                           </td>
                           <td className="py-2.5 px-3 text-stone-600 font-mono text-[11px]">
@@ -289,6 +375,111 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ pois, 
                   </table>
                 </div>
               </div>
+            </div>
+          ) : (
+            /* TAB 3: DUYỆT ĐIỂM MỚI DO DU KHÁCH ĐÓNG GÓP (HƯỚNG 4) */
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-serif text-sm font-bold text-[#1C382B] flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-amber-600" />
+                    <span>Yêu cầu Đề xuất Điểm Tham quan Mới</span>
+                  </h4>
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    Kiểm duyệt các địa điểm do du khách gửi lên trước khi chính thức hiển thị cho cộng đồng.
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-200">
+                  {pendingPois.length} địa điểm chờ duyệt
+                </span>
+              </div>
+
+              {pendingPois.length === 0 ? (
+                <div className="p-12 text-center bg-stone-50 rounded-2xl border border-stone-200/80 space-y-2">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+                  <div className="font-serif text-base font-bold text-stone-800">
+                    Tất cả địa điểm đã được kiểm duyệt!
+                  </div>
+                  <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                    Hiện không có yêu cầu nào đang chờ xử lý. Khi du khách bấm "Thêm điểm đến", yêu cầu mới sẽ xuất hiện tại đây.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pendingPois.map(poi => (
+                    <div 
+                      key={poi.id}
+                      className="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:shadow-md transition-all space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-serif text-sm font-bold text-stone-900">
+                              {poi.name}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getCategoryColor(poi.category)}`}>
+                              {poi.category}
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-stone-100 text-stone-600 border border-stone-200">
+                              {poi.venue_type === 'indoor' ? 'Trong nhà' : 'Ngoài trời'}
+                            </span>
+                          </div>
+
+                          <div className="text-[11px] text-stone-500 flex items-center gap-3">
+                            <span>Người đề xuất: <b>{poi.submitted_by || 'Du khách'}</b></span>
+                            <span>•</span>
+                            <span className="font-mono text-stone-400">Tọa độ: {poi.lat.toFixed(4)}, {poi.lon.toFixed(4)}</span>
+                          </div>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => handleRejectPoi(poi.id)}
+                            disabled={actionLoadingId === poi.id}
+                            className="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                            title="Từ chối đề xuất này"
+                          >
+                            <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Từ chối</span>
+                          </button>
+
+                          <button
+                            onClick={() => handleApprovePoi(poi)}
+                            disabled={actionLoadingId === poi.id}
+                            className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95"
+                            title="Duyệt điểm này đưa lên bản đồ chính thức"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                            <span>Phê duyệt lên bản đồ</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Description & Tips */}
+                      <p className="text-xs text-stone-600 bg-[#FAF7F0] p-2.5 rounded-xl border border-stone-200/60 leading-relaxed">
+                        {poi.description || 'Không có mô tả chi tiết.'}
+                        {poi.tips && <span className="block mt-1 text-[11px] text-[#B85D3B] font-medium">💡 Gợi ý: {poi.tips}</span>}
+                      </p>
+
+                      {/* Duration & Price footer */}
+                      <div className="flex items-center gap-4 text-[11px] text-stone-500 pt-1 border-t border-stone-100 font-medium">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-[#B85D3B]" />
+                          Dự kiến: {poi.estimated_duration_min || 60} phút
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <DollarSign className="w-3 h-3 text-emerald-600" />
+                          Giá vé: {poi.ticket_price ? `${poi.ticket_price.toLocaleString('vi-VN')} đ` : 'Miễn phí'}
+                        </span>
+                        {poi.opening_hours && (
+                          <span>Giờ mở cửa: {poi.opening_hours}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

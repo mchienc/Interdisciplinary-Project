@@ -14,6 +14,8 @@ export interface POI {
   closed_days?: number[];
   closed_time?: string;
   venue_type?: 'indoor' | 'outdoor' | 'semi-indoor';
+  status?: 'approved' | 'pending' | 'rejected';
+  submitted_by?: string;
   address?: string;
   is_custom?: boolean;
   golden_hour?: string;

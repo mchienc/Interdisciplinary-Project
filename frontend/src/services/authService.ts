@@ -1,4 +1,4 @@
-import { User, SavedTrip, AdminStats, PlanResponse } from '../types';
+import { User, SavedTrip, AdminStats, PlanResponse, POI } from '../types';
 import { API_BASE_URL } from './api';
 
 export interface AuthResponse {
@@ -402,3 +402,94 @@ export const getFallbackCommunityTrips = (): SavedTrip[] => [
     }
   }
 ];
+
+
+/**
+ * Lấy danh sách điểm tham quan đang chờ duyệt (Admin)
+ */
+export const getPendingPoisApi = async (token: string): Promise<POI[]> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/pending-pois`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Không thể tải danh sách chờ duyệt');
+    return await res.json();
+  } catch (err) {
+    console.warn('Lỗi tải pending POIs hoặc đang chảy offline, dùng mock:', err);
+    return getFallbackPendingPois();
+  }
+};
+
+/**
+ * Phê duyệt điểm tham quan (Admin)
+ */
+export const approvePoiAdminApi = async (poiId: number, token: string): Promise<any> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/pois/${poiId}/approve`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Không thể duyệt điểm này');
+    removeFallbackPendingPoi(poiId);
+    return await res.json();
+  } catch (err) {
+    removeFallbackPendingPoi(poiId);
+    return { success: true, message: `Đã duyệt điểm #${poiId}` };
+  }
+};
+
+/**
+ * Từ chối điểm tham quan (Admin)
+ */
+export const rejectPoiAdminApi = async (poiId: number, token: string): Promise<any> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/pois/${poiId}/reject`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Không thể từ chối điểm này');
+    removeFallbackPendingPoi(poiId);
+    return await res.json();
+  } catch (err) {
+    removeFallbackPendingPoi(poiId);
+    return { success: true, message: `Đã từ chối điểm #${poiId}` };
+  }
+};
+
+let MOCK_PENDING_POIS: POI[] = [
+  {
+    id: 1001,
+    name: 'Bánh Mì Dân Tổ (Ngã ba Cao Thắng - Trần Nhật Duật)',
+    category: 'culinary',
+    description: 'Quán bánh mì mở lúc 3h sáng nức tiếng Hà Thành, chảo nhân xào thập cẩm đậm đà béo ngậy được các bạn trẻ xếp hàng chờ mua giữa đêm khuya.',
+    lat: 21.0425,
+    lon: 105.8492,
+    estimated_duration_min: 30,
+    opening_hours: '03:00 - 08:00',
+    ticket_price: 35000,
+    venue_type: 'outdoor',
+    status: 'pending',
+    submitted_by: 'Nguyễn Văn Du Khách (tourist@hanoitravel.vn)',
+    tips: 'Nên đến tầm 3h15 sáng để tận mắt chứng kiến chảo xào nhân khổng lồ thơm lừng.'
+  },
+  {
+    id: 1002,
+    name: 'Bảo tàng Gốm Bát Tràng (Tinh hoa Làng nghề Việt)',
+    category: 'museum',
+    description: 'Công trình kiến trúc 7 bàn xoay gốm khổng lồ đỏ son uốn lượn bên bờ sông Bắc Hưng Hải, trưng bày tinh hoa di sản gốm men hơn 500 năm Thăng Long.',
+    lat: 20.9768,
+    lon: 105.9085,
+    estimated_duration_min: 120,
+    opening_hours: '08:00 - 18:00',
+    ticket_price: 50000,
+    venue_type: 'indoor',
+    status: 'pending',
+    submitted_by: 'Trần Thảo Ly (Blogger)',
+    tips: 'Tầng thượng có quán cà phê view trọn dòng sông và không gian trải nghiệm vuốt gốm thực tế.'
+  }
+];
+
+export const getFallbackPendingPois = (): POI[] => [...MOCK_PENDING_POIS];
+export const removeFallbackPendingPoi = (id: number) => {
+  MOCK_PENDING_POIS = MOCK_PENDING_POIS.filter(p => p.id !== id);
+};

@@ -36,7 +36,7 @@ def get_all_pois(category: Optional[str] = None, db: Session = Depends(get_db)):
     Có fallback tự động sang danh sách mẫu khi CSDL chưa bật.
     """
     try:
-        query = db.query(POI)
+        query = db.query(POI).filter(POI.status != "pending")
         if category:
             query = query.filter(POI.category == category)
         pois = query.all()
@@ -46,7 +46,7 @@ def get_all_pois(category: Optional[str] = None, db: Session = Depends(get_db)):
         pass
 
     # Fallback to mock data
-    results = MOCK_POIS
+    results = [p for p in MOCK_POIS if p.get("status", "approved") != "pending"]
     if category:
         results = [p for p in results if p["category"] == category]
     return [POIRead(**p) for p in results]
@@ -71,6 +71,8 @@ def create_poi(poi_data: POICreate, db: Session = Depends(get_db)):
             opening_hours=poi_data.opening_hours,
             ticket_price=poi_data.ticket_price,
             venue_type=poi_data.venue_type or "outdoor",
+            status="pending",
+            submitted_by=poi_data.submitted_by or "Du khách đóng góp",
             geom=point_wkt
         )
         db.add(poi_record)
@@ -91,7 +93,9 @@ def create_poi(poi_data: POICreate, db: Session = Depends(get_db)):
             "estimated_duration_min": poi_data.estimated_duration_min,
             "opening_hours": poi_data.opening_hours,
             "ticket_price": poi_data.ticket_price,
-            "venue_type": poi_data.venue_type or "outdoor"
+            "venue_type": poi_data.venue_type or "outdoor",
+            "status": "pending",
+            "submitted_by": poi_data.submitted_by or "Du khách đóng góp"
         }
 
     if new_poi_dict and not any(p["id"] == new_poi_dict["id"] for p in MOCK_POIS):

@@ -14,6 +14,7 @@ import {
   Building
 } from 'lucide-react';
 import { POI } from '../../types';
+import { useAuth } from '../../context/AuthContext';
 
 gsap.registerPlugin(useGSAP);
 
@@ -49,6 +50,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
   pickedCoords,
   onStartPickOnMap
 }) => {
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('heritage');
   const [venueType, setVenueType] = useState<'indoor' | 'outdoor' | 'semi-indoor'>('outdoor');
@@ -108,7 +110,8 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
       lon: lonNum,
       estimated_duration_min: Number(duration) || 90,
       opening_hours: '07:30 - 21:00',
-      ticket_price: Number(ticketPrice) || 0
+      ticket_price: Number(ticketPrice) || 0,
+      submitted_by: user?.full_name ? `${user.full_name} (${user.email})` : 'Du khách đóng góp'
     };
 
     try {
@@ -125,6 +128,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
         onClose();
         setName('');
         setDescription('');
+        alert('🎉 Đề xuất điểm tham quan của bạn đã được gửi thành công! Ban quản trị sẽ kiểm duyệt trước khi đưa lên bản đồ chính thức.');
       } else {
         // Fallback lưu local nếu backend trả về lỗi
         const localId = Date.now();
@@ -134,6 +138,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
         };
         onSuccess(fallbackPoi);
         onClose();
+        alert('🎉 Đề xuất điểm tham quan của bạn đã được gửi thành công! Ban quản trị sẽ kiểm duyệt trước khi đưa lên bản đồ chính thức.');
       }
     } catch {
       // Fallback lưu local nếu backend offline
@@ -144,6 +149,7 @@ export const AddPoiModal: React.FC<AddPoiModalProps> = ({
       };
       onSuccess(fallbackPoi);
       onClose();
+      alert('🎉 Đề xuất điểm tham quan của bạn đã được gửi thành công! Ban quản trị sẽ kiểm duyệt trước khi đưa lên bản đồ chính thức.');
     } finally {
       setSubmitting(false);
     }

@@ -827,7 +827,15 @@ const WebGisApp: React.FC = () => {
       />
 
       {/* 14. MODAL BẢNG QUẢN TRỊ ADMIN (Admin Panel, z-50) */}
-      <AdminDashboardModal pois={pois} onPoiDeleted={(id) => setPois(prev => prev.filter(p => p.id !== id))} />
+      <AdminDashboardModal 
+        pois={pois} 
+        onPoiDeleted={(id) => setPois(prev => prev.filter(p => p.id !== id))} 
+        onPoiApproved={(newPoi) => {
+          setPois(prev => [newPoi, ...prev]);
+          setNotification(`Đã duyệt điểm "${newPoi.name}" lên bản đồ!`);
+          setTimeout(() => setNotification(null), 3500);
+        }}
+      />
 
     </div>
   );

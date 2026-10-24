@@ -145,7 +145,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [startDate, setStartDate] = useState<string>(todayStr);
 
   // Context-Aware Traffic & Weather Engine
-  const { traffic, weather } = useContextAwareness();
+  const { traffic, weather, suggestion, applySuggestion, dismissSuggestion, isAdapted } = useContextAwareness();
 
   // Module 4: State chia tiền nhóm (1, 2, 4 người)
   const [splitPeople, setSplitPeople] = useState<number>(1);
@@ -1027,6 +1027,53 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     return (
                       <div key={dayItin.day} className="p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-3">
+                        {/* Weather-Adaptive Callout Banner */}
+                        {weather && (weather.condition === 'RAIN' || weather.condition === 'HEAT_PEAK') && (
+                          <div className={`p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 ${
+                            weather.condition === 'RAIN'
+                              ? 'bg-blue-50/90 border-blue-200 text-blue-950'
+                              : 'bg-amber-50/90 border-amber-200 text-amber-950'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              <span className="text-base">{weather.condition === 'RAIN' ? '🌧️' : '☀️'}</span>
+                              <div className="text-[11px] leading-tight">
+                                <div className="font-bold">
+                                  {weather.condition === 'RAIN' 
+                                    ? 'Dự báo trời mưa tại Hà Nội' 
+                                    : `Nắng nóng gay gắt (${weather.temperature.toFixed(1)}°C)`}
+                                </div>
+                                <div className="text-stone-600 text-[10px]">
+                                  {isAdapted 
+                                    ? (weather.condition === 'RAIN' ? '✓ Đã đảo điểm trong nhà mát mẻ lên trước' : '✓ Đã dời điểm ngoài trời về chiều mát')
+                                    : (weather.condition === 'RAIN' ? 'Nên ghé điểm trong nhà trước để không bị ướt' : 'Nên tránh đi bộ ngoài trời giữa trưa')}
+                                </div>
+                              </div>
+                            </div>
+
+                            {!isAdapted ? (
+                              <button
+                                type="button"
+                                onClick={applySuggestion}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-2xs transition active:scale-95 cursor-pointer shrink-0 ${
+                                  weather.condition === 'RAIN'
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                    : 'bg-amber-600 hover:bg-amber-700 text-white'
+                                }`}
+                              >
+                                {weather.condition === 'RAIN' ? 'Tránh mưa ➔' : 'Tránh nắng ➔'}
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={dismissSuggestion}
+                                className="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 transition cursor-pointer shrink-0"
+                                title="Khôi phục thứ tự ban đầu"
+                              >
+                                Hoàn tác
+                              </button>
+                            )}
+                          </div>
+                        )}
                         <div className="flex items-center justify-between pb-2 border-b border-stone-100">
                           <span className="font-serif text-xs font-bold text-[#1C382B] flex items-center gap-1.5">
                             <span 
