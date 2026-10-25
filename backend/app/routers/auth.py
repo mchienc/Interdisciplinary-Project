@@ -215,21 +215,24 @@ def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
             """
             msg.attach(MIMEText(html, "html"))
 
-            # Thử gửi qua SSL port 465 trước, nếu lỗi thì fallback sang port 587 STARTTLS
+            # Thử gửi qua STARTTLS port 587 với local_hostname='localhost' (tránh lỗi hostname Windows chứa khoảng trắng)
             try:
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=8) as server:
+                with smtplib.SMTP("smtp.gmail.com", 587, local_hostname="localhost", timeout=10) as server:
+                    server.ehlo("localhost")
+                    server.starttls()
+                    server.ehlo("localhost")
                     server.login(smtp_user_clean, smtp_pass_clean)
                     server.sendmail(smtp_user_clean, email_clean, msg.as_string())
                 email_sent = True
-            except Exception:
+            except Exception as ex_tls:
                 try:
-                    with smtplib.SMTP("smtp.gmail.com", 587, timeout=8) as server:
-                        server.starttls()
+                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, local_hostname="localhost", timeout=10) as server:
+                        server.ehlo("localhost")
                         server.login(smtp_user_clean, smtp_pass_clean)
                         server.sendmail(smtp_user_clean, email_clean, msg.as_string())
                     email_sent = True
-                except Exception as ex_tls:
-                    print(f"SMTP send email error: {ex_tls}")
+                except Exception as ex_ssl:
+                    print(f"SMTP send email error: {ex_ssl}")
     except Exception as e:
         print(f"SMTP send email error: {e}")
 
@@ -237,7 +240,7 @@ def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
     return GenericAuthResponse(
         success=True,
         message=msg_text,
-        simulated_otp=otp_code
+        simulated_otp=None if email_sent else otp_code
     )
 
 @router.post("/reset-password", response_model=GenericAuthResponse)

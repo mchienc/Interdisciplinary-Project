@@ -1,7 +1,10 @@
 import os
 from dotenv import load_dotenv
 
-# Tải cấu hình biến môi trường từ .env
+# Tải cấu hình biến môi trường từ backend/.env và .env
+env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
+if os.path.exists(env_file_path):
+    load_dotenv(env_file_path)
 load_dotenv()
 
 from fastapi import FastAPI
