@@ -39,6 +39,7 @@ export const AuthModal: React.FC = () => {
   const [customGoogleName, setCustomGoogleName] = useState('');
 
   const googleBtnContainerRef = useRef<HTMLDivElement>(null);
+  const isLikelyApiKey = Boolean(googleClientId && (googleClientId.startsWith('AIza') || !googleClientId.includes('apps.googleusercontent.com')));
 
   // Khởi tạo Google Identity Services (GIS) thật sự khi có Client ID
   useEffect(() => {
@@ -302,7 +303,19 @@ export const AuthModal: React.FC = () => {
             <>
               {/* Nút Đăng nhập Liên kết Google */}
               <div className="space-y-2">
-                {googleClientId ? (
+                {isLikelyApiKey && (
+                  <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] space-y-1">
+                    <div className="font-bold flex items-center gap-1 text-amber-900">
+                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span>Đang cấu hình API Key thay vì OAuth Client ID</span>
+                    </div>
+                    <p className="leading-relaxed">
+                      Mã bạn thêm bắt đầu bằng <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold">AIzaSy...</code> là API Key (Gemini/Maps). Để đăng nhập tài khoản Google thật, bạn cần tạo <b>OAuth 2.0 Client ID</b> (kết thúc bằng <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold">.apps.googleusercontent.com</code>) trong Google Cloud Console.
+                    </p>
+                  </div>
+                )}
+
+                {googleClientId && !isLikelyApiKey ? (
                   <div className="flex flex-col items-center">
                     <div ref={googleBtnContainerRef} className="w-full flex justify-center min-h-[40px]"></div>
                     <span className="text-[10px] text-stone-400 mt-1 flex items-center gap-1">
