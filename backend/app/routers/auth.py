@@ -194,9 +194,13 @@ def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
         smtp_user = os.getenv("MAIL_USERNAME")
         smtp_pass = os.getenv("MAIL_PASSWORD")
         if smtp_user and smtp_pass:
+            smtp_user_clean = smtp_user.strip().replace('"', '').replace("'", "")
+            # Tự động xóa khoảng trắng và dấu ngoặc kép nếu người dùng copy chuỗi 16 ký tự từ Google
+            smtp_pass_clean = smtp_pass.strip().replace('"', '').replace("'", "").replace(" ", "")
+
             msg = MIMEMultipart("alternative")
             msg["Subject"] = f"[{otp_code}] Mã xác thực khôi phục mật khẩu - Hà Nội Thong Dong"
-            msg["From"] = f"Hà Nội WebGIS <{smtp_user}>"
+            msg["From"] = f"Hà Nội WebGIS <{smtp_user_clean}>"
             msg["To"] = email_clean
 
             html = f"""
@@ -210,11 +214,22 @@ def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
             </div>
             """
             msg.attach(MIMEText(html, "html"))
-            with smtplib.SMTP("smtp.gmail.com", 587) as server:
-                server.starttls()
-                server.login(smtp_user, smtp_pass)
-                server.sendmail(smtp_user, email_clean, msg.as_string())
-            email_sent = True
+
+            # Thử gửi qua SSL port 465 trước, nếu lỗi thì fallback sang port 587 STARTTLS
+            try:
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=8) as server:
+                    server.login(smtp_user_clean, smtp_pass_clean)
+                    server.sendmail(smtp_user_clean, email_clean, msg.as_string())
+                email_sent = True
+            except Exception:
+                try:
+                    with smtplib.SMTP("smtp.gmail.com", 587, timeout=8) as server:
+                        server.starttls()
+                        server.login(smtp_user_clean, smtp_pass_clean)
+                        server.sendmail(smtp_user_clean, email_clean, msg.as_string())
+                    email_sent = True
+                except Exception as ex_tls:
+                    print(f"SMTP send email error: {ex_tls}")
     except Exception as e:
         print(f"SMTP send email error: {e}")
 
