@@ -24,7 +24,6 @@ export const AuthModal: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isForgotLoading, setIsForgotLoading] = useState(false);
-  const [simulatedOtp, setSimulatedOtp] = useState<string | null>(null);
 
   // Google OAuth Client ID state
   const googleClientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || 
@@ -183,13 +182,8 @@ export const AuthModal: React.FC = () => {
     try {
       const res = await forgotPasswordApi(forgotEmail);
       setForgotStep('reset');
-      if (res.simulated_otp) {
-        setSimulatedOtp(res.simulated_otp);
-        setOtpCode(res.simulated_otp);
-        setSuccessNotice(`Mã OTP xác thực đã được tạo thành công: ${res.simulated_otp}`);
-      } else {
-        setSuccessNotice(res.message);
-      }
+      setOtpCode('');
+      setSuccessNotice(res.message);
     } catch (err: any) {
       setError(err.message || 'Không thể gửi yêu cầu khôi phục mật khẩu.');
     } finally {
@@ -223,7 +217,6 @@ export const AuthModal: React.FC = () => {
         setTab('login');
         setForgotStep('request');
         setOtpCode('');
-        setSimulatedOtp(null);
         setNewPassword('');
         setConfirmPassword('');
       }, 1500);
@@ -544,37 +537,12 @@ export const AuthModal: React.FC = () => {
                 <form onSubmit={handleResetPasswordSubmit} className="space-y-3 animate-in fade-in duration-200">
                   <div className="p-3 bg-stone-100 rounded-xl text-xs space-y-1">
                     <div className="text-stone-600 font-medium">Mã OTP đã gửi đến: <b>{forgotEmail}</b></div>
-                    <div className="text-[11px] text-stone-500">Vui lòng kiểm tra hộp thư đến (hoặc hòm thư Spam) để lấy mã xác thực 6 số.</div>
+                    <div className="text-[11px] text-stone-500">Vui lòng kiểm tra hộp thư đến (hoặc hòm thư Spam) để lấy mã xác thực 6 số và nhập vào bên dưới.</div>
                   </div>
-
-                  {simulatedOtp && (
-                    <div className="p-3 bg-amber-50/90 border border-amber-200/90 rounded-2xl text-xs space-y-2 animate-in fade-in duration-200 shadow-2xs">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-amber-950 flex items-center gap-1.5">
-                          <KeyRound className="w-3.5 h-3.5 text-amber-700" />
-                          Mã xác thực OTP của bạn:
-                        </span>
-                        <span className="font-mono font-extrabold text-sm tracking-widest text-[#B85D3B] bg-white px-2.5 py-0.5 rounded-lg border border-amber-300 shadow-2xs">
-                          {simulatedOtp}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-amber-800 leading-relaxed">
-                        Hệ thống hiển thị trực tiếp mã xác thực để bạn thử nghiệm và kiểm tra chức năng ngay lập tức.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setOtpCode(simulatedOtp)}
-                        className="w-full py-1.5 px-2 rounded-lg bg-white hover:bg-amber-100/70 border border-amber-200 text-[#1C382B] text-[11px] font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Bấm để tự động điền mã {simulatedOtp}</span>
-                      </button>
-                    </div>
-                  )}
 
                   <div>
                     <label className="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">
-                      Mã xác thực OTP (6 chữ số)
+                      Mã xác thực OTP (6 chữ số từ Email)
                     </label>
                     <input
                       type="text"

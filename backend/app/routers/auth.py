@@ -236,11 +236,11 @@ def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
     except Exception as e:
         print(f"SMTP send email error: {e}")
 
-    msg_text = f"Mã xác thực OTP đã được gửi tới email {email_clean}. Vui lòng kiểm tra hộp thư (hoặc hòm thư Spam) để nhập mã xác nhận."
+    msg_text = f"Mã xác thực OTP đã được gửi tới email {email_clean}. Vui lòng kiểm tra hộp thư (hoặc hòm thư Spam) để lấy mã xác nhận."
     return GenericAuthResponse(
         success=True,
         message=msg_text,
-        simulated_otp=None if email_sent else otp_code
+        simulated_otp=None
     )
 
 @router.post("/reset-password", response_model=GenericAuthResponse)
