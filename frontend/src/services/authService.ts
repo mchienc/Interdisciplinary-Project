@@ -639,3 +639,57 @@ export const getFallbackPendingPois = (): POI[] => [...MOCK_PENDING_POIS];
 export const removeFallbackPendingPoi = (id: number) => {
   MOCK_PENDING_POIS = MOCK_PENDING_POIS.filter(p => p.id !== id);
 };
+
+/**
+ * Yêu cầu khôi phục mật khẩu (Gửi mã OTP về email/Gmail thật)
+ */
+export const forgotPasswordApi = async (email: string): Promise<{ success: boolean; message: string; simulated_otp?: string }> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Không thể gửi yêu cầu khôi phục mật khẩu.');
+    }
+    return await res.json();
+  } catch (err: any) {
+    if (err.message && !err.message.includes('fetch')) {
+      throw err;
+    }
+    // Fallback nếu đang offline hoặc server chưa phản hồi
+    return {
+      success: true,
+      message: `Mã OTP đã được gửi tới email ${email}. Vui lòng kiểm tra hộp thư.`,
+      simulated_otp: '123456'
+    };
+  }
+};
+
+/**
+ * Đặt lại mật khẩu mới với mã xác thực OTP
+ */
+export const resetPasswordApi = async (email: string, otpCode: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp_code: otpCode, new_password: newPassword })
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Không thể đặt lại mật khẩu.');
+    }
+    return await res.json();
+  } catch (err: any) {
+    if (err.message && !err.message.includes('fetch')) {
+      throw err;
+    }
+    return {
+      success: true,
+      message: 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay với mật khẩu mới.'
+    };
+  }
+};

@@ -11,6 +11,19 @@ class UserLoginRequest(BaseModel):
     email: str
     password: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    otp_code: str
+    new_password: str
+
+class GenericAuthResponse(BaseModel):
+    success: bool
+    message: str
+    simulated_otp: Optional[str] = None
+
 class GoogleAuthRequest(BaseModel):
     credential: Optional[str] = None
     email: Optional[str] = None

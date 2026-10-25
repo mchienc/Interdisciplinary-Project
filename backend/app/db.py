@@ -83,10 +83,10 @@ def get_db():
 def init_db():
     """Khởi tạo cấu trúc bảng và nạp dữ liệu mẫu ban đầu"""
     try:
-        from .models.user_trip import User, SavedTrip
-        # Chỉ tạo các bảng User và SavedTrip nếu là SQLite để tránh lỗi SpatiaLite với Geometry
+        from .models.user_trip import User, SavedTrip, PasswordResetOTP
+        # Chỉ tạo các bảng User, SavedTrip, PasswordResetOTP nếu là SQLite để tránh lỗi SpatiaLite với Geometry
         if is_sqlite:
-            Base.metadata.create_all(bind=engine, tables=[User.__table__, SavedTrip.__table__])
+            Base.metadata.create_all(bind=engine, tables=[User.__table__, SavedTrip.__table__, PasswordResetOTP.__table__])
             # Tự động cập nhật cột mới nếu bảng SQLite đã tồn tại từ phiên bản cũ
             with engine.connect() as conn:
                 for col, col_type in [

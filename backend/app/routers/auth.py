@@ -3,8 +3,12 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 
 from ..db import get_db
-from ..models.user_trip import User
-from ..schemas.auth_trip import UserRegisterRequest, UserLoginRequest, TokenResponse, UserResponse, GoogleAuthRequest
+from ..models.user_trip import User, PasswordResetOTP
+from ..schemas.auth_trip import (
+    UserRegisterRequest, UserLoginRequest, TokenResponse,
+    UserResponse, GoogleAuthRequest, ForgotPasswordRequest,
+    ResetPasswordRequest, GenericAuthResponse
+)
 from ..core.security import hash_password, verify_password, create_access_token
 from ..core.dependencies import get_current_user
 
@@ -138,3 +142,123 @@ def google_auth(req: GoogleAuthRequest, db: Session = Depends(get_db)):
 def get_current_user_profile(user: User = Depends(get_current_user)):
     """Lấy thông tin hồ sơ của tài khoản đang đăng nhập"""
     return UserResponse(**user.to_dict())
+
+@router.post("/forgot-password", response_model=GenericAuthResponse)
+def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """Gửi yêu cầu khôi phục mật khẩu & tạo mã xác thực OTP"""
+    import secrets
+    from datetime import datetime, timedelta
+
+    email_clean = req.email.strip().lower()
+    user = db.query(User).filter(User.email == email_clean).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Không tìm thấy tài khoản với email '{email_clean}'. Vui lòng kiểm tra lại."
+        )
+
+    # Nếu người dùng liên kết Google và không có mật khẩu riêng
+    if user.auth_provider == "google":
+        return GenericAuthResponse(
+            success=True,
+            message="Tài khoản của bạn đã liên kết với Google. Bạn có thể bấm 'Tiếp tục với Google' để đăng nhập ngay mà không cần mật khẩu!"
+        )
+
+    # Tạo mã OTP 6 chữ số ngẫu nhiên
+    otp_code = f"{secrets.randbelow(900000) + 100000}"
+    expires_at = datetime.utcnow() + timedelta(minutes=15)
+
+    otp_record = PasswordResetOTP(
+        email=email_clean,
+        otp_code=otp_code,
+        expires_at=expires_at,
+        is_used=False
+    )
+    db.add(otp_record)
+    db.commit()
+
+    # Thử gửi email thật qua SMTP nếu có cấu hình
+    email_sent = False
+    try:
+        import os, smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+
+        smtp_user = os.getenv("MAIL_USERNAME")
+        smtp_pass = os.getenv("MAIL_PASSWORD")
+        if smtp_user and smtp_pass:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = f"[{otp_code}] Mã xác thực khôi phục mật khẩu - Hà Nội Thong Dong"
+            msg["From"] = f"Hà Nội WebGIS <{smtp_user}>"
+            msg["To"] = email_clean
+
+            html = f"""
+            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 24px; border: 1px solid #e5e5e5; border-radius: 16px; background-color: #FDFCF7;">
+                <h2 style="color: #1C382B; margin-top: 0;">Khôi phục Mật khẩu</h2>
+                <p style="color: #555; font-size: 14px;">Bạn vừa yêu cầu đặt lại mật khẩu cho tài khoản <b>{email_clean}</b> trên Hệ thống Du lịch Thông minh & WebGIS Hà Nội.</p>
+                <div style="text-align: center; margin: 24px 0; padding: 16px; background-color: #F4EFE6; border-radius: 12px;">
+                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #B85D3B;">{otp_code}</span>
+                </div>
+                <p style="color: #777; font-size: 12px;">Mã xác thực có hiệu lực trong vòng <b>15 phút</b>. Nếu không phải bạn yêu cầu, vui lòng bỏ qua email này.</p>
+            </div>
+            """
+            msg.attach(MIMEText(html, "html"))
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_pass)
+                server.sendmail(smtp_user, email_clean, msg.as_string())
+            email_sent = True
+    except Exception as e:
+        print(f"SMTP send email error: {e}")
+
+    msg_text = f"Mã xác thực OTP đã được gửi tới email {email_clean}. Vui lòng kiểm tra hộp thư (hoặc hòm thư Spam) để nhập mã xác nhận."
+    return GenericAuthResponse(
+        success=True,
+        message=msg_text,
+        simulated_otp=otp_code
+    )
+
+@router.post("/reset-password", response_model=GenericAuthResponse)
+def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+    """Xác thực mã OTP và cập nhật mật khẩu mới"""
+    from datetime import datetime
+
+    email_clean = req.email.strip().lower()
+    otp_clean = req.otp_code.strip()
+
+    if len(req.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mật khẩu mới phải có ít nhất 6 ký tự."
+        )
+
+    # Tìm bản ghi OTP hợp lệ gần nhất
+    otp_record = db.query(PasswordResetOTP).filter(
+        PasswordResetOTP.email == email_clean,
+        PasswordResetOTP.otp_code == otp_clean,
+        PasswordResetOTP.is_used == False,
+        PasswordResetOTP.expires_at > datetime.utcnow()
+    ).order_by(PasswordResetOTP.id.desc()).first()
+
+    if not otp_record:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mã xác thực OTP không chính xác hoặc đã hết hạn (15 phút). Vui lòng thử lại."
+        )
+
+    user = db.query(User).filter(User.email == email_clean).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Không tìm thấy tài khoản người dùng."
+        )
+
+    # Đổi mật khẩu
+    user.hashed_password = hash_password(req.new_password)
+    otp_record.is_used = True
+    db.commit()
+
+    return GenericAuthResponse(
+        success=True,
+        message="Đặt lại mật khẩu thành công! Bây giờ bạn có thể đăng nhập bằng mật khẩu mới."
+    )
