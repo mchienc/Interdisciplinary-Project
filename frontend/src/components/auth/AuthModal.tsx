@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, User as UserIcon, Mail, Lock, ArrowRight, 
   AlertCircle, CheckCircle2, KeyRound, ShieldCheck, 
-  Settings, HelpCircle, RefreshCw, ChevronLeft 
+  Settings, ChevronLeft 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { forgotPasswordApi, resetPasswordApi } from '../../services/authService';
@@ -27,36 +27,35 @@ export const AuthModal: React.FC = () => {
   const [simulatedOtpNotice, setSimulatedOtpNotice] = useState<string | null>(null);
   const [isForgotLoading, setIsForgotLoading] = useState(false);
 
-  // Google OAuth states
+  // Google OAuth Client ID state
   const [googleClientId, setGoogleClientId] = useState<string>(() => {
     return localStorage.getItem('custom_google_client_id') || 
            (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
   });
   const [showGcpConfig, setShowGcpConfig] = useState(false);
   const [tempClientId, setTempClientId] = useState(googleClientId);
-  const [isGoogleSelectorOpen, setIsGoogleSelectorOpen] = useState(false);
-  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
-  const [customGoogleName, setCustomGoogleName] = useState('');
+  const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
 
   const googleBtnContainerRef = useRef<HTMLDivElement>(null);
   const isLikelyApiKey = Boolean(googleClientId && (googleClientId.startsWith('AIza') || !googleClientId.includes('apps.googleusercontent.com')));
 
-  // Khởi tạo Google Identity Services (GIS) thật sự khi có Client ID
+  // Khởi tạo Google Identity Services (GIS)
   useEffect(() => {
-    if (!googleClientId) return;
-
     const initGIS = () => {
-      if ((window as any).google?.accounts?.id) {
+      if ((window as any).google?.accounts?.id && googleClientId && !isLikelyApiKey) {
         try {
           (window as any).google.accounts.id.initialize({
             client_id: googleClientId,
             callback: async (response: any) => {
               if (response.credential) {
                 try {
+                  setIsGoogleSigningIn(true);
                   await loginWithGoogle({ credential: response.credential });
                   setSuccessNotice('Đăng nhập Google thành công!');
                 } catch (err: any) {
                   setError(err.message || 'Đăng nhập Google không thành công.');
+                } finally {
+                  setIsGoogleSigningIn(false);
                 }
               }
             },
@@ -95,9 +94,83 @@ export const AuthModal: React.FC = () => {
       script.onload = initGIS;
       document.body.appendChild(script);
     }
-  }, [googleClientId, isAuthModalOpen, tab]);
+  }, [googleClientId, isAuthModalOpen, tab, isLikelyApiKey]);
 
   if (!isAuthModalOpen) return null;
+
+  // Xử lý bật Popup Đăng nhập Google thật sự
+  const triggerRealGooglePopup = () => {
+    setError(null);
+    setSuccessNotice(null);
+
+    const activeClientId = googleClientId.trim() || 
+                           localStorage.getItem('custom_google_client_id') || 
+                           (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
+
+    if (!activeClientId) {
+      setShowGcpConfig(true);
+      setError('Vui lòng nhập Google OAuth Client ID của bạn để mở cửa sổ Google thật.');
+      return;
+    }
+
+    if (activeClientId.startsWith('AIza') || !activeClientId.includes('apps.googleusercontent.com')) {
+      setShowGcpConfig(true);
+      setError('Mã hiện tại là API Key. Vui lòng nhập OAuth 2.0 Client ID (đuôi .apps.googleusercontent.com) để Google mở cửa sổ xác thực.');
+      return;
+    }
+
+    // Sử dụng OAuth 2.0 Token Client chính hãng của Google GIS
+    if ((window as any).google?.accounts?.oauth2) {
+      try {
+        setIsGoogleSigningIn(true);
+        const tokenClient = (window as any).google.accounts.oauth2.initTokenClient({
+          client_id: activeClientId,
+          scope: 'openid email profile',
+          callback: async (tokenResponse: any) => {
+            if (tokenResponse?.error) {
+              setIsGoogleSigningIn(false);
+              setError(`Google thông báo: ${tokenResponse.error_description || tokenResponse.error}`);
+              return;
+            }
+
+            if (tokenResponse?.access_token) {
+              try {
+                // Gọi Google UserInfo API thật
+                const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                const profile = await res.json();
+                if (profile?.email) {
+                  await loginWithGoogle({
+                    email: profile.email,
+                    full_name: profile.name || profile.email.split('@')[0],
+                    avatar_url: profile.picture,
+                    credential: tokenResponse.access_token
+                  });
+                  setSuccessNotice(`Đăng nhập Google thành công (${profile.email})`);
+                } else {
+                  setError('Không nhận được email từ tài khoản Google.');
+                }
+              } catch (err: any) {
+                setError(err.message || 'Lỗi khi đồng bộ tài khoản Google với máy chủ.');
+              } finally {
+                setIsGoogleSigningIn(false);
+              }
+            }
+          }
+        });
+
+        // BẬT CỬA SỔ POPUP THẬT CỦA GOOGLE (accounts.google.com)
+        tokenClient.requestAccessToken({ prompt: 'select_account' });
+      } catch (e: any) {
+        setIsGoogleSigningIn(false);
+        console.error('Error triggering Google popup:', e);
+        setError(`Không thể mở cửa sổ Google: ${e?.message || e}`);
+      }
+    } else {
+      setError('Thư viện Google Identity Services đang tải, vui lòng thử lại sau vài giây.');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,50 +246,19 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // Lưu Google Client ID tuỳ chỉnh
+  // Lưu Google Client ID tuỳ chỉnh và kích hoạt popup ngay
   const handleSaveClientId = () => {
     const trimmed = tempClientId.trim();
     setGoogleClientId(trimmed);
     localStorage.setItem('custom_google_client_id', trimmed);
     setShowGcpConfig(false);
-    setSuccessNotice(trimmed ? 'Đã lưu Google Client ID thành công!' : 'Đã xoá Google Client ID.');
-  };
-
-  const handleGoogleBtnClick = () => {
-    if (googleClientId && (window as any).google?.accounts?.id) {
-      (window as any).google.accounts.id.prompt();
+    if (trimmed && trimmed.includes('apps.googleusercontent.com')) {
+      setSuccessNotice('Đã lưu Client ID! Đang chuẩn bị mở cửa sổ Google...');
+      setTimeout(() => {
+        triggerRealGooglePopup();
+      }, 300);
     } else {
-      setIsGoogleSelectorOpen(true);
-    }
-  };
-
-  const handleSelectGoogleAccount = async (account: { email: string; name: string; avatar: string }) => {
-    setError(null);
-    setIsGoogleSelectorOpen(false);
-    try {
-      await loginWithGoogle({
-        email: account.email,
-        full_name: account.name,
-        avatar_url: account.avatar
-      });
-    } catch (err: any) {
-      setError(err.message || 'Đăng nhập Google không thành công.');
-    }
-  };
-
-  const handleCustomGoogleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customGoogleEmail.trim()) return;
-    setError(null);
-    setIsGoogleSelectorOpen(false);
-    try {
-      await loginWithGoogle({
-        email: customGoogleEmail.trim().toLowerCase(),
-        full_name: customGoogleName.trim() || customGoogleEmail.split('@')[0],
-        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(customGoogleName || customGoogleEmail)}&background=0D8ABC&color=fff`
-      });
-    } catch (err: any) {
-      setError(err.message || 'Đăng nhập Google không thành công.');
+      setError('Mã phải kết thúc bằng .apps.googleusercontent.com');
     }
   };
 
@@ -229,7 +271,7 @@ export const AuthModal: React.FC = () => {
         {/* Header Modal */}
         <div className="relative px-6 pt-6 pb-4 bg-gradient-to-b from-[#F4EFE6]/80 to-transparent border-b border-stone-200/70">
           <button
-            onClick={() => { setIsAuthModalOpen(false); setIsGoogleSelectorOpen(false); }}
+            onClick={() => setIsAuthModalOpen(false)}
             className="absolute top-5 right-5 p-1.5 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-200/60 transition cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -301,68 +343,69 @@ export const AuthModal: React.FC = () => {
           {/* TAB 1 & 2: ĐĂNG NHẬP HOẶC ĐĂNG KÝ */}
           {tab !== 'forgot' && (
             <>
-              {/* Nút Đăng nhập Liên kết Google */}
+              {/* Nút Đăng nhập Liên kết Google THẬT SỰ */}
               <div className="space-y-2">
                 {isLikelyApiKey && (
                   <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] space-y-1">
                     <div className="font-bold flex items-center gap-1 text-amber-900">
                       <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                      <span>Đang cấu hình API Key thay vì OAuth Client ID</span>
+                      <span>Đang dùng API Key thay vì OAuth Client ID</span>
                     </div>
                     <p className="leading-relaxed">
-                      Mã bạn thêm bắt đầu bằng <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold">AIzaSy...</code> là API Key (Gemini/Maps). Để đăng nhập tài khoản Google thật, bạn cần tạo <b>OAuth 2.0 Client ID</b> (kết thúc bằng <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold">.apps.googleusercontent.com</code>) trong Google Cloud Console.
+                      Mã bạn nhập bắt đầu bằng <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold">AIzaSy...</code> là API Key (Gemini/Maps). Để đăng nhập Google thật, bạn cần tạo <b>OAuth 2.0 Client ID</b> (kết thúc bằng <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold">.apps.googleusercontent.com</code>) trong Google Cloud Console.
                     </p>
                   </div>
                 )}
 
-                {googleClientId && !isLikelyApiKey ? (
-                  <div className="flex flex-col items-center">
-                    <div ref={googleBtnContainerRef} className="w-full flex justify-center min-h-[40px]"></div>
-                    <span className="text-[10px] text-stone-400 mt-1 flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                      Google Identity Services chính thức (Popup tài khoản thật)
-                    </span>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleGoogleBtnClick}
-                    disabled={isLoading}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-stone-50 border border-stone-300 text-stone-700 text-xs font-semibold shadow-2xs flex items-center justify-center gap-2.5 transition cursor-pointer hover:border-stone-400 active:scale-[0.99] disabled:opacity-50"
-                  >
+                {/* Nút Google thật sự (Gọi popup Google accounts.google.com) */}
+                <button
+                  type="button"
+                  onClick={triggerRealGooglePopup}
+                  disabled={isLoading || isGoogleSigningIn}
+                  className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-stone-50 border border-stone-300 text-stone-700 text-xs font-semibold shadow-2xs flex items-center justify-center gap-2.5 transition cursor-pointer hover:border-stone-400 active:scale-[0.99] disabled:opacity-50"
+                  title="Mở cửa sổ đăng nhập chính thức của Google"
+                >
+                  {isGoogleSigningIn ? (
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                  ) : (
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                       <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
-                    <span>Tiếp tục với Google</span>
-                  </button>
+                  )}
+                  <span>{isGoogleSigningIn ? 'Đang mở cửa sổ Google...' : 'Tiếp tục với Google'}</span>
+                </button>
+
+                {/* Nút official của Google GIS nếu Client ID hợp lệ */}
+                {googleClientId && !isLikelyApiKey && (
+                  <div className="flex flex-col items-center pt-1">
+                    <div ref={googleBtnContainerRef} className="w-full flex justify-center min-h-[40px]"></div>
+                    <span className="text-[10px] text-stone-400 mt-1 flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                      Google Identity Services chính thức (Popup tài khoản thật)
+                    </span>
+                  </div>
                 )}
 
-                <div className="flex items-center justify-between text-[11px] text-stone-400 px-1">
+                <div className="flex items-center justify-between text-[11px] text-stone-400 px-1 pt-0.5">
                   <button
                     type="button"
                     onClick={() => setShowGcpConfig(!showGcpConfig)}
-                    className="hover:text-stone-700 flex items-center gap-1 cursor-pointer transition"
+                    className="hover:text-stone-700 flex items-center gap-1 cursor-pointer transition text-[11px]"
                   >
                     <Settings className="w-3 h-3 text-stone-400" />
-                    <span>{googleClientId ? 'Đổi Google Client ID' : 'Kết nối Google OAuth Client ID thật'}</span>
+                    <span>{googleClientId ? 'Thay đổi Google Client ID' : 'Nhập Google OAuth Client ID thật'}</span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsGoogleSelectorOpen(true)}
-                    className="hover:text-stone-700 cursor-pointer transition text-[10px]"
-                  >
-                    Chọn tài khoản khác
-                  </button>
+                  <span className="text-[10px] text-stone-400">Popup accounts.google.com</span>
                 </div>
 
                 {/* Box cấu hình Client ID cho người dùng / dev */}
                 {showGcpConfig && (
                   <div className="p-3 bg-stone-100 rounded-xl border border-stone-200/90 text-xs space-y-2 animate-in fade-in duration-150">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-stone-700 text-[11px]">Cấu hình Google OAuth Client ID:</span>
+                      <span className="font-bold text-stone-700 text-[11px]">Dán mã OAuth 2.0 Client ID:</span>
                       <a
                         href="https://console.cloud.google.com/apis/credentials"
                         target="_blank"
@@ -376,10 +419,13 @@ export const AuthModal: React.FC = () => {
                       type="text"
                       value={tempClientId}
                       onChange={(e) => setTempClientId(e.target.value)}
-                      placeholder="vd: 123456789-abc.apps.googleusercontent.com"
+                      placeholder="123456789-xxx.apps.googleusercontent.com"
                       className="w-full px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white text-xs font-mono"
                     />
-                    <div className="flex justify-end gap-2">
+                    <p className="text-[10px] text-stone-500 leading-tight">
+                      Mã lấy từ Google Cloud Console &gt; Credentials &gt; OAuth 2.0 Client IDs (loại Web Application).
+                    </p>
+                    <div className="flex justify-end gap-2 pt-1">
                       <button
                         type="button"
                         onClick={() => setShowGcpConfig(false)}
@@ -392,7 +438,7 @@ export const AuthModal: React.FC = () => {
                         onClick={handleSaveClientId}
                         className="px-3 py-1 bg-[#1C382B] text-white text-xs font-semibold rounded-lg hover:bg-[#14291F] cursor-pointer"
                       >
-                        Lưu Client ID
+                        Lưu &amp; Mở Google
                       </button>
                     </div>
                   </div>
@@ -569,7 +615,7 @@ export const AuthModal: React.FC = () => {
           {/* TAB 3: QUÊN MẬT KHẨU (FORGOT PASSWORD / PASSWORD RESET) */}
           {tab === 'forgot' && (
             <div className="space-y-4">
-              {/* Option 1: Đăng nhập tức thì bằng Google (Khuyến nghị cho tài khoản Gmail) */}
+              {/* Option 1: Đăng nhập tức thì bằng Google thật */}
               <div className="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-2xl space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-blue-900">
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -578,17 +624,17 @@ export const AuthModal: React.FC = () => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                   </svg>
-                  <span>Khôi phục tức thì qua Google (Không cần nhớ mật khẩu)</span>
+                  <span>Khôi phục tức thì qua Google (Không cần mật khẩu cũ)</span>
                 </div>
                 <p className="text-[11px] text-blue-700 leading-relaxed">
-                  Nếu bạn dùng tài khoản Gmail, bạn có thể xác thực trực tiếp qua Google để đăng nhập ngay lập tức.
+                  Nếu bạn dùng Gmail, bạn có thể xác thực chính chủ qua Google để truy cập tài khoản ngay lập tức.
                 </p>
                 <button
                   type="button"
-                  onClick={handleGoogleBtnClick}
+                  onClick={triggerRealGooglePopup}
                   className="w-full py-2 px-3 rounded-xl bg-white hover:bg-blue-100/60 border border-blue-300 text-blue-800 text-xs font-semibold shadow-2xs flex items-center justify-center gap-2 transition cursor-pointer"
                 >
-                  <span>Xác thực qua tài khoản Google</span>
+                  <span>Mở Google để xác thực</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -726,111 +772,6 @@ export const AuthModal: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Modal Chọn Tài khoản Google (Google Account Selector) */}
-        {isGoogleSelectorOpen && (
-          <div className="absolute inset-0 z-20 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-            <div className="w-full bg-white rounded-2xl shadow-2xl border border-stone-200 p-5 space-y-4 animate-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                  </svg>
-                  <span className="font-semibold text-xs text-stone-800">Đăng nhập bằng Google</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsGoogleSelectorOpen(false)}
-                  className="p-1 rounded-full text-stone-400 hover:text-stone-700 cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-[11px] text-stone-500">
-                  Chọn một tài khoản Google để tiếp tục đến <b>Hà Nội WebGIS</b>:
-                </p>
-
-                {/* Tài khoản mẫu 1: dangchien2005@gmail.com */}
-                <button
-                  type="button"
-                  onClick={() => handleSelectGoogleAccount({
-                    email: 'dangchien2005@gmail.com',
-                    name: 'Đặng Chiến',
-                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
-                  })}
-                  className="w-full p-2.5 rounded-xl border border-stone-200 hover:border-[#4285F4] hover:bg-blue-50/40 flex items-center gap-3 transition text-left cursor-pointer group"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80"
-                    alt="Đặng Chiến"
-                    className="w-8 h-8 rounded-full object-cover border border-stone-200 group-hover:border-[#4285F4]"
-                  />
-                  <div className="flex-1 truncate">
-                    <div className="text-xs font-bold text-stone-800 truncate">Đặng Chiến</div>
-                    <div className="text-[11px] text-stone-500 font-mono truncate">dangchien2005@gmail.com</div>
-                  </div>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 transition shrink-0" />
-                </button>
-
-                {/* Tài khoản mẫu 2: tourist.google@gmail.com */}
-                <button
-                  type="button"
-                  onClick={() => handleSelectGoogleAccount({
-                    email: 'tourist.google@gmail.com',
-                    name: 'Nguyễn Văn Du Khách (Google)',
-                    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
-                  })}
-                  className="w-full p-2.5 rounded-xl border border-stone-200 hover:border-[#4285F4] hover:bg-blue-50/40 flex items-center gap-3 transition text-left cursor-pointer group"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80"
-                    alt="Du Khách"
-                    className="w-8 h-8 rounded-full object-cover border border-stone-200 group-hover:border-[#4285F4]"
-                  />
-                  <div className="flex-1 truncate">
-                    <div className="text-xs font-bold text-stone-800 truncate">Nguyễn Văn Du Khách</div>
-                    <div className="text-[11px] text-stone-500 font-mono truncate">tourist.google@gmail.com</div>
-                  </div>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 transition shrink-0" />
-                </button>
-              </div>
-
-              {/* Tùy chọn nhập tài khoản Google khác */}
-              <form onSubmit={handleCustomGoogleSubmit} className="pt-2 border-t border-stone-100 space-y-2">
-                <span className="text-[10px] text-stone-500 font-medium">Hoặc dùng tài khoản Google khác của bạn:</span>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={customGoogleName}
-                    onChange={(e) => setCustomGoogleName(e.target.value)}
-                    placeholder="Tên của bạn"
-                    className="px-2.5 py-1.5 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#4285F4]"
-                  />
-                  <input
-                    type="email"
-                    required
-                    value={customGoogleEmail}
-                    onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                    placeholder="email@gmail.com"
-                    className="px-2.5 py-1.5 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#4285F4]"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-1.5 rounded-lg bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
-                >
-                  Tiếp tục với tài khoản này
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
