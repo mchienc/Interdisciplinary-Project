@@ -644,9 +644,13 @@ const WebGisApp: React.FC = () => {
                 className="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-800 text-xs font-semibold flex items-center gap-2 transition cursor-pointer shadow-2xs"
                 title="Tài khoản cá nhân"
               >
-                <div className="w-6 h-6 rounded-full bg-[#1C382B] text-white text-[10px] flex items-center justify-center font-bold">
-                  {user?.full_name ? user.full_name[0].toUpperCase() : 'U'}
-                </div>
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt={user.full_name} className="w-6 h-6 rounded-full object-cover border border-stone-200" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-[#1C382B] text-white text-[10px] flex items-center justify-center font-bold">
+                    {user?.full_name ? user.full_name[0].toUpperCase() : 'U'}
+                  </div>
+                )}
                 <span className="hidden md:inline max-w-[110px] truncate">{user?.full_name}</span>
                 <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
                   isAdmin ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
@@ -658,9 +662,23 @@ const WebGisApp: React.FC = () => {
 
               {isUserMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/90 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-3 py-2 border-b border-stone-100">
-                    <div className="font-bold text-xs text-stone-900 truncate">{user?.full_name}</div>
-                    <div className="text-[10px] text-stone-400 truncate">{user?.email}</div>
+                  <div className="px-3 py-2 border-b border-stone-100 flex items-center gap-2.5">
+                    {user?.avatar_url ? (
+                      <img src={user.avatar_url} alt={user.full_name} className="w-8 h-8 rounded-full object-cover border border-stone-200" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-[#1C382B] text-white text-xs flex items-center justify-center font-bold">
+                        {user?.full_name ? user.full_name[0].toUpperCase() : 'U'}
+                      </div>
+                    )}
+                    <div className="truncate flex-1">
+                      <div className="font-bold text-xs text-stone-900 truncate">{user?.full_name}</div>
+                      <div className="text-[10px] text-stone-400 truncate flex items-center gap-1">
+                        <span>{user?.email}</span>
+                        {user?.auth_provider === 'google' && (
+                          <span className="text-[9px] px-1 py-0.2 rounded bg-blue-50 text-blue-600 font-bold font-mono">Google</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <div className="py-1">

@@ -99,8 +99,26 @@ def init_db():
                         conn.exec_driver_sql(f"ALTER TABLE saved_trips ADD COLUMN {col} {col_type};")
                     except Exception:
                         pass
+
+                for col, col_type in [
+                    ("avatar_url", "VARCHAR(500)"),
+                    ("auth_provider", "VARCHAR(50) DEFAULT 'local'")
+                ]:
+                    try:
+                        conn.exec_driver_sql(f"ALTER TABLE users ADD COLUMN {col} {col_type};")
+                    except Exception:
+                        pass
         else:
             Base.metadata.create_all(bind=engine)
+            with engine.connect() as conn:
+                for col, col_type in [
+                    ("avatar_url", "VARCHAR(500)"),
+                    ("auth_provider", "VARCHAR(50) DEFAULT 'local'")
+                ]:
+                    try:
+                        conn.exec_driver_sql(f"ALTER TABLE users ADD COLUMN {col} {col_type};")
+                    except Exception:
+                        pass
 
         # Seed tài khoản mặc định
         db = SessionLocal()

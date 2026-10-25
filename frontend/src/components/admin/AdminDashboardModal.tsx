@@ -541,8 +541,17 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                         <td className="py-3 px-4 font-mono font-bold text-stone-400">
                           #{u.id}
                         </td>
-                        <td className="py-3 px-4 font-semibold text-stone-900">
-                          {u.full_name || 'Chưa đặt tên'}
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2">
+                            {u.avatar_url ? (
+                              <img src={u.avatar_url} alt={u.full_name} className="w-6 h-6 rounded-full object-cover border border-stone-200" />
+                            ) : (
+                              <div className="w-6 h-6 rounded-full bg-stone-200 text-stone-700 text-[10px] flex items-center justify-center font-bold">
+                                {u.full_name ? u.full_name[0].toUpperCase() : 'U'}
+                              </div>
+                            )}
+                            <span className="font-semibold text-stone-900">{u.full_name || 'Chưa đặt tên'}</span>
+                          </div>
                         </td>
                         <td className="py-3 px-4 font-mono text-stone-600">
                           {u.email}
@@ -561,10 +570,17 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                           )}
                         </td>
                         <td className="py-3 px-4 text-right">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium bg-emerald-50 text-emerald-700 font-mono">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            Đã đồng bộ CSDL
-                          </span>
+                          <div className="flex items-center justify-end gap-1.5">
+                            {u.auth_provider === 'google' && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200 font-mono">
+                                Google
+                              </span>
+                            )}
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium bg-emerald-50 text-emerald-700 font-mono">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              Đã lưu CSDL
+                            </span>
+                          </div>
                         </td>
                       </tr>
                     ))}

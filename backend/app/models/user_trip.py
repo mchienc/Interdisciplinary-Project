@@ -12,6 +12,8 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255), nullable=False)
     role = Column(String(50), default="traveler", nullable=False) # 'traveler' hoặc 'admin'
+    avatar_url = Column(String(500), nullable=True) # Ảnh đại diện (Google profile photo)
+    auth_provider = Column(String(50), default="local", nullable=False) # 'local' hoặc 'google'
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Quan hệ 1-N với chuyến đi đã lưu
@@ -23,6 +25,8 @@ class User(Base):
             "email": self.email,
             "full_name": self.full_name,
             "role": self.role,
+            "avatar_url": self.avatar_url,
+            "auth_provider": self.auth_provider,
             "created_at": self.created_at.isoformat() if self.created_at else None
         }
 

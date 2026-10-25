@@ -157,6 +157,8 @@ export interface User {
   email: string;
   full_name: string;
   role: 'traveler' | 'admin';
+  avatar_url?: string;
+  auth_provider?: 'local' | 'google';
   created_at?: string;
 }
 

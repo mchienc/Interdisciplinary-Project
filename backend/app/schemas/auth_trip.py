@@ -11,11 +11,19 @@ class UserLoginRequest(BaseModel):
     email: str
     password: str
 
+class GoogleAuthRequest(BaseModel):
+    credential: Optional[str] = None
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+
 class UserResponse(BaseModel):
     id: int
     email: str
     full_name: str
     role: str
+    avatar_url: Optional[str] = None
+    auth_provider: Optional[str] = "local"
     created_at: Optional[str] = None
 
 class TokenResponse(BaseModel):

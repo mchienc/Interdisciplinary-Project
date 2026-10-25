@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from ..db import get_db
 from ..models.user_trip import User
-from ..schemas.auth_trip import UserRegisterRequest, UserLoginRequest, TokenResponse, UserResponse
+from ..schemas.auth_trip import UserRegisterRequest, UserLoginRequest, TokenResponse, UserResponse, GoogleAuthRequest
 from ..core.security import hash_password, verify_password, create_access_token
 from ..core.dependencies import get_current_user
 
@@ -58,6 +58,75 @@ def login(req: UserLoginRequest, db: Session = Depends(get_db)):
             detail="Email hoặc mật khẩu không chính xác. Vui lòng thử lại."
         )
     
+    token = create_access_token({"sub": str(user.id), "role": user.role, "email": user.email})
+    return TokenResponse(
+        access_token=token,
+        token_type="bearer",
+        user=UserResponse(**user.to_dict())
+    )
+
+@router.post("/google", response_model=TokenResponse)
+def google_auth(req: GoogleAuthRequest, db: Session = Depends(get_db)):
+    """Đăng nhập hoặc Đăng ký liên kết tài khoản Google OAuth"""
+    import secrets
+    import urllib.request
+    import json
+
+    email = req.email
+    full_name = req.full_name or "Du Khách Google"
+    avatar_url = req.avatar_url
+
+    # Nếu Frontend truyền Google ID Token (Google Identity Services)
+    if req.credential and not email:
+        try:
+            verify_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={req.credential}"
+            with urllib.request.urlopen(verify_url, timeout=5) as resp:
+                g_data = json.loads(resp.read().decode("utf-8"))
+                email = g_data.get("email")
+                full_name = g_data.get("name") or full_name
+                avatar_url = g_data.get("picture") or avatar_url
+        except Exception:
+            try:
+                import jwt
+                payload = jwt.decode(req.credential, options={"verify_signature": False})
+                email = payload.get("email")
+                full_name = payload.get("name") or full_name
+                avatar_url = payload.get("picture") or avatar_url
+            except Exception:
+                pass
+
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Không thể xác thực thông tin tài khoản Google. Vui lòng thử lại."
+        )
+
+    email_clean = email.strip().lower()
+    user = db.query(User).filter(User.email == email_clean).first()
+
+    if user:
+        # Nếu user đã tồn tại, đồng bộ avatar và provider
+        if avatar_url and not user.avatar_url:
+            user.avatar_url = avatar_url
+        user.auth_provider = "google"
+        db.commit()
+        db.refresh(user)
+    else:
+        # Tự động tạo người dùng mới từ tài khoản Google
+        role = "admin" if email_clean.startswith("admin@") else "traveler"
+        random_pwd = secrets.token_urlsafe(16)
+        user = User(
+            email=email_clean,
+            hashed_password=hash_password(random_pwd),
+            full_name=full_name.strip() or "Du Khách Google",
+            role=role,
+            avatar_url=avatar_url,
+            auth_provider="google"
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
     token = create_access_token({"sub": str(user.id), "role": user.role, "email": user.email})
     return TokenResponse(
         access_token=token,
