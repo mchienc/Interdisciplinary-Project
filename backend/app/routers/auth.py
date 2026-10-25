@@ -215,24 +215,72 @@ def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
             """
             msg.attach(MIMEText(html, "html"))
 
-            # Thử gửi qua STARTTLS port 587 với local_hostname='localhost' (tránh lỗi hostname Windows chứa khoảng trắng)
-            try:
-                with smtplib.SMTP("smtp.gmail.com", 587, local_hostname="localhost", timeout=10) as server:
-                    server.ehlo("localhost")
-                    server.starttls()
-                    server.ehlo("localhost")
-                    server.login(smtp_user_clean, smtp_pass_clean)
-                    server.sendmail(smtp_user_clean, email_clean, msg.as_string())
-                email_sent = True
-            except Exception as ex_tls:
+            # 1. ƯU TIÊN: Gửi qua Webhook HTTPS (Google Apps Script Web App)
+            # Render Free CHẶN cổng SMTP 587/465, nhưng CHO PHÉP cổng HTTPS 443.
+            webhook_url = os.getenv("GMAIL_WEBHOOK_URL")
+            if webhook_url:
                 try:
-                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, local_hostname="localhost", timeout=10) as server:
+                    import urllib.request, json
+                    payload = json.dumps({
+                        "to": email_clean,
+                        "subject": f"[{otp_code}] Mã xác thực khôi phục mật khẩu - Hà Nội Thong Dong",
+                        "html": html
+                    }).encode("utf-8")
+                    req_wh = urllib.request.Request(
+                        webhook_url.strip(),
+                        data=payload,
+                        headers={"Content-Type": "application/json"}
+                    )
+                    with urllib.request.urlopen(req_wh, timeout=10) as resp:
+                        email_sent = True
+                        print(f"Gửi OTP qua Webhook HTTPS thành công tới {email_clean}")
+                except Exception as ex_wh:
+                    print(f"Webhook HTTPS send error: {ex_wh}")
+
+            # 2. Thử gửi qua Resend API nếu có RESEND_API_KEY (HTTPS Port 443)
+            resend_key = os.getenv("RESEND_API_KEY")
+            if not email_sent and resend_key:
+                try:
+                    import urllib.request, json
+                    payload = json.dumps({
+                        "from": "Hà Nội WebGIS <onboarding@resend.dev>",
+                        "to": [email_clean],
+                        "subject": f"[{otp_code}] Mã xác thực khôi phục mật khẩu - Hà Nội Thong Dong",
+                        "html": html
+                    }).encode("utf-8")
+                    req_rs = urllib.request.Request(
+                        "https://api.resend.com/emails",
+                        data=payload,
+                        headers={
+                            "Authorization": f"Bearer {resend_key.strip()}",
+                            "Content-Type": "application/json"
+                        }
+                    )
+                    with urllib.request.urlopen(req_rs, timeout=10) as resp:
+                        email_sent = True
+                        print(f"Gửi OTP qua Resend API thành công tới {email_clean}")
+                except Exception as ex_rs:
+                    print(f"Resend API send error: {ex_rs}")
+
+            # 3. Fallback: Gửi qua SMTP truyền thống (Hoạt động tốt khi chạy ở Localhost hoặc server mở port 587/465)
+            if not email_sent:
+                try:
+                    with smtplib.SMTP("smtp.gmail.com", 587, local_hostname="localhost", timeout=8) as server:
+                        server.ehlo("localhost")
+                        server.starttls()
                         server.ehlo("localhost")
                         server.login(smtp_user_clean, smtp_pass_clean)
                         server.sendmail(smtp_user_clean, email_clean, msg.as_string())
                     email_sent = True
-                except Exception as ex_ssl:
-                    print(f"SMTP send email error: {ex_ssl}")
+                except Exception as ex_tls:
+                    try:
+                        with smtplib.SMTP_SSL("smtp.gmail.com", 465, local_hostname="localhost", timeout=8) as server:
+                            server.ehlo("localhost")
+                            server.login(smtp_user_clean, smtp_pass_clean)
+                            server.sendmail(smtp_user_clean, email_clean, msg.as_string())
+                        email_sent = True
+                    except Exception as ex_ssl:
+                        print(f"SMTP send email error: {ex_ssl}")
     except Exception as e:
         print(f"SMTP send email error: {e}")
 
