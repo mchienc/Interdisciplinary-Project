@@ -182,8 +182,11 @@ const WebGisApp: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  // 3. Kịch bản: Chuyển trực tiếp từ Landing Page vào Không gian Làm việc WebGIS
-  const handleLaunchWorkspace = (presetPoiIds?: number[]) => {
+  // Lưu trạng thái chờ vào Workspace sau khi đăng nhập thành công
+  const pendingWorkspaceRef = useRef<{ requested: boolean; presetPoiIds?: number[] }>({ requested: false });
+
+  // Hàm thực thi chuyển cảnh vào Workspace WebGIS
+  const executeWorkspaceTransition = (presetPoiIds?: number[]) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
 
@@ -245,6 +248,29 @@ const WebGisApp: React.FC = () => {
 
     }, appContainerRef);
   };
+
+  // 3. Kịch bản: Chuyển từ Landing Page vào Không gian Làm việc WebGIS (Yêu cầu Đăng nhập / Đăng ký)
+  const handleLaunchWorkspace = (presetPoiIds?: number[]) => {
+    if (!isAuthenticated) {
+      pendingWorkspaceRef.current = { requested: true, presetPoiIds };
+      setNotification('Vui lòng đăng nhập hoặc đăng ký tài khoản để bắt đầu lập lịch trình!');
+      setTimeout(() => setNotification(null), 4000);
+      setIsAuthModalOpen(true);
+      return;
+    }
+    executeWorkspaceTransition(presetPoiIds);
+  };
+
+  // Tự động đưa người dùng vào Workspace ngay khi đăng nhập/đăng ký thành công, hoặc đưa về Landing khi đăng xuất
+  useEffect(() => {
+    if (isAuthenticated && pendingWorkspaceRef.current.requested) {
+      const presetIds = pendingWorkspaceRef.current.presetPoiIds;
+      pendingWorkspaceRef.current = { requested: false };
+      executeWorkspaceTransition(presetIds);
+    } else if (!isAuthenticated && isWorkspaceActive) {
+      handleReturnToLanding();
+    }
+  }, [isAuthenticated, isWorkspaceActive]);
 
   // 4. Kịch bản Quay lại Landing Page (Reverse Transition)
   const handleReturnToLanding = () => {
