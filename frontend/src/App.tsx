@@ -391,6 +391,21 @@ const WebGisApp: React.FC = () => {
     );
   };
 
+  // Bỏ nhanh 1 điểm trực tiếp từ Timeline lộ trình và tự động tối ưu lại
+  const handleRemovePoiFromPlan = (poiId: number) => {
+    const targetPoi = pois.find(p => p.id === poiId);
+    const remainingIds = selectedPoiIds.filter(id => id !== poiId);
+    if (remainingIds.length < 2) {
+      setNotification('Cần giữ lại tối thiểu 2 địa điểm để duy trì lộ trình!');
+      setTimeout(() => setNotification(null), 3500);
+      return;
+    }
+    setSelectedPoiIds(remainingIds);
+    setNotification(`Đã bỏ "${targetPoi?.name || 'địa điểm'}" và đang tối ưu lại lộ trình...`);
+    setTimeout(() => setNotification(null), 3500);
+    handleRunOptimization(undefined, remainingIds);
+  };
+
   // Chọn tất cả POIs
   const handleSelectAllPois = () => {
     setSelectedPoiIds(pois.map(p => p.id));
@@ -758,6 +773,7 @@ const WebGisApp: React.FC = () => {
           weights={weights}
           onChangeWeights={setWeights}
           onRunOptimization={handleRunOptimization}
+          onRemovePoiFromPlan={handleRemovePoiFromPlan}
           onApplyAiPlan={handleApplyAiPlan}
           plan={activePlan}
           loading={loading}

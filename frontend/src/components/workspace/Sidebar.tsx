@@ -29,7 +29,8 @@ import {
   Camera,
   Coffee,
   Moon,
-  Sun
+  Sun,
+  X
 } from 'lucide-react';
 import { POI, Accommodation, PlanResponse, WeightsConfig } from '../../types';
 import { DAY_COLORS } from '../../constants/map';
@@ -82,6 +83,7 @@ interface SidebarProps {
   onOpenStoryModal?: () => void;
   itineraryTitle?: string;
   onApplyAiPlan?: (poiIds: number[], days: number, title: string) => void;
+  onRemovePoiFromPlan?: (poiId: number) => void;
 }
 
 // CATEGORY_META imported from constants/categories
@@ -122,7 +124,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenQrModal,
   onOpenStoryModal,
   itineraryTitle,
-  onApplyAiPlan
+  onApplyAiPlan,
+  onRemovePoiFromPlan
 }) => {
   // Quản lý xác thực và lưu chuyến đi
   const { token, isAuthenticated, setIsAuthModalOpen, refreshMyTripsCount, setIsMyTripsOpen } = useAuth();
@@ -188,14 +191,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
     };
   }, [plan, days, splitPeople, transportMode]);
 
-  // Module 3: Cảnh báo giờ mở cửa & ngày đóng cửa thông minh
+  // Kiểm tra xem lựa chọn hiện tại ở Setup có thay đổi so với lộ trình đang hiển thị không
+  const hasUnsyncedChanges = useMemo(() => {
+    if (!plan) return false;
+    const planPoiIds = plan.daily_itineraries?.flatMap(d => d.visit_sequence?.map(p => p.id) || []) || [];
+    if (planPoiIds.length !== selectedPoiIds.length) return true;
+    const sortedPlanIds = [...planPoiIds].sort((a, b) => a - b);
+    const sortedSelectedIds = [...selectedPoiIds].sort((a, b) => a - b);
+    for (let i = 0; i < sortedPlanIds.length; i++) {
+      if (sortedPlanIds[i] !== sortedSelectedIds[i]) return true;
+    }
+    if (plan.days !== days) return true;
+    if (plan.transport_mode && plan.transport_mode !== transportMode) return true;
+    return false;
+  }, [plan, selectedPoiIds, days, transportMode]);
+
+  // Module 3: Cảnh báo giờ mở cửa & ngày đóng cửa thông minh (Đồng bộ theo Ngày khởi hành)
   const smartWarnings = useMemo(() => {
     const warnings: string[] = [];
     const selectedObjects = pois.filter(p => selectedPoiIds.includes(p.id));
     
+    // Tính danh sách các thứ trong tuần của chuyến đi
+    const tripDaysInfo = Array.from({ length: days }, (_, idx) => ({
+      dayNum: idx + 1,
+      ...getDayCalendarInfo(idx + 1, startDate)
+    }));
+    const hasMonOrFri = tripDaysInfo.some(info => info.dayOfWeek === 1 || info.dayOfWeek === 5);
+    const hasWeekend = tripDaysInfo.some(info => info.isWeekend);
+
     const langBac = selectedObjects.find(p => p.name.includes('Lăng') || (p.closed_days && p.closed_days.length > 0));
     if (langBac) {
-      warnings.push('Lăng Bác đóng cửa viếng vào Thứ Hai & Thứ Sáu hàng tuần. Hãy lưu ý chọn ngày khởi hành phù hợp!');
+      if (hasMonOrFri) {
+        const conflictDays = tripDaysInfo
+          .filter(info => info.dayOfWeek === 1 || info.dayOfWeek === 5)
+          .map(info => `Ngày ${info.dayNum} (${info.dayName})`)
+          .join(', ');
+        warnings.push(`Lưu ý: Chuyến đi của bạn có ${conflictDays} trùng vào lịch đóng cửa bảo dưỡng của Lăng Bác (Thứ Hai & Thứ Sáu).`);
+      } else {
+        warnings.push('Lăng Bác mở cửa buổi sáng các ngày trong lịch trình của bạn (đóng cửa Thứ Hai & Thứ Sáu).');
+      }
+    }
+
+    if (hasWeekend) {
+      warnings.push('Chuyến đi có ngày Cuối tuần: Không gian Phố đi bộ Hồ Gươm & Chợ đêm Phố Cổ sẽ hoạt động từ tối Thứ Sáu đến hết Chủ Nhật.');
     }
 
     const museums = selectedObjects.filter(p => p.closed_time === '17:00' || p.category === 'museum');
@@ -205,7 +243,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
 
     return warnings;
-  }, [pois, selectedPoiIds]);
+  }, [pois, selectedPoiIds, days, startDate]);
 
   // Tự động chuyển sang tab 'itinerary' khi vừa tính toán xong plan mới
   React.useEffect(() => {
@@ -287,29 +325,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ======================================================== */}
       <div className="p-4 sm:p-5 border-b border-stone-200/80 bg-white/60">
         {plan ? (
-          <div className="grid grid-cols-2 p-1 bg-stone-100 rounded-2xl gap-1">
-            <button
-              onClick={() => setSidebarTab('itinerary')}
-              className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                sidebarTab === 'itinerary' 
-                  ? 'bg-white text-[#1C382B] shadow-xs' 
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5 text-[#B85D3B]" />
-              <span>Lộ Trình Du Lịch</span>
-            </button>
-            <button
-              onClick={() => setSidebarTab('setup')}
-              className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                sidebarTab === 'setup' 
-                  ? 'bg-white text-[#1C382B] shadow-xs' 
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <Sliders className="w-3.5 h-3.5 text-stone-500" />
-              <span>Điểm Đến &amp; Gu</span>
-            </button>
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 p-1 bg-stone-100 rounded-2xl gap-1">
+              <button
+                onClick={() => setSidebarTab('itinerary')}
+                className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 relative ${
+                  sidebarTab === 'itinerary' 
+                    ? 'bg-white text-[#1C382B] shadow-xs' 
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Compass className="w-3.5 h-3.5 text-[#B85D3B]" />
+                <span>Lộ Trình Du Lịch</span>
+                {hasUnsyncedChanges && (
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Cấu hình đã thay đổi, cần tính lại lộ trình" />
+                )}
+              </button>
+              <button
+                onClick={() => setSidebarTab('setup')}
+                className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  sidebarTab === 'setup' 
+                    ? 'bg-white text-[#1C382B] shadow-xs' 
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Sliders className="w-3.5 h-3.5 text-stone-500" />
+                <span>Điểm Đến &amp; Gu ({selectedPoiIds.length})</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-between">
@@ -389,6 +432,59 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <span>{d} Ngày</span>
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Ngày khởi hành & Giờ xuất phát ngay từ Bước 1 */}
+              <div className="p-3 rounded-2xl bg-stone-50/90 border border-stone-200/80 space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-stone-600 flex items-center gap-1.5 text-xs shrink-0">
+                    <Calendar className="w-3.5 h-3.5 text-[#B85D3B]" />
+                    <span>Ngày khởi hành:</span>
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-stone-200 text-stone-800 shadow-2xs focus:outline-hidden focus:border-[#B85D3B] cursor-pointer"
+                    />
+                    {(() => {
+                      const baseInfo = getDayCalendarInfo(1, startDate);
+                      return (
+                        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
+                          baseInfo.isWeekend
+                            ? 'bg-amber-100 text-amber-800 border border-amber-300/80'
+                            : 'bg-stone-200/80 text-stone-700'
+                        }`}>
+                          {baseInfo.dayName}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 text-xs">
+                  <span className="font-medium text-stone-600 flex items-center gap-1.5 text-xs">
+                    <Clock className="w-3.5 h-3.5 text-[#B85D3B]" />
+                    <span>Giờ xuất phát:</span>
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {['07:30', '08:00', '08:30', '09:00'].map((time) => (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => setDepartureTime(time)}
+                        className={`px-2 py-1 rounded-lg text-[11px] font-semibold transition cursor-pointer ${
+                          departureTime === time
+                            ? 'bg-[#1C382B] text-white shadow-xs'
+                            : 'bg-white hover:bg-stone-200 text-stone-700 border border-stone-200'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -736,6 +832,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
             ======================================================== */}
         {sidebarTab === 'itinerary' && plan && (
           <div className="space-y-5">
+            {/* Banner nhắc cập nhật khi người dùng vừa thay đổi lựa chọn ở Tab Điểm Đến & Gu */}
+            {hasUnsyncedChanges && (
+              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300/90 flex items-center justify-between gap-2 text-xs shadow-2xs animate-in fade-in duration-200">
+                <div className="text-amber-950 leading-snug">
+                  <div className="font-bold">Cấu hình chuyến đi đã thay đổi</div>
+                  <div className="text-[11px] text-amber-800">
+                    Đang chọn <b>{selectedPoiIds.length} điểm</b> ({days} ngày) — Bấm cập nhật để vẽ lại lộ trình.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={onRunOptimization}
+                  className="px-3 py-1.5 rounded-xl bg-[#B85D3B] hover:bg-[#9E4C2E] text-white text-[11px] font-bold shrink-0 cursor-pointer transition shadow-xs flex items-center gap-1"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Cập nhật</span>
+                </button>
+              </div>
+            )}
+
             {/* Quick Trip Metrics Strip */}
             <div className="p-3.5 rounded-2xl bg-stone-100/80 border border-stone-200/80 grid grid-cols-3 gap-2 text-center">
               <div>
@@ -1326,9 +1442,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               return (
                                 <div 
                                   key={step.id} 
+                                  onClick={() => onOpenPoiDetail(poi)}
                                   onMouseEnter={() => onHoverPoi?.(poi.id)}
                                   onMouseLeave={() => onHoverPoi?.(null)}
-                                  className={`flex items-start gap-2.5 text-xs pl-1.5 pr-2 py-1.5 rounded-xl transition-all cursor-pointer ${
+                                  className={`group flex items-start gap-2.5 text-xs pl-1.5 pr-2 py-2 rounded-xl transition-all cursor-pointer ${
                                     hoveredPoiId === poi.id ? 'bg-amber-100/80 ring-1 ring-[#B85D3B]' : 'hover:bg-stone-50'
                                   }`}
                                 >
@@ -1339,11 +1456,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     {pNum}
                                   </span>
                                   <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between gap-1 flex-wrap">
-                                      <span className="font-bold text-[#1C382B] text-xs">{poi.name}</span>
-                                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#B85D3B]/10 text-[#B85D3B] border border-[#B85D3B]/20">
-                                        {step.timeSlot}
-                                      </span>
+                                    <div className="flex items-center justify-between gap-1">
+                                      <span className="font-bold text-[#1C382B] text-xs truncate">{poi.name}</span>
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#B85D3B]/10 text-[#B85D3B] border border-[#B85D3B]/20">
+                                          {step.timeSlot}
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onOpenPoiDetail(poi);
+                                          }}
+                                          title="Xem chi tiết địa điểm"
+                                          className="p-1 rounded-lg text-stone-400 hover:text-[#1C382B] hover:bg-stone-200/70 transition cursor-pointer"
+                                        >
+                                          <Eye className="w-3.5 h-3.5" />
+                                        </button>
+                                        {onRemovePoiFromPlan && (
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              onRemovePoiFromPlan(poi.id);
+                                            }}
+                                            title="Bỏ điểm này khỏi lộ trình & tự động tính lại"
+                                            className="p-1 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                                          >
+                                            <X className="w-3.5 h-3.5" />
+                                          </button>
+                                        )}
+                                      </div>
                                     </div>
 
                                     {/* Badges row: Venue Type, Golden Hour, Price */}
@@ -1446,14 +1589,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <FileSpreadsheet className="w-4 h-4" />
                 <span>Xuất file Excel đầy đủ lịch trình</span>
               </button>
-
-              <button
-                onClick={() => setSidebarTab('setup')}
-                className="w-full py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Chỉnh sửa lại danh sách điểm &amp; thời gian</span>
-              </button>
             </div>
           </div>
         )}
@@ -1465,43 +1600,78 @@ export const Sidebar: React.FC<SidebarProps> = ({
           STICKY BOTTOM CTA BUTTON
           ======================================================== */}
       <div className="p-4 sm:p-5 border-t border-stone-200/90 bg-gradient-to-t from-[#FDFCF7] via-[#FDFCF7] to-white/80">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (loading) return;
-            if (selectedPoiIds.length < 2) {
-              onSelectPopularPois();
-              return;
-            }
-            onRunOptimization();
-          }}
-          disabled={loading}
-          className={`w-full py-4 rounded-2xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all duration-200 cursor-pointer shadow-lg ${
-            loading
-              ? 'bg-stone-300 text-stone-500 cursor-not-allowed shadow-none'
-              : selectedPoiIds.length < 2
-                ? 'bg-[#1C382B] hover:bg-[#2A4D3B] active:scale-[0.98] text-white shadow-md'
-                : 'bg-[#B85D3B] hover:bg-[#9E4C2E] active:scale-[0.98] text-white shadow-[#B85D3B]/25 hover:shadow-xl'
-          }`}
-        >
-          {loading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              <span>Đang dệt lộ trình thảnh thơi...</span>
-            </>
-          ) : selectedPoiIds.length < 2 ? (
-            <span>Gợi ý 6 điểm thân quen &amp; Lên đường</span>
-          ) : (
-            <span>Khởi tạo hành trình &amp; Tìm nơi nghỉ tiện nhất</span>
-          )}
-        </button>
-
-        {selectedPoiIds.length < 2 && (
-          <div className="text-[11px] text-center text-stone-500 mt-1.5 font-medium">
-            Nhấp nút trên để hệ thống tự chọn 6 điểm thân quen tại Hà Nội
+        {plan && !hasUnsyncedChanges && sidebarTab === 'itinerary' ? (
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setSidebarTab('setup')}
+              className="py-3 px-3 rounded-2xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-[#1C382B] text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+            >
+              <Sliders className="w-3.5 h-3.5 text-[#B85D3B]" />
+              <span>Thêm / Bớt điểm ({selectedPoiIds.length})</span>
+            </button>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={onRunOptimization}
+              className="py-3 px-3 rounded-2xl bg-[#1C382B] hover:bg-[#2A4D3B] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs disabled:opacity-50"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 text-amber-300 ${loading ? 'animate-spin' : ''}`} />
+              <span>Tính lại lộ trình</span>
+            </button>
           </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (loading) return;
+                if (selectedPoiIds.length < 2) {
+                  onSelectPopularPois();
+                  return;
+                }
+                onRunOptimization();
+              }}
+              disabled={loading}
+              className={`w-full py-4 rounded-2xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all duration-200 cursor-pointer shadow-lg ${
+                loading
+                  ? 'bg-stone-300 text-stone-500 cursor-not-allowed shadow-none'
+                  : selectedPoiIds.length < 2
+                    ? 'bg-[#1C382B] hover:bg-[#2A4D3B] active:scale-[0.98] text-white shadow-md'
+                    : hasUnsyncedChanges
+                      ? 'bg-[#B85D3B] hover:bg-[#9E4C2E] ring-2 ring-amber-400/60 active:scale-[0.98] text-white shadow-[#B85D3B]/30 hover:shadow-xl'
+                      : 'bg-[#B85D3B] hover:bg-[#9E4C2E] active:scale-[0.98] text-white shadow-[#B85D3B]/25 hover:shadow-xl'
+              }`}
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  <span>Đang dệt lộ trình thảnh thơi...</span>
+                </>
+              ) : selectedPoiIds.length < 2 ? (
+                <span>Gợi ý 6 điểm thân quen &amp; Lên đường</span>
+              ) : hasUnsyncedChanges ? (
+                <>
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Cập nhật lại lộ trình ({selectedPoiIds.length} điểm • {days} ngày)</span>
+                </>
+              ) : (
+                <span>Khởi tạo hành trình ({selectedPoiIds.length} điểm • {days} ngày)</span>
+              )}
+            </button>
+
+            {selectedPoiIds.length < 2 ? (
+              <div className="text-[11px] text-center text-stone-500 mt-1.5 font-medium">
+                Nhấp nút trên để hệ thống tự chọn 6 điểm thân quen tại Hà Nội
+              </div>
+            ) : hasUnsyncedChanges ? (
+              <div className="text-[11px] text-center text-[#B85D3B] mt-1.5 font-semibold">
+                Bạn vừa thay đổi cấu hình — Bấm nút trên để vẽ lại lộ trình mới
+              </div>
+            ) : null}
+          </>
         )}
       </div>
 
