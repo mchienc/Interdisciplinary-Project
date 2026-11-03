@@ -155,12 +155,12 @@ async def call_gemini_api(
     prompt_or_contents: List[Dict[str, Any]],
     system_instruction: str,
     api_key: str,
-    model_name: str = "gemini-3.1-flash-lite"
+    model_name: str = "gemini-2.5-flash"
 ) -> Optional[str]:
     """
-    Gọi Google Gemini API (v1beta) với danh sách model khả dụng: gemini-3.1-flash-lite, gemini-3.5-flash, gemini-flash-latest.
+    Gọi Google Gemini API (v1beta) với danh sách model khả dụng: gemini-2.5-flash, gemini-2.0-flash, gemini-1.5-flash, gemini-flash-latest.
     """
-    models_to_try = [model_name, "gemini-3.5-flash", "gemini-flash-latest", "gemini-3.8-flash"]
+    models_to_try = [model_name, "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]
     # Tránh trùng lặp
     models_to_try = list(dict.fromkeys(models_to_try))
 
@@ -262,13 +262,13 @@ async def chat_storyteller(req: StorytellerRequest):
             prompt_or_contents=contents,
             system_instruction=system_instruction,
             api_key=api_key,
-            model_name="gemini-3.1-flash-lite"
+            model_name="gemini-2.5-flash"
         )
         if answer:
             return StorytellerResponse(
                 text=answer.strip(),
                 source="gemini",
-                model="gemini-3.1-flash-lite"
+                model="gemini-2.5-flash"
             )
 
     # Nếu không có key hoặc API gặp sự cố -> Fallback dữ liệu văn hóa cục bộ
@@ -315,7 +315,7 @@ async def generate_narrative(req: NarrativeRequest):
             prompt_or_contents=contents,
             system_instruction=system_instruction,
             api_key=api_key,
-            model_name="gemini-3.1-flash-lite"
+            model_name="gemini-2.5-flash"
         )
         if narrative:
             return NarrativeResponse(
@@ -471,7 +471,7 @@ async def prompt_to_itinerary(req: PromptToItineraryRequest):
             prompt_or_contents=contents,
             system_instruction=system_instruction,
             api_key=api_key,
-            model_name="gemini-3.1-flash-lite"
+            model_name="gemini-2.5-flash"
         )
 
         if raw_response:
