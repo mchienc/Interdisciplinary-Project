@@ -435,37 +435,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </div>
 
-              {/* Ngày khởi hành & Giờ xuất phát ngay từ Bước 1 */}
-              <div className="p-3 rounded-2xl bg-stone-50/90 border border-stone-200/80 space-y-2.5">
+              {/* Ngày khởi hành & Giờ xuất phát ngay từ Bước 1 (Kèm Lịch các ngày & Cảnh báo tức thì) */}
+              <div className="p-3.5 rounded-2xl bg-[#FAF7F0] border border-[#B85D3B]/35 space-y-2.5 shadow-2xs">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-stone-600 flex items-center gap-1.5 text-xs shrink-0">
+                  <span className="font-bold text-[#1C382B] flex items-center gap-1.5 text-xs shrink-0">
                     <Calendar className="w-3.5 h-3.5 text-[#B85D3B]" />
                     <span>Ngày khởi hành:</span>
                   </span>
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-stone-200 text-stone-800 shadow-2xs focus:outline-hidden focus:border-[#B85D3B] cursor-pointer"
-                    />
-                    {(() => {
-                      const baseInfo = getDayCalendarInfo(1, startDate);
-                      return (
-                        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
-                          baseInfo.isWeekend
-                            ? 'bg-amber-100 text-amber-800 border border-amber-300/80'
-                            : 'bg-stone-200/80 text-stone-700'
-                        }`}>
-                          {baseInfo.dayName}
-                        </span>
-                      );
-                    })()}
-                  </div>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-stone-300 text-[#1C382B] shadow-2xs focus:outline-hidden focus:border-[#B85D3B] cursor-pointer"
+                  />
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 text-xs">
-                  <span className="font-medium text-stone-600 flex items-center gap-1.5 text-xs">
+                {/* Dải hiển thị các thứ trong chuyến đi */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  {Array.from({ length: days }, (_, idx) => {
+                    const info = getDayCalendarInfo(idx + 1, startDate);
+                    const isMonOrFri = info.dayOfWeek === 1 || info.dayOfWeek === 5;
+                    const hasLangBac = pois.some(p => selectedPoiIds.includes(p.id) && (p.name.includes('Lăng') || (p.closed_days && p.closed_days.length > 0)));
+                    return (
+                      <span
+                        key={idx}
+                        className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold border flex items-center gap-1 ${
+                          isMonOrFri && hasLangBac
+                            ? 'bg-rose-50 text-rose-800 border-rose-300'
+                            : info.isWeekend
+                              ? 'bg-amber-100/90 text-amber-900 border-amber-300'
+                              : 'bg-white text-stone-700 border-stone-200'
+                        }`}
+                      >
+                        <span>N{idx + 1}: {info.label}</span>
+                        {info.isWeekend && <span className="text-[9px] text-amber-700 font-bold">• Phố đi bộ</span>}
+                        {isMonOrFri && hasLangBac && <span className="text-[9px] text-rose-600 font-bold">• Lăng Bác đóng cửa</span>}
+                      </span>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-stone-200/70 text-xs">
+                  <span className="font-bold text-[#1C382B] flex items-center gap-1.5 text-xs">
                     <Clock className="w-3.5 h-3.5 text-[#B85D3B]" />
                     <span>Giờ xuất phát:</span>
                   </span>
