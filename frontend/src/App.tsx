@@ -109,10 +109,6 @@ const WebGisApp: React.FC = () => {
         setPois(data);
         setSelectedPoiIds(prev => (prev.length > 0 ? prev : data.slice(0, 6).map((p: POI) => p.id)));
         setApiStatus('online');
-        if (intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
         return;
       } catch {
         setApiStatus('offline');
@@ -125,15 +121,17 @@ const WebGisApp: React.FC = () => {
 
     fetchPois();
 
-    // Tự động kiểm tra kết nối định kỳ để chuyển ngay sang Online khi bật backend
-    intervalId = setInterval(() => {
-      fetchPois();
-    }, 5000);
+    // Nếu đang ở trạng thái offline thì tự động kiểm tra lại mỗi 3 giây cho đến khi lên Online
+    if (apiStatus === 'offline') {
+      intervalId = setInterval(() => {
+        fetchPois();
+      }, 3000);
+    }
 
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, []);
+  }, [apiStatus]);
 
   // Nạp chuyến đi từ danh sách đã lưu lên bản đồ
   const handleLoadSavedTrip = (savedTrip: SavedTrip) => {
