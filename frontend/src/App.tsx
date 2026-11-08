@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Sidebar } from './components/workspace/Sidebar';
 import { MapView, MapViewHandle } from './components/map/MapView';
@@ -62,7 +62,7 @@ const WebGisApp: React.FC = () => {
   const [plan, setPlan] = useState<PlanResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeDayTab, setActiveDayTab] = useState<number | null>(null);
-  const [apiStatus, setApiStatus] = useState<'online' | 'offline'>('offline');
+  const [apiStatus, setApiStatus] = useState<'online' | 'offline'>('online');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Context-Aware Engine Hooks
