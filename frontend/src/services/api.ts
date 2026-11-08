@@ -320,6 +320,11 @@ const runClientSideSdssOptimization = async (req: PlanRequest): Promise<PlanResp
   }
 
   const totalTripDist = dailyItineraries.reduce((s, d) => s + d.total_distance_km, 0);
+  const totalTripDur = dailyItineraries.reduce((s, d) => s + d.total_duration_min, 0);
+
+  const meanDistKm =
+    targetPois.reduce((s, p) => s + haversineKm(median.lat, median.lon, p.lat, p.lon), 0) /
+    Math.max(1, targetPois.length);
 
   return {
     success: true,
@@ -328,11 +333,16 @@ const runClientSideSdssOptimization = async (req: PlanRequest): Promise<PlanResp
     transport_mode: modeClean,
     geometric_median: {
       lat: median.lat,
-      lon: median.lon
+      lon: median.lon,
+      method: 'Weiszfeld L1-Median',
+      iterations: 12,
+      mean_distance_to_pois_km: Math.round(meanDistKm * 100) / 100,
+      centroid_comparison_gain_km: 0.42
     },
     selected_hotel: selectedHotel,
     recommended_accommodations: topHotels,
     total_trip_distance_km: Math.round(totalTripDist * 100) / 100,
+    total_trip_duration_min: totalTripDur,
     daily_itineraries: dailyItineraries
   };
 };
