@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
-import { loginApi, registerApi, getMeApi, getMyTripsApi, googleAuthApi, GoogleAuthPayload } from '../services/authService';
+import { loginApi, registerApi, getMeApi, getMyTripsApi, googleAuthApi, GoogleAuthPayload, USER_PROFILE_STORAGE_KEY } from '../services/authService';
 
 interface AuthContextType {
   user: User | null;
@@ -28,27 +28,34 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const TOKEN_KEY = 'hanoi_webgis_auth_token';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const cached = localStorage.getItem(USER_PROFILE_STORAGE_KEY);
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isMyTripsOpen, setIsMyTripsOpen] = useState<boolean>(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
   const [savedTripsCount, setSavedTripsCount] = useState<number>(0);
 
-  // Khôi phục phiên đăng nhập khi load trang
+  // Khôi phục phiên đăng nhập duy nhất 1 lần khi tải trang
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      const savedToken = localStorage.getItem(TOKEN_KEY);
+      if (!savedToken) {
         setIsLoading(false);
         return;
       }
       try {
-        const profile = await getMeApi(token);
+        const profile = await getMeApi(savedToken);
         setUser(profile);
-        // Tải số lượng chuyến đi
         try {
-          const trips = await getMyTripsApi(token);
+          const trips = await getMyTripsApi(savedToken);
           setSavedTripsCount(trips.length);
         } catch {
           // Bỏ qua lỗi phụ nếu mạng lag
@@ -56,6 +63,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch (err) {
         console.warn('Phiên đăng nhập đã hết hạn:', err);
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_PROFILE_STORAGE_KEY);
         setToken(null);
         setUser(null);
       } finally {
@@ -64,7 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     restoreSession();
-  }, [token]);
+  }, []);
 
   const refreshMyTripsCount = async () => {
     if (!token) {
@@ -134,6 +142,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_PROFILE_STORAGE_KEY);
     setToken(null);
     setUser(null);
     setSavedTripsCount(0);

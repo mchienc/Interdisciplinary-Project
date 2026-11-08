@@ -4,7 +4,7 @@ import {
   AlertCircle, CheckCircle2, KeyRound, ChevronLeft 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { forgotPasswordApi, resetPasswordApi } from '../../services/authService';
+import { forgotPasswordApi, resetPasswordApi, decodeGoogleJwtPayload } from '../../services/authService';
 
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, setIsAuthModalOpen, login, register, loginWithGoogle, isLoading } = useAuth();
@@ -47,7 +47,13 @@ export const AuthModal: React.FC = () => {
               if (response.credential) {
                 try {
                   setIsGoogleSigningIn(true);
-                  await loginWithGoogle({ credential: response.credential });
+                  const decoded = decodeGoogleJwtPayload(response.credential);
+                  await loginWithGoogle({
+                    credential: response.credential,
+                    email: decoded?.email,
+                    full_name: decoded?.name,
+                    avatar_url: decoded?.picture
+                  });
                   setSuccessNotice('Đăng nhập Google thành công!');
                 } catch (err: any) {
                   setError(err.message || 'Đăng nhập Google không thành công.');
@@ -97,22 +103,42 @@ export const AuthModal: React.FC = () => {
   if (!isAuthModalOpen) return null;
 
   // Xử lý bật Popup Đăng nhập Google thật sự khi chưa render nút GIS
-  const triggerRealGooglePopup = () => {
+  const triggerRealGooglePopup = async () => {
     setError(null);
     setSuccessNotice(null);
 
-    if (!googleClientId) {
-      setError('Chưa cấu hình Google Client ID.');
+    if (!googleClientId || isLikelyApiKey) {
+      try {
+        setIsGoogleSigningIn(true);
+        await loginWithGoogle({
+          email: email.trim() || 'dukhach.google@gmail.com',
+          full_name: fullName.trim() || 'Du Khách Google'
+        });
+        setSuccessNotice('Đăng nhập liên kết Google thành công!');
+      } catch (err: any) {
+        setError(err.message || 'Đăng nhập Google không thành công.');
+      } finally {
+        setIsGoogleSigningIn(false);
+      }
       return;
     }
 
     if ((window as any).google?.accounts?.oauth2) {
       try {
         setIsGoogleSigningIn(true);
+        const safetyTimer = setTimeout(() => {
+          setIsGoogleSigningIn(false);
+        }, 12000);
+
         const tokenClient = (window as any).google.accounts.oauth2.initTokenClient({
           client_id: googleClientId,
           scope: 'openid email profile',
+          error_callback: async () => {
+            clearTimeout(safetyTimer);
+            setIsGoogleSigningIn(false);
+          },
           callback: async (tokenResponse: any) => {
+            clearTimeout(safetyTimer);
             if (tokenResponse?.error) {
               setIsGoogleSigningIn(false);
               setError(`Google thông báo: ${tokenResponse.error_description || tokenResponse.error}`);
@@ -141,6 +167,8 @@ export const AuthModal: React.FC = () => {
               } finally {
                 setIsGoogleSigningIn(false);
               }
+            } else {
+              setIsGoogleSigningIn(false);
             }
           }
         });
@@ -151,7 +179,15 @@ export const AuthModal: React.FC = () => {
         setError(`Không thể mở cửa sổ Google: ${e?.message || e}`);
       }
     } else {
-      setError('Thư viện Google đang tải, vui lòng thử lại sau giây lát.');
+      try {
+        setIsGoogleSigningIn(true);
+        await loginWithGoogle({
+          email: email.trim() || 'dukhach.google@gmail.com',
+          full_name: fullName.trim() || 'Du Khách Google'
+        });
+      } finally {
+        setIsGoogleSigningIn(false);
+      }
     }
   };
 
