@@ -20,7 +20,7 @@ import {
   Smile
 } from 'lucide-react';
 import { POI } from '../../types';
-import { generatePromptToItineraryApi, PromptToItineraryResult, PromptToItineraryParams } from '../../services/aiService';
+import { generatePromptToItineraryApi, PromptToItineraryResult, PromptToItineraryParams, extractExplicitDaysFromPrompt } from '../../services/aiService';
 
 interface AiTripPlannerCardProps {
   currentDays: number;
@@ -91,6 +91,7 @@ export const AiTripPlannerCard: React.FC<AiTripPlannerCardProps> = ({
       clearTimeout(stepTimer1);
       clearTimeout(stepTimer2);
       setResult(res);
+      setSelectedDays(res.days);
       // Áp dụng ngay vào lộ trình
       onApplyPlan(res.recommended_poi_ids, res.days, res.title);
     } catch (err) {
@@ -104,9 +105,11 @@ export const AiTripPlannerCard: React.FC<AiTripPlannerCardProps> = ({
   const handlePromptSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!promptText.trim()) return;
+    const targetDays = extractExplicitDaysFromPrompt(promptText, selectedDays);
+    setSelectedDays(targetDays);
     executeGeneration({
       prompt: promptText,
-      days: selectedDays
+      days: targetDays
     });
   };
 

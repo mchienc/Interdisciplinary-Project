@@ -168,16 +168,16 @@ async def call_gemini_api(
     prompt_or_contents: List[Dict[str, Any]],
     system_instruction: str,
     api_key: str,
-    model_name: str = "gemini-3.5-flash"
+    model_name: str = "gemini-3.5-flash-lite"
 ) -> Optional[str]:
     """
-    Gọi Google Gemini API (v1beta) với danh sách model khả dụng: gemini-3.5-flash, gemini-3.5-flash-lite, gemini-flash-lite-latest.
+    Gọi Google Gemini API (v1beta) ưu tiên các model tốc độ cao (~0.7s): gemini-3.5-flash-lite, gemini-flash-lite-latest, gemini-3.1-flash-lite, gemini-3.5-flash.
     """
-    models_to_try = [model_name, "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.1-flash-lite"]
+    models_to_try = ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash", model_name]
     # Tránh trùng lặp
     models_to_try = list(dict.fromkeys(models_to_try))
 
-    async with httpx.AsyncClient(timeout=25.0) as client:
+    async with httpx.AsyncClient(timeout=6.0) as client:
         for m in models_to_try:
             gen_cfg: Dict[str, Any] = {
                 "temperature": 0.7,
